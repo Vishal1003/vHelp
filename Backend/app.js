@@ -27,8 +27,8 @@ app.use(express.json());
 const vendorRoutes = require('./routes/vendor');
 const userRoutes = require('./routes/user');
 
-app.use('/vendor', vendorRoutes);
-app.use('/user', userRoutes);
+app.use('/api/vendor', vendorRoutes);
+app.use('/api/user', userRoutes);
 
 app.listen(3000, () => {
   console.log('Server Started!');
