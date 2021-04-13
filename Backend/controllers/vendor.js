@@ -2,6 +2,31 @@ const Item = require("../models/item");
 const bcrypt = require("bcryptjs");
 const Vendor = require("../models/vendor");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+const mongoose = require("mongoose");
+
+const FILE_TYPE_MAP = {
+    "image/png": "png",
+    "image/jpeg": "jpeg",
+    "image/jpg": "jpg"
+};
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const isValid = FILE_TYPE_MAP[file.mimetype];
+        let uploadError = new Error("invalid image type");
+
+        if (isValid) {
+            uploadError = null;
+        }
+        cb(uploadError, "public/uploads");
+    },
+    filename: function (req, file, cb) {
+        const fileName = file.originalname.split(" ").join("-");
+        const extension = FILE_TYPE_MAP[file.mimetype];
+        cb(null, `${fileName}-${Date.now()}.${extension}`);
+    }
+});
 
 exports.getLogin = async (req, res, next) => {
     res.status(404).send("To be implemented");
@@ -53,17 +78,56 @@ exports.postRegister = async (req, res, next) => {
 
 // POST a item
 exports.postAddItem = async (req, res, next) => {
-    const { name, cost, category, imageUrl, email } = req.body;
+    const { name, cost, category, file, email } = req.body;
 
     const vendor = await Vendor.findOne({ email: email });
 
     if (!vendor) return res.status(404).send("No vendor found with that email id!");
 
+    let imagePath;
+
+    if (file) {
+        const fileName = file.filename;
+        const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+        imagepath = `${basePath}${fileName}`;
+    } else {
+        imagepath = product.image;
+    }
+
+    const updatedProduct = await Item.findByIdAndUpdate(req.params.id, {
+        name: name,
+        cost: parseFloat(cost),
+        category: category,
+        imageUrl: imagePath,
+        seller: vendor._id
+    });
+
+    if (!updatedProduct) return res.status(400).send("Error updating that item");
+
+    res.status(200).send("Item updated Successfully");
+};
+
+// UPDATE item
+exports.updateItem = async (req, res, next) => {
+    if (!mongoose.isValidObjectId(req.params.id))
+        return res
+            .status(400)
+            .json({ success: false, message: "No product found with that emailId" });
+    const { name, cost, category, file, email } = req.body;
+
+    const vendor = await Vendor.findOne({ email: email });
+
+    if (!vendor) return res.status(404).send("No vendor found with that email id!");
+    if (!file) return res.status(400).json({ success: false, message: "No image file found" });
+
+    const fileName = file.filename;
+    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+
     let item = new Item({
         name: name,
         cost: parseFloat(cost),
         category: category,
-        imageUrl: imageUrl,
+        imageUrl: `${basePath}${fileName}`,
         seller: vendor._id
     });
 
