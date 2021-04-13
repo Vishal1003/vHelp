@@ -3,13 +3,21 @@ const bcrypt = require("bcryptjs");
 const Vendor = require("../models/vendor");
 const jwt = require("jsonwebtoken");
 
+function isValidId(id) {
+    return require("mongoose").Types.ObjectId.isValid(id);
+}
+
+function normalize(str) {
+    return str.trim().toLowerCase();
+}
+
 exports.getLogin = async (req, res, next) => {
     res.status(404).send("To be implemented");
 };
 
 exports.postLogin = async (req, res, next) => {
-    const { email, password } = req.body;
-    const vendor = await Vendor.findOne({ email: email });
+    let { email, password } = req.body;
+    const vendor = await Vendor.findOne({ email: normalize(email) });
     if (!vendor) {
         return res.status(401).send("Email or Password does not match!");
     }
@@ -32,14 +40,14 @@ exports.postLogin = async (req, res, next) => {
 
 exports.postRegister = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body;
-        let vendor = await Vendor.findOne({ email: email });
+        let { name, email, password } = req.body;
+        let vendor = await Vendor.findOne({ email: normalize(email) });
         if (vendor) return res.status(404).send("Vendor already registered with that emailId");
 
         const hashedPassword = await bcrypt.hash(password, 8);
         vendor = new Vendor({
-            name: name,
-            email: email,
+            name: normalize(name),
+            email: normalize(email),
             password: hashedPassword
         });
 
@@ -53,17 +61,16 @@ exports.postRegister = async (req, res, next) => {
 
 // POST a item
 exports.postAddItem = async (req, res, next) => {
-    const { name, cost, category, imageUrl, email } = req.body;
-
-    const vendor = await Vendor.findOne({ email: email });
+    let { name, cost, category, imageUrl, email } = req.body;
+    const vendor = await Vendor.findOne({ email: normalize(email) });
 
     if (!vendor) return res.status(404).send("No vendor found with that email id!");
 
     let item = new Item({
-        name: name,
-        cost: parseFloat(cost),
-        category: category,
-        imageUrl: imageUrl,
+        name: normalize(name),
+        cost: parseFloat(normalize(cost)),
+        category: normalize(category),
+        imageUrl: normalize(imageUrl),
         seller: vendor._id
     });
 
@@ -71,7 +78,7 @@ exports.postAddItem = async (req, res, next) => {
 
     if (!item) return res.status(400).send("Error creating that item");
 
-    res.status(200).send("Item Added Successfully");
+    res.status(200).json({ message: "Item Added Successfully", item: item });
 };
 
 // GET list of all items of that vendor
@@ -82,5 +89,56 @@ exports.getItems = async (req, res, next) => {
         return res.status(200).json({ items: items });
     } else {
         return res.status(400).send("Could not retrieve items!");
+    }
+};
+
+// Delete the item given by Id and return the removed item
+exports.deleteItem = async (req, res, next) => {
+    const itemId = req.params.id;
+    if (!isValidId(itemId)) {
+        return res.status(400).json({ message: "Invalid Item Id" });
+    }
+    const item = await Item.findByIdAndDelete(itemId);
+    if (item) {
+        return res.status(200).json({ message: "Item removed successfully", item: item });
+    } else {
+        return res.status(404).json({ message: "Item Not Found" });
+    }
+};
+
+// Find the item given by Id and return the found item
+exports.getItem = async (req, res, next) => {
+    const itemId = req.params.id;
+    if (!isValidId(itemId)) {
+        return res.status(400).json({ message: "Invalid Item Id" });
+    }
+    const item = await Item.findById(itemId);
+    if (item) {
+        return res.status(200).json({ message: "Item found successfully", item: item });
+    } else {
+        return res.status(404).json({ message: "Item Not Found" });
+    }
+};
+
+// Update the item given by Id and return the updated item
+exports.putItem = async (req, res, next) => {
+    const itemId = req.params.id;
+    if (!isValidId(itemId)) {
+        return res.status(400).json({ message: "Invalid Item Id" });
+    }
+    const item = await Item.findByIdAndUpdate(
+        itemId,
+        {
+            name: req.body.name,
+            cost: parseFloat(req.body.cost),
+            category: req.body.category,
+            imageUrl: req.body.imageUrl
+        },
+        { new: true }
+    );
+    if (item) {
+        return res.status(200).json({ message: "Item updated successfully", item: item });
+    } else {
+        return res.status(404).json({ message: "Item Not Found" });
     }
 };

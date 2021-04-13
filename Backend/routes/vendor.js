@@ -10,8 +10,11 @@ router.post("/login", controller.postLogin);
 router.post("/register", controller.postRegister);
 
 // Modification operations on Items
-router.post("/addItem", controller.postAddItem);
+router.post("/item", controller.postAddItem);
+router.put("/item/:id", controller.putItem);
+router.delete("/item/:id", controller.deleteItem);
 
 // Non modification operations on Items
-router.get("/Items", controller.getItems);
+router.get("/items", controller.getItems);
+router.get("/item/:id", controller.getItem);
 module.exports = router;
