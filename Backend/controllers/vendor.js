@@ -98,7 +98,7 @@ exports.postAddItem = async (req, res, next) => {
     res.status(200).json({ message: "Item Added Successfully", item: item });
 };
 
-// Update the item given by Id and return the updated item
+// UPDATE the item given by Id and return the updated item
 exports.putItem = async (req, res, next) => {
     let { name, cost, category } = req.body;
     const vId = req.user.vendorId;
@@ -139,7 +139,7 @@ exports.putItem = async (req, res, next) => {
     }
 };
 
-// Delete the item given by Id and return the removed item
+// DELETE the item given by Id and return the removed item
 exports.deleteItem = async (req, res, next) => {
     const itemId = req.params.id;
     if (!isValidId(itemId)) {
@@ -153,7 +153,7 @@ exports.deleteItem = async (req, res, next) => {
     }
 };
 
-// Find the item given by Id and return the found item
+// GET the item given by Id and return the found item
 exports.getItem = async (req, res, next) => {
     const itemId = req.params.id;
     if (!isValidId(itemId)) {

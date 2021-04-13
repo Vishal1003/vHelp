@@ -3,10 +3,10 @@ const controller = require("../controllers/index");
 const router = express.Router();
 
 // GET all products
-router.get("/product", controller.getAllProducts);
+router.get("/items", controller.getAllProducts);
 
 // GET one product
-router.get("/product/:id", controller.getOneProduct);
+router.get("/item/:id", controller.getOneProduct);
 
 // GET vendors list
 router.get("/vendor", controller.getAllVendors);
