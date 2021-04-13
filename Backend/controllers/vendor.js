@@ -73,10 +73,10 @@ exports.getItems = async (req, res, next) => {
 
 // POST a item
 exports.postAddItem = async (req, res, next) => {
-    let { name, cost, category, email } = req.body;
-    const vendor = await Vendor.findOne({ email: normalize(email) });
+    let { name, cost, category } = req.body;
+    const vendor = await Vendor.findById(req.user.vendorId);
+    if (!vendor) return res.status(404).send("No vendor found!");
 
-    if (!vendor) return res.status(404).send("No vendor found with that email id!");
     const file = req.file;
     if (!file) return res.status(400).json({ success: false, message: "No image file found" });
 
@@ -100,7 +100,11 @@ exports.postAddItem = async (req, res, next) => {
 
 // Update the item given by Id and return the updated item
 exports.putItem = async (req, res, next) => {
-    let { name, cost, category, email } = req.body;
+    let { name, cost, category } = req.body;
+    const vId = req.user.vendorId;
+    const vendor = await Vendor.findById(vId);
+    if (!vendor) return res.status(404).send("No vendor found!");
+
     const itemId = req.params.id;
     if (!isValidId(itemId)) {
         return res.status(400).json({ message: "Invalid Item Id" });
@@ -109,22 +113,22 @@ exports.putItem = async (req, res, next) => {
     const product = await Item.findById(req.params.id);
     if (!product) return res.status(400).json({ success: false, message: "No item found!" });
     const file = req.file;
-    let imagePath;
+    
+    let imagePath = product.imageUrl;
     if (file) {
         const fileName = file.filename;
         const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
         imagepath = `${basePath}${fileName}`;
-    } else {
-        imagepath = product.imageUrl;
     }
 
     const item = await Item.findByIdAndUpdate(
         itemId,
         {
-            name: name,
-            cost: parseFloat(cost),
-            category: category,
-            imageUrl: imagePath
+            name: normalize(name),
+            cost: parseFloat(normalize(cost)),
+            category: normalize(category),
+            imageUrl: imagePath,
+            seller: vendor._id
         },
         { new: true }
     );
