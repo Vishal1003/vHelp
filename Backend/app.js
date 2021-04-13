@@ -24,8 +24,8 @@ mongoose
 // middlewares
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(errorHandler);
 app.use(authJwt());
+app.use(errorHandler);
 
 // Routes
 const vendorRoutes = require('./routes/vendor');
