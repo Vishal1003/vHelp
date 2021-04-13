@@ -2,36 +2,10 @@ const Item = require("../models/item");
 const bcrypt = require("bcryptjs");
 const Vendor = require("../models/vendor");
 const jwt = require("jsonwebtoken");
-const multer = require("multer");
 const mongoose = require("mongoose");
 
-const FILE_TYPE_MAP = {
-    "image/png": "png",
-    "image/jpeg": "jpeg",
-    "image/jpg": "jpg"
-};
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const isValid = FILE_TYPE_MAP[file.mimetype];
-        let uploadError = new Error("invalid image type");
-
-        if (isValid) {
-            uploadError = null;
-        }
-        cb(uploadError, "public/uploads");
-    },
-    filename: function (req, file, cb) {
-        const fileName = file.originalname.split(" ").join("-");
-        const extension = FILE_TYPE_MAP[file.mimetype];
-        cb(null, `${fileName}-${Date.now()}.${extension}`);
-    }
-});
-
-const uploadOptions = multer({ storage: storage });
-
 function isValidId(id) {
-    return require("mongoose").Types.ObjectId.isValid(id);
+    return mongoose.Types.ObjectId.isValid(id);
 }
 
 function normalize(str) {
@@ -80,12 +54,11 @@ exports.postRegister = async (req, res, next) => {
 
         vendor = await vendor.save();
         if (!vendor) return res.status(400).send("Vendor cannot be registered!");
-        res.status(200).send("Registered Successfully");
+        res.status(200).send(vendor);
     } catch (err) {
         throw err;
     }
 };
-
 
 // GET list of all items of that vendor
 exports.getItems = async (req, res, next) => {
@@ -100,10 +73,11 @@ exports.getItems = async (req, res, next) => {
 
 // POST a item
 exports.postAddItem = async (req, res, next) => {
-    let { name, cost, category, file, email } = req.body;
+    let { name, cost, category, email } = req.body;
     const vendor = await Vendor.findOne({ email: normalize(email) });
 
     if (!vendor) return res.status(404).send("No vendor found with that email id!");
+    const file = req.file;
     if (!file) return res.status(400).json({ success: false, message: "No image file found" });
 
     const fileName = file.filename;
@@ -113,7 +87,7 @@ exports.postAddItem = async (req, res, next) => {
         name: normalize(name),
         cost: parseFloat(normalize(cost)),
         category: normalize(category),
-        imageUrl: normalize(`${basePath}${fileName}`),
+        imageUrl: `${basePath}${fileName}`,
         seller: vendor._id
     });
 
@@ -126,19 +100,19 @@ exports.postAddItem = async (req, res, next) => {
 
 // Update the item given by Id and return the updated item
 exports.putItem = async (req, res, next) => {
-    let { name, cost, category, file, email } = req.body;
+    let { name, cost, category, email } = req.body;
     const itemId = req.params.id;
     if (!isValidId(itemId)) {
         return res.status(400).json({ message: "Invalid Item Id" });
     }
 
     const product = await Item.findById(req.params.id);
-    if(!product) return res.status(400).json({success: false, message: "No item found!"})
-
+    if (!product) return res.status(400).json({ success: false, message: "No item found!" });
+    const file = req.file;
     let imagePath;
     if (file) {
         const fileName = file.filename;
-        const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+        const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
         imagepath = `${basePath}${fileName}`;
     } else {
         imagepath = product.imageUrl;
@@ -188,4 +162,3 @@ exports.getItem = async (req, res, next) => {
         return res.status(404).json({ message: "Item Not Found" });
     }
 };
-
