@@ -28,13 +28,23 @@ const storage = multer.diskStorage({
     }
 });
 
+const uploadOptions = multer({ storage: storage });
+
+function isValidId(id) {
+    return require("mongoose").Types.ObjectId.isValid(id);
+}
+
+function normalize(str) {
+    return str.trim().toLowerCase();
+}
+
 exports.getLogin = async (req, res, next) => {
     res.status(404).send("To be implemented");
 };
 
 exports.postLogin = async (req, res, next) => {
-    const { email, password } = req.body;
-    const vendor = await Vendor.findOne({ email: email });
+    let { email, password } = req.body;
+    const vendor = await Vendor.findOne({ email: normalize(email) });
     if (!vendor) {
         return res.status(401).send("Email or Password does not match!");
     }
@@ -57,14 +67,14 @@ exports.postLogin = async (req, res, next) => {
 
 exports.postRegister = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body;
-        let vendor = await Vendor.findOne({ email: email });
+        let { name, email, password } = req.body;
+        let vendor = await Vendor.findOne({ email: normalize(email) });
         if (vendor) return res.status(404).send("Vendor already registered with that emailId");
 
         const hashedPassword = await bcrypt.hash(password, 8);
         vendor = new Vendor({
-            name: name,
-            email: email,
+            name: normalize(name),
+            email: normalize(email),
             password: hashedPassword
         });
 
@@ -76,67 +86,6 @@ exports.postRegister = async (req, res, next) => {
     }
 };
 
-// POST a item
-exports.postAddItem = async (req, res, next) => {
-    const { name, cost, category, file, email } = req.body;
-
-    const vendor = await Vendor.findOne({ email: email });
-
-    if (!vendor) return res.status(404).send("No vendor found with that email id!");
-
-    let imagePath;
-
-    if (file) {
-        const fileName = file.filename;
-        const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
-        imagepath = `${basePath}${fileName}`;
-    } else {
-        imagepath = product.image;
-    }
-
-    const updatedProduct = await Item.findByIdAndUpdate(req.params.id, {
-        name: name,
-        cost: parseFloat(cost),
-        category: category,
-        imageUrl: imagePath,
-        seller: vendor._id
-    });
-
-    if (!updatedProduct) return res.status(400).send("Error updating that item");
-
-    res.status(200).send("Item updated Successfully");
-};
-
-// UPDATE item
-exports.updateItem = async (req, res, next) => {
-    if (!mongoose.isValidObjectId(req.params.id))
-        return res
-            .status(400)
-            .json({ success: false, message: "No product found with that emailId" });
-    const { name, cost, category, file, email } = req.body;
-
-    const vendor = await Vendor.findOne({ email: email });
-
-    if (!vendor) return res.status(404).send("No vendor found with that email id!");
-    if (!file) return res.status(400).json({ success: false, message: "No image file found" });
-
-    const fileName = file.filename;
-    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
-
-    let item = new Item({
-        name: name,
-        cost: parseFloat(cost),
-        category: category,
-        imageUrl: `${basePath}${fileName}`,
-        seller: vendor._id
-    });
-
-    item = await item.save();
-
-    if (!item) return res.status(400).send("Error creating that item");
-
-    res.status(200).send("Item Added Successfully");
-};
 
 // GET list of all items of that vendor
 exports.getItems = async (req, res, next) => {
@@ -148,3 +97,95 @@ exports.getItems = async (req, res, next) => {
         return res.status(400).send("Could not retrieve items!");
     }
 };
+
+// POST a item
+exports.postAddItem = async (req, res, next) => {
+    let { name, cost, category, file, email } = req.body;
+    const vendor = await Vendor.findOne({ email: normalize(email) });
+
+    if (!vendor) return res.status(404).send("No vendor found with that email id!");
+    if (!file) return res.status(400).json({ success: false, message: "No image file found" });
+
+    const fileName = file.filename;
+    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+
+    let item = new Item({
+        name: normalize(name),
+        cost: parseFloat(normalize(cost)),
+        category: normalize(category),
+        imageUrl: normalize(`${basePath}${fileName}`),
+        seller: vendor._id
+    });
+
+    item = await item.save();
+
+    if (!item) return res.status(400).send("Error creating that item");
+
+    res.status(200).json({ message: "Item Added Successfully", item: item });
+};
+
+// Update the item given by Id and return the updated item
+exports.putItem = async (req, res, next) => {
+    let { name, cost, category, file, email } = req.body;
+    const itemId = req.params.id;
+    if (!isValidId(itemId)) {
+        return res.status(400).json({ message: "Invalid Item Id" });
+    }
+
+    const product = await Item.findById(req.params.id);
+    if(!product) return res.status(400).json({success: false, message: "No item found!"})
+
+    let imagePath;
+    if (file) {
+        const fileName = file.filename;
+        const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+        imagepath = `${basePath}${fileName}`;
+    } else {
+        imagepath = product.imageUrl;
+    }
+
+    const item = await Item.findByIdAndUpdate(
+        itemId,
+        {
+            name: name,
+            cost: parseFloat(cost),
+            category: category,
+            imageUrl: imagePath
+        },
+        { new: true }
+    );
+    if (item) {
+        return res.status(200).json({ message: "Item updated successfully", item: item });
+    } else {
+        return res.status(404).json({ message: "Item Not Found" });
+    }
+};
+
+// Delete the item given by Id and return the removed item
+exports.deleteItem = async (req, res, next) => {
+    const itemId = req.params.id;
+    if (!isValidId(itemId)) {
+        return res.status(400).json({ message: "Invalid Item Id" });
+    }
+    const item = await Item.findByIdAndDelete(itemId);
+    if (item) {
+        return res.status(200).json({ message: "Item removed successfully", item: item });
+    } else {
+        return res.status(404).json({ message: "Item Not Found" });
+    }
+};
+
+// Find the item given by Id and return the found item
+exports.getItem = async (req, res, next) => {
+    const itemId = req.params.id;
+    if (!isValidId(itemId)) {
+        return res.status(400).json({ message: "Invalid Item Id" });
+    }
+    const item = await Item.findById(itemId);
+    if (item) {
+        return res.status(200).json({ message: "Item found successfully", item: item });
+    } else {
+        return res.status(404).json({ message: "Item Not Found" });
+    }
+};
+
