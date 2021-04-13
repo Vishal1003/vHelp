@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const errorHandler = require('./middlewares/error-handler');
 const env = require('dotenv');
+const authJwt = require('./middlewares/jwt');
 
 const app = express();
 env.config();
@@ -22,6 +24,8 @@ mongoose
 // middlewares
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(errorHandler);
+app.use(authJwt());
 
 // Routes
 const vendorRoutes = require('./routes/vendor');

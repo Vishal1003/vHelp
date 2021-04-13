@@ -1,23 +1,33 @@
-const Item = require("../models/item");
-const bcrypt = require("bcryptjs");
-const Vendor = require("../models/vendor");
+const Item = require('../models/item');
+const bcrypt = require('bcryptjs');
+const Vendor = require('../models/vendor');
+const jwt = require('jsonwebtoken');
 
 exports.getLogin = async (req, res, next) => {
-  res.status(404).send("To be implemented");
+  res.status(404).send('To be implemented');
 };
 
 exports.postLogin = async (req, res, next) => {
   const { email, password } = req.body;
-  Vendor.findOne({ email: email }, (error, result) => {
-    if (error) {
-      throw error;
-    }
-    if (result) {
-      return res.status(200).send("Logged In Successfully!");
-    } else {
-      return res.status(404).send("Email is not registered!");
-    }
-  });
+  const vendor = await Vendor.findOne({ email: email });
+  if (!vendor) {
+    return res.status(401).send('Email or Password does not match!');
+  }
+  if (bcrypt.compareSync(password, vendor.password)) {
+    const token = jwt.sign({ vendorId: vendor._id }, process.env.JWT_SECRET, {
+      expiresIn: '1d',
+    });
+    // res.cookie('jwt', token, {
+    //   httpOnly: true,
+    //   maxAge: 24 * 60 * 60 * 1000,
+    // });
+    return res.status(200).json({
+      token: token,
+      message: 'Logged in successfully!',
+    });
+  } else {
+    return res.status(401).send('Email or Password does not match!');
+  }
 };
 
 exports.postRegister = async (req, res, next) => {
@@ -27,7 +37,7 @@ exports.postRegister = async (req, res, next) => {
     if (vendor)
       return res
         .status(404)
-        .send("Vendor already registered with that emailId");
+        .send('Vendor already registered with that emailId');
 
     const hashedPassword = await bcrypt.hash(password, 8);
     vendor = new Vendor({
@@ -37,8 +47,8 @@ exports.postRegister = async (req, res, next) => {
     });
 
     vendor = await vendor.save();
-    if (!vendor) return res.status(400).send("Vendor cannot be registered!");
-    res.status(200).send("Registered Successfully");
+    if (!vendor) return res.status(400).send('Vendor cannot be registered!');
+    res.status(200).send('Registered Successfully');
   } catch (err) {
     throw err;
   }
@@ -51,7 +61,7 @@ exports.postAddItem = async (req, res, next) => {
   const vendor = await Vendor.findOne({ email: email });
 
   if (!vendor)
-    return res.status(404).send("No vendor found with that email id!");
+    return res.status(404).send('No vendor found with that email id!');
 
   let item = new Item({
     name: name,
@@ -63,7 +73,17 @@ exports.postAddItem = async (req, res, next) => {
 
   item = await item.save();
 
-  if (!item) res.status(400).send("Error creating that item");
+  if (!item) res.status(400).send('Error creating that item');
 
-  res.status(200).send("Item Added Successfully");
+  res.status(200).send('Item Added Successfully');
+};
+
+exports.getItems = async (req, res, next) => {
+  const vendorId = req.user.vendorId;
+  const items = await Item.find({ seller: vendorId });
+  if (items) {
+    return res.status(200).json({ items: items });
+  } else {
+    return res.status(400).send('Could not retrieve items!');
+  }
 };

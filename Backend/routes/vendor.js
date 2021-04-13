@@ -9,7 +9,9 @@ router.post('/login', controller.postLogin);
 // Register
 router.post('/register', controller.postRegister);
 
-// Add an Item
+// Modification operations on Items
 router.post('/addItem', controller.postAddItem);
 
+// Non modification operations on Items
+router.get('/Items', controller.getItems);
 module.exports = router;
