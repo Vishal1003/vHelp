@@ -24,6 +24,7 @@ mongoose
 // middlewares
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use("/public", express.static(__dirname + "/public"));
 app.use(authJwt());
 app.use(errorHandler);
 
