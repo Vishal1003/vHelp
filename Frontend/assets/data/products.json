@@ -1,0 +1,38 @@
+[
+    {
+        "_id": { "$oid": "6077fe05561f0b098c17fbd4" },
+        "name": "hamburger",
+        "cost": 23,
+        "category": "streetfood",
+        "imageUrl": "https://www.fabhotels.com/blog/wp-content/uploads/2018/08/1000x650-276.jpg",
+        "seller": "Jack Sparrow",
+        "__v": { "$numberInt": "0" }
+    },
+    {
+        "_id": { "$oid": "60780200561f0b098c17fbd5" },
+        "name": "pizza",
+        "cost": 23,
+        "category": "streetfood",
+        "imageUrl": "https://www.swantour.com/blogs/wp-content/uploads/2019/04/Best-Street-Food-Places-in-Delhi.jpg",
+        "seller": "Jack Sparrow",
+        "__v": { "$numberInt": "0" }
+    },
+    {
+        "_id": { "$oid": "60780274561f0b098c17fbd6" },
+        "name": "t-shirt",
+        "cost": 23,
+        "category": "clothes",
+        "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUcgr7wYSB_wUsEmGGxLtNTTFgE2DqhiuzZzcdRl75fzdS69jdTKOpD2t3urgzHBD-M5Q&usqp=CAU",
+        "seller": "Jack Sparrow",
+        "__v": { "$numberInt": "0" }
+    },
+    {
+        "_id": { "$oid": "607802dd561f0b098c17fbd7" },
+        "name": "ironscrap",
+        "cost": 23,
+        "category": "iron-waste",
+        "imageUrl": "https://static.toiimg.com/thumb/msid-66919188,width-748,height-499,resizemode=4,imgsize-168094/.jpg",
+        "seller": "Jack Sparrow",
+        "__v": { "$numberInt": "0" }
+    }
+]
