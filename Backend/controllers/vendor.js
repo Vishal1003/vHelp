@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const Vendor = require("../models/vendor");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const { base } = require("../models/item");
 
 function isValidId(id) {
     return mongoose.Types.ObjectId.isValid(id);
@@ -74,7 +75,7 @@ exports.getItems = async (req, res, next) => {
 // POST a item
 exports.postAddItem = async (req, res, next) => {
     let { name, cost, category } = req.body;
-    const vendor = await Vendor.findById(req.user.vendorId);
+    const vendor = await Vendor.findById(req.user.vendorId).select("_id");
     if (!vendor) return res.status(404).send("No vendor found!");
 
     const file = req.file;
@@ -82,6 +83,7 @@ exports.postAddItem = async (req, res, next) => {
 
     const fileName = file.filename;
     const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+    console.log(fileName, basePath);
 
     let item = new Item({
         name: normalize(name),
@@ -102,36 +104,33 @@ exports.postAddItem = async (req, res, next) => {
 exports.putItem = async (req, res, next) => {
     let { name, cost, category } = req.body;
     const vId = req.user.vendorId;
-    const vendor = await Vendor.findById(vId);
+    const vendor = await Vendor.findById(vId).select("_id");
     if (!vendor) return res.status(404).send("No vendor found!");
 
     const itemId = req.params.id;
     if (!isValidId(itemId)) {
         return res.status(400).json({ message: "Invalid Item Id" });
     }
-
-    const product = await Item.findById(req.params.id);
+    const product = await Item.findById(itemId);
     if (!product) return res.status(400).json({ success: false, message: "No item found!" });
-    const file = req.file;
-    
-    let imagePath = product.imageUrl;
-    if (file) {
-        const fileName = file.filename;
-        const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
-        imagepath = `${basePath}${fileName}`;
+    let updates = {};
+    if (name) {
+        name = normalize(name);
+        updates.name = name;
     }
-
-    const item = await Item.findByIdAndUpdate(
-        itemId,
-        {
-            name: normalize(name),
-            cost: parseFloat(normalize(cost)),
-            category: normalize(category),
-            imageUrl: imagePath,
-            seller: vendor._id
-        },
-        { new: true }
-    );
+    if (cost) {
+        cost = normalize(cost);
+        updates.cost = cost;
+    }
+    if (category) {
+        category = normalize(category);
+        updates.category = category;
+    }
+    if (req.file) {
+        const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+        updates.imageUrl = `${basePath}${req.file.filename}`;
+    }
+    const item = await Item.findByIdAndUpdate(itemId, { $set: updates }, { new: true });
     if (item) {
         return res.status(200).json({ message: "Item updated successfully", item: item });
     } else {

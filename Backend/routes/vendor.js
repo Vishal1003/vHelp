@@ -36,8 +36,8 @@ router.post("/login", controller.postLogin);
 router.post("/register", controller.postRegister);
 
 // Modification operations on Items
-router.post("/item",  uploadOptions.single('image'), controller.postAddItem);
-router.put("/item/:id",  uploadOptions.single('image'), controller.putItem);
+router.post("/item", uploadOptions.single("image"), controller.postAddItem);
+router.put("/item/:id", uploadOptions.single("image"), controller.putItem);
 router.delete("/item/:id", controller.deleteItem);
 
 // Non modification operations on Items
