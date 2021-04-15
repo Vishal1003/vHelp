@@ -34,5 +34,14 @@
         "imageUrl": "https://static.toiimg.com/thumb/msid-66919188,width-748,height-499,resizemode=4,imgsize-168094/.jpg",
         "seller": "Jack Sparrow",
         "__v": { "$numberInt": "0" }
+    },
+    {
+        "_id": { "$oid": "607802dd561f0b098c17fbd8" },
+        "name": "Cholle Bhature",
+        "cost": 23,
+        "category": "streetfood",
+        "imageUrl": "https://static.toiimg.com/thumb/msid-66919188,width-748,height-499,resizemode=4,imgsize-168094/.jpg",
+        "seller": "Jack Sparrow",
+        "__v": { "$numberInt": "0" }
     }
 ]
