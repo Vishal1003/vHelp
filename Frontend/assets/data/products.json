@@ -43,5 +43,14 @@
         "imageUrl": "https://static.toiimg.com/thumb/msid-66919188,width-748,height-499,resizemode=4,imgsize-168094/.jpg",
         "seller": "Jack Sparrow",
         "__v": { "$numberInt": "0" }
+    },
+    {
+        "_id": { "$oid": "607802dd561f0b098c17fbd9" },
+        "name": "Cups and Glasses",
+        "cost": 23,
+        "category": "Art and Craft",
+        "imageUrl": "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F9%2F2019%2F09%2FLe20Creuset20Mug.jpg&q=85",
+        "seller": "Jack Sparrow",
+        "__v": { "$numberInt": "0" }
     }
 ]
