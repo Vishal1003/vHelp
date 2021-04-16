@@ -27,8 +27,7 @@ export default function ProductCard(props) {
                     </Text>
                     <Text style={styles.cardDetails}>
                         Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                        Lorem Ipsum has been the industry's standard dummy text ever since the
-                        1500s 
+                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s
                     </Text>
                 </View>
             </View>
@@ -60,9 +59,8 @@ const styles = StyleSheet.create({
         height: "100%",
         width: "100%",
         alignSelf: "center",
-        borderRadius: 8,
-        borderBottomRightRadius: 0,
-        borderTopRightRadius: 0
+        borderTopRightRadius: 8,
+        borderTopLeftRadius: 8
     },
     cardInfo: {
         flex: 2,
@@ -71,7 +69,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderLeftWidth: 0,
         borderBottomRightRadius: 8,
-        borderTopRightRadius: 8,
+        borderBottomLeftRadius: 8,
         backgroundColor: "#fff"
     },
     cardTitle: {
