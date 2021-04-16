@@ -1,0 +1,50 @@
+[
+    {
+        "seller_id": 1,
+        "name": "Shaanta Pots",
+        "imageUrl": "https://picsum.photos/id/1/200",
+        "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Arcu bibendum at varius vel pharetra vel turpis nunc. In aliquam sem fringilla ut.",
+        "products": [
+            {
+                "_id": 1,
+                "name": "Clay Products",
+                "cost": 20,
+                "category": "Art",
+                "imageUrl": "https://image.shutterstock.com/z/stock-photo-pondicherry-puducherry-february-woman-street-vendor-selling-gift-items-handicrafts-1325897540.jpg",
+                "seller": "Shaanta Pots"
+            },
+            {
+                "_id": 11,
+                "name": "Clay Jug & Glass Set",
+                "cost": 40,
+                "category": "Art",
+                "imageUrl": "https://images-na.ssl-images-amazon.com/images/I/61uSVGcYqbL._SX425_.jpg",
+                "seller": "Shaanta Pots"
+            },
+            {
+                "_id": 12,
+                "name": "Kadhaai",
+                "cost": 100,
+                "category": "Art",
+                "imageUrl": "https://images-na.ssl-images-amazon.com/images/I/61iLBAUEdoL._SY355_.jpg",
+                "seller": "Shaanta Pots"
+            }
+        ]
+    },
+    {
+        "seller_id": 2,
+        "name": "Rajesh Stall",
+        "imageUrl": "https://picsum.photos/id/2/200",
+        "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Arcu bibendum at varius vel pharetra vel turpis nunc. In aliquam sem fringilla ut.",
+        "products": [
+            {
+                "_id": 2,
+                "name": "Bananas",
+                "cost": 12,
+                "category": "Fruits",
+                "imageUrl": "https://im.indiatimes.in/photogallery/2020/Apr/1afp_5ea00fcfb21b1.jpg?w=1200&h=900&cc=1",
+                "seller": "Rajesh Stall"
+            }
+        ]
+    }
+]
