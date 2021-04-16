@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ActivityIndicator, SafeAreaView, FlatList, ScrollView } from "react-native";
+import {
+    View,
+    StyleSheet,
+    ActivityIndicator,
+    SafeAreaView,
+    FlatList,
+    ScrollView
+} from "react-native";
 import { Container, Header, Icon, Item, Input, Text } from "native-base";
 import ProductList from "./ProductList";
 import SearchedProduct from "../../components/Card/SearchedProduct";
@@ -7,7 +14,7 @@ import Banner from "../../components/Shared/Banner";
 
 const data = require("../../assets/data/products.json");
 
-const ProductContainer = () => {
+const ProductContainer = (props) => {
     const [products, setProducts] = useState([]);
     const [productsFiltered, setProductsFiltered] = useState([]);
     const [focus, setFocus] = useState();
@@ -49,7 +56,10 @@ const ProductContainer = () => {
                 </Item>
             </Header>
             {focus == true ? (
-                <SearchedProduct productsFiltered={productsFiltered} />
+                <SearchedProduct
+                    navigation={props.navigation}
+                    productsFiltered={productsFiltered}
+                />
             ) : (
                 <ScrollView>
                     <Banner />
@@ -57,7 +67,13 @@ const ProductContainer = () => {
                         <FlatList
                             data={products}
                             numColumns={2}
-                            renderItem={({ item }) => <ProductList key={item.name} item={item} />}
+                            renderItem={({ item }) => (
+                                <ProductList
+                                    key={item.name}
+                                    item={item}
+                                    navigation={props.navigation}
+                                />
+                            )}
                             keyExtractor={(item) => item.name}
                         />
                     </View>

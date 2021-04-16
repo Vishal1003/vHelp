@@ -1,27 +1,29 @@
-import React from 'react';
-import { View, StyleSheet, Dimensions} from 'react-native'
-import { Content, Left, Body, ListItem, Thumbnail, Text } from 'native-base';
+import React from "react";
+import { View, StyleSheet, Dimensions } from "react-native";
+import { Content, Left, Body, ListItem, Thumbnail, Text } from "native-base";
 
-const { width } = Dimensions.get("window")
+const { width } = Dimensions.get("window");
 
 const SearchedProduct = (props) => {
     const { productsFiltered } = props;
-    return(
+    return (
         <View style={{ width: width }}>
             {productsFiltered.length > 0 ? (
                 productsFiltered.map((item) => (
                     <ListItem
-                        // onPress={() => {
-                        //     props.navigation.navigate("Product Detail", {item: item})
-                        // }}
+                        onPress={() => {
+                            props.navigation.navigate("Product Details", { item: item });
+                        }}
                         key={item.name}
                         avatar
                     >
                         <Left>
-                            <Thumbnail 
-                                source={{uri: item.imageUrl ? 
-                                    item.imageUrl : 'https://cdn.pixabay.com/photo/2012/04/01/17/29/box-23649_960_720.png'
-                                        }}
+                            <Thumbnail
+                                source={{
+                                    uri: item.imageUrl
+                                        ? item.imageUrl
+                                        : "https://cdn.pixabay.com/photo/2012/04/01/17/29/box-23649_960_720.png"
+                                }}
                             />
                         </Left>
                         <Body>
@@ -32,7 +34,7 @@ const SearchedProduct = (props) => {
                 ))
             ) : (
                 <View style={styles.center}>
-                    <Text style={{ alignSelf:  'center' }}>
+                    <Text style={{ alignSelf: "center" }}>
                         No products match the selected criteria
                     </Text>
                 </View>
@@ -43,10 +45,10 @@ const SearchedProduct = (props) => {
 
 const styles = StyleSheet.create({
     center: {
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: "center",
+        alignItems: "center",
         height: 100
     }
-})
+});
 
 export default SearchedProduct;
