@@ -9,6 +9,7 @@ import HomeNavigator from "./HomeNavigator";
 import AddProductNavigator from "./AddProductNavigator";
 import ProfileNavigator from "./ProfileNavigator";
 // import VendorNavigator from "./VendorNavigator";
+const customColor = require("../constants/Color");
 
 const Tab = createBottomTabNavigator();
 
@@ -19,7 +20,7 @@ export default function Main() {
             tabBarOptions={{
                 keyboardHidesTabBar: true,
                 showLabel: false,
-                activeTintColor: "#03bafc"
+                activeTintColor: customColor.dark
             }}
         >
             <Tab.Screen

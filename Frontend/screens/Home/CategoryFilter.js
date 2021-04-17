@@ -2,6 +2,8 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { ListItem, Badge, Text } from "native-base";
 
+const customColor = require("../../constants/Color");
+
 const CategoryFilter = (props) => {
     return (
         <ScrollView
@@ -59,10 +61,10 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     active: {
-        backgroundColor: "#03bafc"
+        backgroundColor: customColor.dark
     },
     inactive: {
-        backgroundColor: "#a0e1eb"
+        backgroundColor: customColor.light
     }
 });
 

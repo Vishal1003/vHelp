@@ -1,33 +1,52 @@
 import React from "react";
 import { TextInput, StyleSheet } from "react-native";
 
+const customColor = require("../../constants/Color");
+
 const Input = (props) => {
+    const {
+        height = 40,
+        multiline = false,
+        numOfLine = 1,
+        placeholder,
+        autoCorrect,
+        onChangeText,
+        onFocus,
+        secureTextEntry,
+        keyboardType,
+        id,
+        name,
+        value
+    } = props;
+
     return (
         <TextInput
-            style={styles.input}
-            placeholder={props.placeholder}
-            name={props.name}
-            id={props.id}
-            value={props.value}
-            autoCorrect={props.autoCorrect}
-            onChangeText={props.onChangeText}
-            onFocus={props.onFocus}
-            secureTextEntry={props.secureTextEntry}
-            keyboardType={props.keyboardType}
+            style={[styles.input, { height: height }]}
+            placeholder={placeholder}
+            name={name}
+            id={id}
+            value={value}
+            autoCorrect={autoCorrect}
+            onChangeText={onChangeText}
+            onFocus={onFocus}
+            secureTextEntry={secureTextEntry}
+            keyboardType={keyboardType}
+            multiline={multiline}
+            numberOfLines={numOfLine}
         ></TextInput>
     );
 };
 
 const styles = StyleSheet.create({
     input: {
-        width: "80%",
-        height: 60,
+        width: "85%",
         backgroundColor: "white",
         margin: 10,
-        borderRadius: 20,
+        marginTop: 5,
+        borderRadius: 5,
         padding: 10,
         borderWidth: 2,
-        borderColor: "#a0e1eb"
+        borderColor: customColor.medium
     }
 });
 
