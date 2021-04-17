@@ -57,21 +57,13 @@ export default function Main() {
                     )
                 }}
             />
-            {true ? (
-                <Tab.Screen
-                    name="Profile"
-                    component={ProfileNavigator}
-                    options={{
-                        tabBarIcon: ({ color }) => (
-                            <Icon
-                                name="user"
-                                color={color}
-                                size={30}
-                            />
-                        )
-                    }}
-                />
-            ) : null}
+            <Tab.Screen
+                name="Profile"
+                component={ProfileNavigator}
+                options={{
+                    tabBarIcon: ({ color }) => <Icon name="user" color={color} size={30} />
+                }}
+            />
         </Tab.Navigator>
     );
 }
