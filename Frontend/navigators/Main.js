@@ -2,9 +2,12 @@ import React from "react";
 import { View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/FontAwesome";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 // Stacks
 import HomeNavigator from "./HomeNavigator";
+import AddProductNavigator from "./AddProductNavigator";
+import ProfileNavigator from "./ProfileNavigator";
 // import VendorNavigator from "./VendorNavigator";
 
 const Tab = createBottomTabNavigator();
@@ -16,7 +19,7 @@ export default function Main() {
             tabBarOptions={{
                 keyboardHidesTabBar: true,
                 showLabel: false,
-                activeTintColor: "#e91e63"
+                activeTintColor: "#03bafc"
             }}
         >
             <Tab.Screen
@@ -34,31 +37,41 @@ export default function Main() {
                 }}
             />
             <Tab.Screen
-                name="Cart"
+                name="Vendor"
+                component={HomeNavigator}
+                options={{
+                    tabBarIcon: ({ color }) => (
+                        <FontAwesome5 name="map-marker-alt" color={color} size={30} />
+                    )
+                }}
+            />
+            {/* {context.stateUser.user.isVendor == true ? ( */}
+            {true ? (
+                <Tab.Screen
+                    name="AddItem"
+                    component={AddProductNavigator}
+                    options={{
+                        tabBarIcon: ({ color }) => (
+                            <Icon name="plus-circle" color={color} size={30} />
+                        )
+                    }}
+                />
+            ) : null}
+            <Tab.Screen
+                name="Chat"
                 component={HomeNavigator}
                 options={{
                     tabBarIcon: ({ color }) => (
                         <View>
-                            <Icon name="shopping-cart" color={color} size={30} />
+                            <Icon name="wechat" color={color} size={30} />
                             {/* <CartIcon /> */}
                         </View>
                     )
                 }}
             />
-
-            {/* {context.stateUser.user.isAdmin == true ? ( */}
-            {true ? (
-                <Tab.Screen
-                    name="Admin"
-                    component={HomeNavigator}
-                    options={{
-                        tabBarIcon: ({ color }) => <Icon name="cog" color={color} size={30} />
-                    }}
-                />
-            ) : null}
             <Tab.Screen
-                name="Vendor"
-                component={HomeNavigator}
+                name="Profile"
+                component={ProfileNavigator}
                 options={{
                     tabBarIcon: ({ color }) => <Icon name="user" color={color} size={30} />
                 }}

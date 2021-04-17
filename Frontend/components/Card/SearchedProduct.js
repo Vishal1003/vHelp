@@ -5,14 +5,14 @@ import { Left, Body, ListItem, Thumbnail, Text } from "native-base";
 const { width } = Dimensions.get("window");
 
 const SearchedProduct = (props) => {
-    const { productsFiltered } = props;
+    const { productsFiltered, navigateTo } = props;
     return (
         <ScrollView style={{ width: width }}>
             {productsFiltered.length > 0 ? (
                 productsFiltered.map((item) => (
                     <ListItem
                         onPress={() => {
-                            props.navigation.navigate("Product Details", { item: item });
+                            props.navigation.navigate({ navigateTo }, { item: item });
                         }}
                         key={item.name}
                         avatar
