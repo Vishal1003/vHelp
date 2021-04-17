@@ -85,7 +85,6 @@ const ProductContainer = (props) => {
                 <SearchedProduct
                     navigation={props.navigation}
                     productsFiltered={productsFiltered}
-                    navigateTo="Product Details"
                 />
             ) : (
                 <ScrollView>

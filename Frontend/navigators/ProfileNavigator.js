@@ -16,6 +16,13 @@ function MyStack() {
                     headerShown: false
                 }}
             />
+            <Stack.Screen
+                name="Edit Profile"
+                component={EditProfileScreen}
+                options={{
+                    headerShown: true
+                }}
+            />
         </Stack.Navigator>
     );
 }

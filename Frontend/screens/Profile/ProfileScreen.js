@@ -6,13 +6,13 @@ import { Avatar, Title, Caption, Text, TouchableRipple } from "react-native-pape
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
-const ProfileScreen = () => {
+const ProfileScreen = (props) => {
     return (
         <SafeAreaView style={styles.container}>
             <Header style={{ backgroundColor: "#fff" }}>
                 <Left>
                     <Button transparent>
-                        <Icon name="arrow-left" />
+                        <Icon name="arrow-left" size={25} />
                     </Button>
                 </Left>
                 <Body>
@@ -27,7 +27,7 @@ const ProfileScreen = () => {
                     <View style={{ flexDirection: "row", marginTop: 15 }}>
                         <Avatar.Image
                             source={{
-                                uri: "https://i.pravatar.cc/150?img=3"
+                                uri: "https://i.pravatar.cc/150?img=6"
                             }}
                             size={80}
                         />
@@ -77,7 +77,11 @@ const ProfileScreen = () => {
                     </TouchableRipple>
                     <TouchableRipple onPress={() => {}}>
                         <View style={styles.menuItem}>
-                            <MaterialIcons name="supervised-user-circle" color="#00008B" size={25} />
+                            <MaterialIcons
+                                name="supervised-user-circle"
+                                color="#00008B"
+                                size={25}
+                            />
                             <Text style={styles.menuItemText}>Verified Vendors</Text>
                         </View>
                     </TouchableRipple>
@@ -93,7 +97,7 @@ const ProfileScreen = () => {
                             <Text style={styles.menuItemText}>Support</Text>
                         </View>
                     </TouchableRipple>
-                    <TouchableRipple onPress={() => {}}>
+                    <TouchableRipple onPress={() => {props.navigation.navigate("Edit Profile");}}>
                         <View style={styles.menuItem}>
                             <Icon name="cog-outline" color="#00008B" size={25} />
                             <Text style={styles.menuItemText}>Settings</Text>
