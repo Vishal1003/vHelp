@@ -3,8 +3,10 @@ import { View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+
 // Stacks
 import HomeNavigator from "./HomeNavigator";
+import AddProductNavigator from "./AddProductNavigator";
 import ProfileNavigator from "./ProfileNavigator";
 // import VendorNavigator from "./VendorNavigator";
 
@@ -17,7 +19,7 @@ export default function Main() {
             tabBarOptions={{
                 keyboardHidesTabBar: true,
                 showLabel: false,
-                activeTintColor: "#e91e63"
+                activeTintColor: "#03bafc"
             }}
         >
             <Tab.Screen
@@ -43,10 +45,20 @@ export default function Main() {
                     )
                 }}
             />
-            {/* {context.stateUser.user.isAdmin == true ? ( */}
-
+            {/* {context.stateUser.user.isVendor == true ? ( */}
+            {true ? (
+                <Tab.Screen
+                    name="AddItem"
+                    component={AddProductNavigator}
+                    options={{
+                        tabBarIcon: ({ color }) => (
+                            <Icon name="plus-circle" color={color} size={30} />
+                        )
+                    }}
+                />
+            ) : null}
             <Tab.Screen
-                name="Cart"
+                name="Chat"
                 component={HomeNavigator}
                 options={{
                     tabBarIcon: ({ color }) => (
