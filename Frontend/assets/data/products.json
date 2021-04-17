@@ -21,7 +21,7 @@
     },
     {
         "_id": 3,
-        "name": "Home Products and Leather Items",
+        "name": "Leather Items",
         "cost": 50,
         "category": "General",
         "imageUrl": "https://businessnes.com/wp-content/uploads/2018/04/236684D1-85CE-4D7F-8D8F-B5A3B1682474.jpeg",
@@ -41,11 +41,11 @@
     },
     {
         "_id": 5,
-        "name": "Chaat and Gol Gappe",
+        "name": "Chaat & GolGappe",
         "cost": 30,
         "category": "Street-Food",
         "imageUrl": "https://i.pinimg.com/originals/28/31/75/28317570676a9be9c76f4eae1ea5a694.jpg",
-        "seller": "Shyaam Chaat Vaala",
+        "seller": "Shyaam Chaat",
         "shortdesc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
         "detaildesc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Arcu bibendum at varius vel pharetra vel turpis nunc. In aliquam sem fringilla ut."
     },

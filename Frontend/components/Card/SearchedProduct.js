@@ -1,13 +1,13 @@
 import React from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
-import { Content, Left, Body, ListItem, Thumbnail, Text } from "native-base";
+import { View, StyleSheet, Dimensions, ScrollView } from "react-native";
+import { Left, Body, ListItem, Thumbnail, Text } from "native-base";
 
 const { width } = Dimensions.get("window");
 
 const SearchedProduct = (props) => {
     const { productsFiltered } = props;
     return (
-        <View style={{ width: width }}>
+        <ScrollView style={{ width: width }}>
             {productsFiltered.length > 0 ? (
                 productsFiltered.map((item) => (
                     <ListItem
@@ -39,7 +39,7 @@ const SearchedProduct = (props) => {
                     </Text>
                 </View>
             )}
-        </View>
+        </ScrollView>
     );
 };
 
