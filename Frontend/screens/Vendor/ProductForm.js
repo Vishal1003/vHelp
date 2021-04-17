@@ -6,10 +6,10 @@ import {
     StyleSheet,
     TouchableOpacity,
     Platform,
-    Button,
     ToastAndroid
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+// import { Header, Title, Button, Right, Body, Left, Picker, Item } from "native-base";
 import { Item, Picker } from "native-base";
 import Icon from "react-native-vector-icons/FontAwesome";
 import FormContainer from "../../components/Shared/FormContainer";
@@ -25,8 +25,7 @@ export default function ProductForm(props) {
     const [image, setImage] = useState();
     const [category, setCategory] = useState();
     const [item, setItem] = useState(null);
-
-    React.useEffect(() => {
+    useEffect(() => {
         if (!props.route.params) {
             // Adding
             setItem(null);
@@ -123,8 +122,8 @@ export default function ProductForm(props) {
                 <Picker
                     mode="dropdown"
                     iosIcon={<Icon color={"#007aff"} name="arrow-down" />}
-                    style={{ width: undefined }}
                     placeholder="Select your Category"
+                    style={{ width: Platform.OS === "ios" ? undefined : 120 }}
                     selectedValue={pickerValue}
                     placeholderStyle={{ color: "#007aff" }}
                     placeholderIconColor="#007aff"
