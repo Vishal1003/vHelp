@@ -1,7 +1,13 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ImageBackground, TextInput, StyleSheet } from "react-native";
-
-import { useTheme } from "react-native-paper";
+import React, { useEffect, useState } from "react";
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    ImageBackground,
+    TextInput,
+    StyleSheet,
+    Platform
+} from "react-native";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -10,36 +16,33 @@ import Feather from "react-native-vector-icons/Feather";
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 
-import ImagePicker from "react-native-image-crop-picker";
+import * as ImagePicker from "expo-image-picker";
+import Constants from "expo-constants";
 
 const EditProfileScreen = () => {
     const [image, setImage] = useState("https://i.pravatar.cc/150?img=6");
-    const { colors } = useTheme();
 
-    const takePhotoFromCamera = () => {
-        ImagePicker.openCamera({
-            compressImageMaxWidth: 300,
-            compressImageMaxHeight: 300,
-            cropping: true,
-            compressImageQuality: 0.7
-        }).then((image) => {
-            console.log(image);
-            setImage(image.path);
-            this.bs.current.snapTo(1);
+    const takePhotoFromCamera = async () => {
+        let result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1
         });
+
+        if (!result.cancelled) setImage(result.uri);
     };
 
-    const choosePhotoFromLibrary = () => {
-        ImagePicker.openPicker({
-            width: 300,
-            height: 300,
-            cropping: true,
-            compressImageQuality: 0.7
-        }).then((image) => {
-            console.log(image);
-            setImage(image.path);
-            this.bs.current.snapTo(1);
+    const choosePhotoFromLibrary = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1
         });
+        if (!result.cancelled) {
+            setImage(result.uri);
+        }
     };
 
     renderInner = () => (
@@ -116,13 +119,13 @@ const EditProfileScreen = () => {
                                     <Icon
                                         name="camera"
                                         size={35}
-                                        color="#fff"
+                                        color="grey"
                                         style={{
                                             opacity: 0.7,
                                             alignItems: "center",
                                             justifyContent: "center",
                                             borderWidth: 1,
-                                            borderColor: "#fff",
+                                            borderColor: "grey",
                                             borderRadius: 10
                                         }}
                                     />
@@ -136,89 +139,59 @@ const EditProfileScreen = () => {
                 </View>
 
                 <View style={styles.action}>
-                    <FontAwesome name="user-o" color={colors.text} size={20} />
+                    <FontAwesome name="user-o" size={20} />
                     <TextInput
                         placeholder="First Name"
                         placeholderTextColor="#666666"
                         autoCorrect={false}
-                        style={[
-                            styles.textInput,
-                            {
-                                color: colors.text
-                            }
-                        ]}
+                        style={styles.textInput}
                     />
                 </View>
                 <View style={styles.action}>
-                    <FontAwesome name="user-o" color={colors.text} size={20} />
+                    <FontAwesome name="user-o" size={20} />
                     <TextInput
                         placeholder="Last Name"
                         placeholderTextColor="#666666"
                         autoCorrect={false}
-                        style={[
-                            styles.textInput,
-                            {
-                                color: colors.text
-                            }
-                        ]}
+                        style={styles.textInput}
                     />
                 </View>
                 <View style={styles.action}>
-                    <Feather name="phone" color={colors.text} size={20} />
+                    <Feather name="phone" size={20} />
                     <TextInput
                         placeholder="Phone"
                         placeholderTextColor="#666666"
                         keyboardType="number-pad"
                         autoCorrect={false}
-                        style={[
-                            styles.textInput,
-                            {
-                                color: colors.text
-                            }
-                        ]}
+                        style={styles.textInput}
                     />
                 </View>
                 <View style={styles.action}>
-                    <FontAwesome name="envelope-o" color={colors.text} size={20} />
+                    <FontAwesome name="envelope-o" size={20} />
                     <TextInput
                         placeholder="Email"
                         placeholderTextColor="#666666"
                         keyboardType="email-address"
                         autoCorrect={false}
-                        style={[
-                            styles.textInput,
-                            {
-                                color: colors.text
-                            }
-                        ]}
+                        style={styles.textInput}
                     />
                 </View>
                 <View style={styles.action}>
-                    <FontAwesome name="globe" color={colors.text} size={20} />
+                    <FontAwesome name="globe" size={20} />
                     <TextInput
                         placeholder="Country"
                         placeholderTextColor="#666666"
                         autoCorrect={false}
-                        style={[
-                            styles.textInput,
-                            {
-                                color: colors.text
-                            }
-                        ]}
+                        style={styles.textInput}
                     />
                 </View>
                 <View style={styles.action}>
-                    <Icon name="map-marker-outline" color={colors.text} size={20} />
+                    <Icon name="map-marker-outline" size={20} />
                     <TextInput
                         placeholder="City"
                         placeholderTextColor="#666666"
                         autoCorrect={false}
-                        style={[
-                            styles.textInput,
-                            {
-                                color: colors.text
-                            }
-                        ]}
+                        style={styles.textInput}
                     />
                 </View>
                 <TouchableOpacity style={styles.commandButton} onPress={() => {}}>
@@ -246,12 +219,6 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: "#FFFFFF",
         paddingTop: 20
-        // borderTopLeftRadius: 20,
-        // borderTopRightRadius: 20,
-        // shadowColor: '#000000',
-        // shadowOffset: {width: 0, height: 0},
-        // shadowRadius: 5,
-        // shadowOpacity: 0.4,
     },
     header: {
         backgroundColor: "#FFFFFF",
@@ -259,7 +226,6 @@ const styles = StyleSheet.create({
         shadowOffset: { width: -1, height: -3 },
         shadowRadius: 2,
         shadowOpacity: 0.4,
-        // elevation: 5,
         paddingTop: 20,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20
