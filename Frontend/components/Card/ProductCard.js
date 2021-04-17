@@ -1,25 +1,12 @@
 import React from "react";
-import { Dimensions, Image, StyleSheet, View } from "react-native";
+import { Dimensions, Image, StyleSheet } from "react-native";
 import StarRating from "./StarRating";
-import {
-    Container,
-    Header,
-    Content,
-    Card,
-    CardItem,
-    Thumbnail,
-    Text,
-    Button,
-    Icon,
-    Left,
-    Body,
-    Right
-} from "native-base";
+import { Container, Content, Card, CardItem, Text, Icon, Left, Body, Right } from "native-base";
 
-const { width, height } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 
 export default function ProductCard(props) {
-    const { name, cost, category, imageUrl, seller, shortdesc } = props;
+    const { name, cost, imageUrl, seller, shortdesc } = props;
     return (
         <Container style={styles.container}>
             <Content>
@@ -58,10 +45,10 @@ export default function ProductCard(props) {
 }
 
 const styles = StyleSheet.create({
-    container : {
-        height : 3 * height / 4 - 40,
-        paddingBottom : 0,
-        marginBottom : 20,
+    container: {
+        height: (3 * height) / 4 - 40,
+        paddingBottom: 0,
+        marginBottom: 20,
         backgroundColor: "gainsboro"
     }
-})
+});

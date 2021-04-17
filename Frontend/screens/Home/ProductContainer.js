@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, SafeAreaView, ScrollView, Dimensions } from "react-native";
-import { Header, Icon, Item, Input, Text, Container } from "native-base";
+import { Header, Icon, Item, Input, Text } from "native-base";
 import ProductList from "./ProductList";
 import SearchedProduct from "../../components/Card/SearchedProduct";
 import Banner from "../../components/Shared/Banner";
@@ -85,6 +85,7 @@ const ProductContainer = (props) => {
                 <SearchedProduct
                     navigation={props.navigation}
                     productsFiltered={productsFiltered}
+                    navigateTo="Product Details"
                 />
             ) : (
                 <ScrollView>
