@@ -1,15 +1,12 @@
-import { Card, ListItem } from "native-base";
+import { Card, Header, ListItem } from "native-base";
 import React from "react";
-import { SafeAreaView } from "react-native";
+import { SafeAreaView, ScrollView } from "react-native";
+import ListOfUsers from "../../components/ListOfUsers/ListOfUsers";
 
 export default function VendorList() {
     return (
-        <SafeAreaView>
-            <Card containerStyle={{ padding: 0 }}>
-                {users.map((u, i) => (
-                    <ListItem key={i} />
-                ))}
-            </Card>
-        </SafeAreaView>
+        <ScrollView>
+            <ListOfUsers />
+        </ScrollView>
     );
 }

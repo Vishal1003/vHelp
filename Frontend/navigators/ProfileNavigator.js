@@ -3,6 +3,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import ProfileScreen from "../screens/Profile/ProfileScreen";
 import EditProfileScreen from "../screens/Profile/EditProfileScreen";
+import VendorList from "../screens/Vendor/VendorList";
 
 const Stack = createStackNavigator();
 
@@ -19,6 +20,13 @@ function MyStack() {
             <Stack.Screen
                 name="Edit Profile"
                 component={EditProfileScreen}
+                options={{
+                    headerShown: true
+                }}
+            />
+            <Stack.Screen
+                name="Vendor List"
+                component={VendorList}
                 options={{
                     headerShown: true
                 }}

@@ -75,7 +75,11 @@ const ProfileScreen = (props) => {
                             <Text style={styles.menuItemText}>Your Favorites</Text>
                         </View>
                     </TouchableRipple>
-                    <TouchableRipple onPress={() => {}}>
+                    <TouchableRipple
+                        onPress={() => {
+                            props.navigation.navigate("Vendor List");
+                        }}
+                    >
                         <View style={styles.menuItem}>
                             <MaterialIcons
                                 name="supervised-user-circle"
@@ -97,7 +101,11 @@ const ProfileScreen = (props) => {
                             <Text style={styles.menuItemText}>Support</Text>
                         </View>
                     </TouchableRipple>
-                    <TouchableRipple onPress={() => {props.navigation.navigate("Edit Profile");}}>
+                    <TouchableRipple
+                        onPress={() => {
+                            props.navigation.navigate("Edit Profile");
+                        }}
+                    >
                         <View style={styles.menuItem}>
                             <Icon name="cog-outline" color="#00008B" size={25} />
                             <Text style={styles.menuItemText}>Settings</Text>

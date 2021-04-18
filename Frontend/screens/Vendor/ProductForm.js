@@ -12,6 +12,7 @@ import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 
 import * as ImagePicker from "expo-image-picker";
+import * as Font from "expo-font";
 
 import { Body, Button, Container, Header, Item, Left, Picker, Right, Title } from "native-base";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -54,6 +55,13 @@ export default function ProductForm(props) {
                 }
             }
         })();
+
+        // Font error
+        (async () =>
+            await Font.loadAsync({
+                Roboto: require("native-base/Fonts/Roboto.ttf"),
+                Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
+            }))();
     }, []);
 
     const takePhotoFromCamera = async () => {

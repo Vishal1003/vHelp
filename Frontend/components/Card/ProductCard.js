@@ -46,9 +46,7 @@ export default function ProductCard(props) {
 
 const styles = StyleSheet.create({
     container: {
-        // height: (3 * height) / 4 - 40,
-        paddingBottom: 0,
-        marginBottom: 20,
+        height: (3 * height) / 4 - 50,
         backgroundColor: "gainsboro"
     }
 });
