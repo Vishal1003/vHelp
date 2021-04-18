@@ -29,7 +29,6 @@ const storage = multer.diskStorage({
 const uploadOptions = multer({ storage: storage });
 
 // Login
-router.get("/login", controller.getLogin);
 router.post("/login", controller.postLogin);
 
 // Register
@@ -42,6 +41,5 @@ router.delete("/item/:id", controller.deleteItem);
 
 // Non modification operations on Items
 router.get("/items", controller.getItems);
-router.get("/item/:id", controller.getItem);
 
 module.exports = router;

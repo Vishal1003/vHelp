@@ -39,7 +39,9 @@ exports.getOneProduct = async (req, res, next) => {
     if (!isValidId(req.params.id)) {
         return res.status(400).json({ success: false, message: "Invalid Item Id" });
     }
-    const item = await Item.findById(req.params.id);
+    const item = await Item.findById(req.params.id)
+        .populate("category")
+        .populate("seller", "-password");
     if (!item)
         return res.status(400).json({ success: false, message: "No product found with that id" });
     res.status(200).json({ success: true, message: "Product found successfully", item });

@@ -9,7 +9,7 @@ router.get("/items", controller.getAllProducts);
 router.get("/item/:id", controller.getOneProduct);
 
 // GET vendors list
-router.get("/vendor", controller.getAllVendors);
+router.get("/vendors", controller.getAllVendors);
 
 // GET one vendor and his products
 router.get("/vendor/:id", controller.getOneVendor);

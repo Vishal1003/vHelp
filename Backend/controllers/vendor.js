@@ -10,10 +10,6 @@ function isValidId(id) {
     return mongoose.Types.ObjectId.isValid(id);
 }
 
-exports.getLogin = async (req, res, next) => {
-    res.status(404).json({ success: false, message: "To be implemented" });
-};
-
 exports.postLogin = async (req, res, next) => {
     let { email, password } = req.body;
     const vendor = await Vendor.findOne({ email: email });
@@ -197,21 +193,5 @@ exports.deleteItem = async (req, res, next) => {
             .json({ success: true, message: "Item removed successfully", item: item });
     } else {
         return res.status(404).json({ success: false, message: "Item Not Found" });
-    }
-};
-
-// GET the item given by Id and return the found item
-exports.getItem = async (req, res, next) => {
-    const itemId = req.params.id;
-    if (!isValidId(itemId)) {
-        return res.status(400).json({ success: false, message: "Invalid item id" });
-    }
-    const item = await Item.findById(itemId);
-    if (item) {
-        return res
-            .status(200)
-            .json({ success: true, message: "Item found successfully", item: item });
-    } else {
-        return res.status(404).json({ success: false, message: "Item not found" });
     }
 };

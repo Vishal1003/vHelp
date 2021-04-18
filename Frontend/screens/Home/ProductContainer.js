@@ -9,8 +9,8 @@ import CategoryFilter from "./CategoryFilter";
 // const data = require("../../assets/data/products.json");
 // const itemCategory = require("../../assets/data/categories.json");
 
+const backendURL = `https://vhelp-rest.herokuapp.com`;
 import axios from "axios";
-const IP_ADDRESS_V4 = "192.168.0.20";
 
 const { height } = Dimensions.get("window");
 
@@ -30,7 +30,7 @@ const ProductContainer = (props) => {
 
     useEffect(() => {
         axios
-            .get(`http://${IP_ADDRESS_V4}:3000/api/index/items`)
+            .get(`${backendURL}/api/index/items`)
             .then((res) => {
                 if (res.data.success === true) {
                     for (const x in res.data.items) {
@@ -52,7 +52,7 @@ const ProductContainer = (props) => {
                 throw error;
             });
         axios
-            .get(`http://${IP_ADDRESS_V4}:3000/api/index/category`)
+            .get(`${backendURL}/api/index/category`)
             .then((res) => {
                 if (res.data.success === true) {
                     setCategories(res.data.categories);
