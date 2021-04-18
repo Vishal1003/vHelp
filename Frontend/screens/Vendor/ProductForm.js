@@ -28,7 +28,6 @@ export default function ProductForm(props) {
     const [name, setName] = useState();
     const [cost, setCost] = useState();
     const [description, setDescription] = useState();
-    const [longdesc, setLongDesc] = useState();
     const [image, setImage] = useState();
     const [category, setCategory] = useState();
     const [item, setItem] = useState(null);
@@ -90,7 +89,9 @@ export default function ProductForm(props) {
         <View style={styles.panel}>
             <View style={{ alignItems: "center" }}>
                 <Text style={styles.panelTitle}>Upload Photo</Text>
-                <Text style={styles.panelSubtitle}>Choose the photo that describes your product the best!</Text>
+                <Text style={styles.panelSubtitle}>
+                    Choose the photo that describes your product the best!
+                </Text>
             </View>
             <TouchableOpacity style={styles.panelButton} onPress={takePhotoFromCamera}>
                 <Text style={styles.panelButtonTitle}>Take Photo</Text>
@@ -130,97 +131,93 @@ export default function ProductForm(props) {
                     <Button transparent></Button>
                 </Right>
             </Header>
-            <FormContainer>
-                <View style={styles.imageContainer}>
-                    <Image style={styles.image} source={{ uri: image }} />
+            <Animated.View
+                style={{
+                    opacity: Animated.add(0.1, Animated.multiply(this.fall, 1.0))
+                }}
+            >
+                <FormContainer>
+                    <View style={styles.imageContainer}>
+                        <Image style={styles.image} source={{ uri: image }} />
+                        <TouchableOpacity
+                            onPress={() => this.bs.current.snapTo(0)}
+                            style={styles.imagePicker}
+                        >
+                            <Icon style={{ color: "white" }} name="camera" />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={[styles.label, { marginTop: 20 }]}>
+                        <Text>Name of the Product</Text>
+                    </View>
+                    <Input
+                        placeholder="Name"
+                        name="name"
+                        id="name"
+                        value={name}
+                        onChangeText={(text) => setName(text)}
+                    />
+                    <View style={styles.label}>
+                        <Text>Price (INR)</Text>
+                    </View>
+                    <Input
+                        placeholder="Price"
+                        name="cost"
+                        id="cost"
+                        value={cost}
+                        keyboardType={"numeric"}
+                        onChangeText={(text) => setCost(text)}
+                    />
+
+                    <View style={styles.label}>
+                        <Text>Description (Short Desc)</Text>
+                    </View>
+                    <Input
+                        placeholder="Description (50 words)"
+                        name="description"
+                        id="description"
+                        value={description}
+                        multiline={true}
+                        numOfLine={2}
+                        onChangeText={(text) => setDescription(text)}
+                    />
+
+                    <Item picker>
+                        <Picker
+                            mode="dropdown"
+                            iosIcon={<Icon color={"#007aff"} name="arrow-down" />}
+                            placeholder="Select your Category"
+                            style={{ width: Platform.OS === "ios" ? undefined : 120 }}
+                            selectedValue={pickerValue}
+                            placeholderStyle={{ color: "#007aff" }}
+                            placeholderIconColor="#007aff"
+                            onValueChange={(e) => [setPickerValue(e), setCategory(e)]}
+                        >
+                            {categories.map((c) => {
+                                return (
+                                    <Picker.Item key={c._id.$oid} label={c.name} value={c.name} />
+                                );
+                            })}
+                        </Picker>
+                    </Item>
+
+                    {/* {err ? <Error message={err} /> : null} */}
                     <TouchableOpacity
-                        onPress={() => this.bs.current.snapTo(0)}
-                        style={styles.imagePicker}
+                        onPress={() => addProduct()}
+                        style={[styles.buttonContainer, { marginTop: 20 }]}
                     >
-                        <Icon style={{ color: "white" }} name="camera" />
+                        <Text style={styles.buttonText}>CONFIRM</Text>
                     </TouchableOpacity>
-                </View>
-                <View style={[styles.label, {marginTop: 20}]}>
-                    <Text>Name of the Product</Text>
-                </View>
-                <Input
-                    placeholder="Name"
-                    name="name"
-                    id="name"
-                    value={name}
-                    onChangeText={(text) => setName(text)}
-                />
-                <View style={styles.label}>
-                    <Text>Price (INR)</Text>
-                </View>
-                <Input
-                    placeholder="Price"
-                    name="cost"
-                    id="cost"
-                    value={cost}
-                    keyboardType={"numeric"}
-                    onChangeText={(text) => setCost(text)}
-                />
-
-                <View style={styles.label}>
-                    <Text>Description (Short Desc)</Text>
-                </View>
-                <Input
-                    placeholder="Description (50 words)"
-                    name="description"
-                    id="description"
-                    value={description}
-                    multiline={true}
-                    numOfLine={2}
-                    onChangeText={(text) => setDescription(text)}
-                />
-                <View style={styles.label}>
-                    <Text>Detailed Description</Text>
-                </View>
-                <Input
-                    placeholder="Detailed Description (250 words)"
-                    name="description"
-                    id="description"
-                    value={longdesc}
-                    multiline={true}
-                    numOfLine={4}
-                    onChangeText={(text) => setLongDesc(text)}
-                />
-
-                <Item picker>
-                    <Picker
-                        mode="dropdown"
-                        iosIcon={<Icon color={"#007aff"} name="arrow-down" />}
-                        placeholder="Select your Category"
-                        style={{ width: Platform.OS === "ios" ? undefined : 120 }}
-                        selectedValue={pickerValue}
-                        placeholderStyle={{ color: "#007aff" }}
-                        placeholderIconColor="#007aff"
-                        onValueChange={(e) => [setPickerValue(e), setCategory(e)]}
+                    <TouchableOpacity
+                        onPress={() => {}}
+                        style={[
+                            styles.buttonContainer,
+                            { backgroundColor: customColor.medium, marginBottom: 80 }
+                        ]}
                     >
-                        {categories.map((c) => {
-                            return <Picker.Item key={c._id.$oid} label={c.name} value={c.name} />;
-                        })}
-                    </Picker>
-                </Item>
-
-                {/* {err ? <Error message={err} /> : null} */}
-                <TouchableOpacity
-                    onPress={() => addProduct()}
-                    style={[styles.buttonContainer, { marginTop: 20 }]}
-                >
-                    <Text style={styles.buttonText}>CONFIRM</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => {}}
-                    style={[
-                        styles.buttonContainer,
-                        { backgroundColor: customColor.medium, marginBottom: 10 }
-                    ]}
-                >
-                    <Text style={styles.buttonText}>CANCEL</Text>
-                </TouchableOpacity>
-            </FormContainer>
+                        <Text style={styles.buttonText}>CANCEL</Text>
+                    </TouchableOpacity>
+                </FormContainer>
+            </Animated.View>
             <BottomSheet
                 ref={this.bs}
                 snapPoints={[330, 0]}
@@ -230,12 +227,6 @@ export default function ProductForm(props) {
                 callbackNode={this.fall}
                 enabledGestureInteraction={true}
             />
-            <Animated.View
-                style={{
-                    margin: 20,
-                    opacity: Animated.add(0.1, Animated.multiply(this.fall, 1.0))
-                }}
-            ></Animated.View>
         </Container>
     );
 }
