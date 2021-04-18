@@ -10,15 +10,21 @@ const itemSchema = mongoose.Schema({
         required: true
     },
     category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+        required: true
+    },
+    description: {
         type: String,
         required: true
     },
-    imageUrl: {
-        type: String,
-        required: true
+    image: {
+        data: Buffer,
+        contentType: String
     },
     seller: {
         type: mongoose.Schema.Types.ObjectId,
+        required: true,
         ref: "Vendor"
     }
 });

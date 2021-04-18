@@ -2,19 +2,17 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 
-function normalize(str) {
-    return str.trim().toLowerCase();
-}
-
 exports.getLogin = async (req, res, next) => {
-    res.status(404).send("To be implemented");
+    res.status(404).json({ success: false, message: "To be implemented" });
 };
 
 exports.postLogin = async (req, res, next) => {
     let { email, password } = req.body;
-    const user = await User.findOne({ email: normalize(email) });
+    const user = await User.findOne({ email: email });
     if (!user) {
-        return res.status(401).send("That email is not registered!");
+        return res
+            .status(401)
+            .json({ success: false, message: "email or password does not match" });
     }
     if (bcrypt.compareSync(password, user.password)) {
         const token = jwt.sign({ userId: user._id, isVendor: false }, process.env.JWT_SECRET, {
@@ -24,36 +22,50 @@ exports.postLogin = async (req, res, next) => {
         //   httpOnly: true,
         //   maxAge: 24 * 60 * 60 * 1000,
         // });
-        return res.status(200).json({ message: "Logged in successfully!", token: token });
+        return res
+            .status(200)
+            .json({ success: true, message: "Logged in successfully", user, token: token });
     } else {
-        return res.status(401).send("Password does not match!");
+        return res
+            .status(401)
+            .json({ success: false, message: "email or password does not match" });
     }
 };
 
 exports.postRegister = async (req, res, next) => {
     let { name, email, password, street, city, postal_code, country } = req.body;
+    // Check if user exists already
+    let user = await User.findOne({ email: email });
+    if (user) {
+        return res
+            .status(404)
+            .json({ success: false, message: "User already registered with that email" });
+    }
 
-    let checkUser = await User.findOne({ email: normalize(email) });
-
-    if (checkUser) return res.status(400).send("User Already Exists");
-
+    // Check if image is available
+    const file = req.file;
+    if (!file) {
+        return res.status(400).json({ success: false, message: "No image file found" });
+    }
+    // Hashing Password
     const hashedPassword = await bcrypt.hash(password, 8);
-
-    let user = new User({
-        name: normalize(name),
-        email: normalize(email),
+    user = new User({
+        name: name,
+        email: email,
         password: hashedPassword,
         address: {
-            street: normalize(street),
-            city: normalize(city),
-            postal_code: normalize(postal_code),
-            country: normalize(country)
+            street: street,
+            city: city,
+            postal_code: postal_code,
+            country: country
         }
     });
-
+    user.image.data = fs.readFileSync(file.path);
+    user.image.contentType = file.mimetype;
     user = await user.save();
 
-    if (!user) return res.status(400).send("Error creating that user!");
-
-    res.status(200).send(user);
+    if (!user) {
+        return res.status(400).json({ success: false, message: "User cannot be registered" });
+    }
+    res.status(200).json({ success: true, message: "User registered successfully", user });
 };

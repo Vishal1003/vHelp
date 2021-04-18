@@ -20,15 +20,13 @@ const SearchedProduct = (props) => {
                         <Left>
                             <Thumbnail
                                 source={{
-                                    uri: item.imageUrl
-                                        ? item.imageUrl
-                                        : "https://cdn.pixabay.com/photo/2012/04/01/17/29/box-23649_960_720.png"
+                                    uri: item.image
                                 }}
                             />
                         </Left>
                         <Body>
                             <Text>{item.name}</Text>
-                            <Text note>{item.seller}</Text>
+                            <Text note>{item.seller.name}</Text>
                         </Body>
                     </ListItem>
                 ))

@@ -14,4 +14,10 @@ router.get("/vendor", controller.getAllVendors);
 // GET one vendor and his products
 router.get("/vendor/:id", controller.getOneVendor);
 
+// POST category for the product
+router.post("/category", controller.postCategory);
+
+// GET all categories for the products
+router.get("/category", controller.getCategory);
+
 module.exports = router;

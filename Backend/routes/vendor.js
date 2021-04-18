@@ -33,7 +33,7 @@ router.get("/login", controller.getLogin);
 router.post("/login", controller.postLogin);
 
 // Register
-router.post("/register", controller.postRegister);
+router.post("/register", uploadOptions.single("image"), controller.postRegister);
 
 // Modification operations on Items
 router.post("/item", uploadOptions.single("image"), controller.postAddItem);
@@ -43,4 +43,5 @@ router.delete("/item/:id", controller.deleteItem);
 // Non modification operations on Items
 router.get("/items", controller.getItems);
 router.get("/item/:id", controller.getItem);
+
 module.exports = router;
