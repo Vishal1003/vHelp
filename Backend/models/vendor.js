@@ -12,6 +12,10 @@ const vendorSchema = mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    image: {
+        data: Buffer,
+        contentType: String
     }
 });
 const Vendor = mongoose.model("Vendor", vendorSchema);

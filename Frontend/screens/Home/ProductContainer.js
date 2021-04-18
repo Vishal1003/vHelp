@@ -6,10 +6,17 @@ import SearchedProduct from "../../components/Card/SearchedProduct";
 import Banner from "../../components/Shared/Banner";
 import CategoryFilter from "./CategoryFilter";
 
-const data = require("../../assets/data/products.json");
-const itemCategory = require("../../assets/data/categories.json");
+// const data = require("../../assets/data/products.json");
+// const itemCategory = require("../../assets/data/categories.json");
+
+import axios from "axios";
+const IP_ADDRESS_V4 = "192.168.0.20";
 
 const { height } = Dimensions.get("window");
+
+const arrayBufferToBase64 = (buffer) => {
+    return require("base64-arraybuffer").encode(buffer);
+};
 
 const ProductContainer = (props) => {
     const [products, setProducts] = useState([]);
@@ -22,13 +29,47 @@ const ProductContainer = (props) => {
     const [productsCtg, setProductsCtg] = useState([]);
 
     useEffect(() => {
-        setProducts(data);
-        setProductsFiltered(data);
+        axios
+            .get(`http://${IP_ADDRESS_V4}:3000/api/index/items`)
+            .then((res) => {
+                if (res.data.success === true) {
+                    for (const x in res.data.items) {
+                        var base64Flag = "data:";
+                        base64Flag += res.data.items[x].image.contentType;
+                        base64Flag += ";base64,";
+                        res.data.items[x].image =
+                            base64Flag + arrayBufferToBase64(res.data.items[x].image.data.data);
+                    }
+                    setProducts(res.data.items);
+                    setProductsFiltered(res.data.items);
+                    setInitialState(res.data.items);
+                } else {
+                    throw new Error(res.data.message);
+                }
+            })
+            .catch((error) => {
+                console.log("API call error");
+                throw error;
+            });
+        axios
+            .get(`http://${IP_ADDRESS_V4}:3000/api/index/category`)
+            .then((res) => {
+                if (res.data.success === true) {
+                    setCategories(res.data.categories);
+                } else {
+                    throw new Error(res.data.message);
+                }
+            })
+            .catch((error) => {
+                console.log("API call error");
+                throw error;
+            });
+        // setProducts(data);
+        // setProductsFiltered(data);
+        // setInitialState(data);
         setFocus(false);
-
-        setCategories(itemCategory);
+        // setCategories(itemCategory);
         setActive(-1);
-        setInitialState(data);
 
         return () => {
             setProducts([]);

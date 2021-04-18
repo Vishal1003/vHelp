@@ -6,7 +6,7 @@ import { Container, Content, Card, CardItem, Text, Icon, Left, Body, Right } fro
 const { height } = Dimensions.get("window");
 
 export default function ProductCard(props) {
-    const { name, cost, imageUrl, seller, shortdesc } = props;
+    const { name, cost, image, seller, description } = props;
     return (
         <Container style={styles.container}>
             <Content>
@@ -14,12 +14,12 @@ export default function ProductCard(props) {
                     <CardItem>
                         <Body>
                             <Text style={{ fontWeight: "bold" }}>{name}</Text>
-                            <Text note>{seller}</Text>
+                            <Text note>{seller.name}</Text>
                         </Body>
                     </CardItem>
                     <CardItem cardBody>
                         <Image
-                            source={{ uri: imageUrl }}
+                            source={{ uri: image }}
                             style={{ height: height / 4, width: null, flex: 1 }}
                         />
                     </CardItem>
@@ -36,7 +36,7 @@ export default function ProductCard(props) {
                         <Text>{cost} $</Text>
                     </CardItem>
                     <CardItem>
-                        <Text>{shortdesc}</Text>
+                        <Text>{description}</Text>
                     </CardItem>
                 </Card>
             </Content>
@@ -46,7 +46,7 @@ export default function ProductCard(props) {
 
 const styles = StyleSheet.create({
     container: {
-        height: (3 * height) / 4 - 40,
+        // height: (3 * height) / 4 - 40,
         paddingBottom: 0,
         marginBottom: 20,
         backgroundColor: "gainsboro"

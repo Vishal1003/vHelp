@@ -9,14 +9,14 @@ export default function ProductDetails(props) {
                 <View>
                     <Image
                         style={styles.imageContainer}
-                        source={{ uri: item.imageUrl }}
+                        source={{ uri: item.image }}
                         resizeMode="contain"
                         style={styles.image}
                     />
                 </View>
                 <View style={styles.contentContainer}>
                     <H1 style={styles.contentHeader}>{item.name}</H1>
-                    <Text style={styles.contentText}>{item.category}</Text>
+                    <Text style={styles.contentText}>{item.category.name}</Text>
                 </View>
             </ScrollView>
             <View style={styles.bottomContainer}>
