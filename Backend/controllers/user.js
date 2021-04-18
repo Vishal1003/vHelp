@@ -2,10 +2,6 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 
-exports.getLogin = async (req, res, next) => {
-    res.status(404).json({ success: false, message: "To be implemented" });
-};
-
 exports.postLogin = async (req, res, next) => {
     let { email, password } = req.body;
     const user = await User.findOne({ email: email });
