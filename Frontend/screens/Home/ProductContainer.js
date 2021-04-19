@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, SafeAreaView, ScrollView, Dimensions } from "react-native";
+import {
+    View,
+    StyleSheet,
+    SafeAreaView,
+    ScrollView,
+    Dimensions,
+    ActivityIndicator
+} from "react-native";
 import { Header, Icon, Item, Input, Text } from "native-base";
 import ProductList from "./ProductList";
 import SearchedProduct from "../../components/Card/SearchedProduct";
@@ -27,50 +34,38 @@ const ProductContainer = (props) => {
     const [active, setActive] = useState();
     const [initialState, setInitialState] = useState([]);
     const [productsCtg, setProductsCtg] = useState([]);
+    const [isLoading, setIsLoading] = useState();
 
     useEffect(() => {
-        axios
-            .get(`${backendURL}/api/index/items`)
-            .then((res) => {
-                if (res.data.success === true) {
-                    for (const x in res.data.items) {
-                        var base64Flag = "data:";
-                        base64Flag += res.data.items[x].image.contentType;
-                        base64Flag += ";base64,";
-                        res.data.items[x].image =
-                            base64Flag + arrayBufferToBase64(res.data.items[x].image.data.data);
-                    }
-                    setProducts(res.data.items);
-                    setProductsFiltered(res.data.items);
-                    setInitialState(res.data.items);
-                } else {
-                    throw new Error(res.data.message);
+        const fetchAPI = async () => {
+            setIsLoading(true);
+            let res = await axios.get(`${backendURL}/api/index/items`);
+            if (res.data.success === true) {
+                for (const x in res.data.items) {
+                    var base64Flag = "data:";
+                    base64Flag += res.data.items[x].image.contentType;
+                    base64Flag += ";base64,";
+                    res.data.items[x].image =
+                        base64Flag + arrayBufferToBase64(res.data.items[x].image.data.data);
                 }
-            })
-            .catch((error) => {
-                console.log("API call error");
-                throw error;
-            });
-        axios
-            .get(`${backendURL}/api/index/category`)
-            .then((res) => {
-                if (res.data.success === true) {
-                    setCategories(res.data.categories);
-                } else {
-                    throw new Error(res.data.message);
-                }
-            })
-            .catch((error) => {
-                console.log("API call error");
-                throw error;
-            });
-        // setProducts(data);
-        // setProductsFiltered(data);
-        // setInitialState(data);
+                setProducts(res.data.items);
+                setProductsFiltered(res.data.items);
+                setInitialState(res.data.items);
+                setProductsCtg(res.data.items);
+            } else {
+                throw new Error(res.data.message);
+            }
+            res = await axios.get(`${backendURL}/api/index/category`);
+            if (res.data.success === true) {
+                setCategories(res.data.categories);
+            } else {
+                throw new Error(res.data.message);
+            }
+            setIsLoading(false);
+        };
+        fetchAPI();
         setFocus(false);
-        // setCategories(itemCategory);
         setActive(-1);
-
         return () => {
             setProducts([]);
             setProductsFiltered([]);
@@ -109,7 +104,16 @@ const ProductContainer = (props) => {
         }
     };
 
-    return (
+    return isLoading == true ? (
+        <SafeAreaView>
+            <View style={{ alignSelf: "center", marginTop: "50%" }}>
+                <ActivityIndicator style={{ margin: 10 }} size="large" color="blue" />
+                <Text style={{ fontSize: 30, fontWeight: "bold", color: "blue" }}>
+                    Loading Products
+                </Text>
+            </View>
+        </SafeAreaView>
+    ) : (
         <SafeAreaView>
             <Header searchBar rounded>
                 <Item>
@@ -137,7 +141,6 @@ const ProductContainer = (props) => {
                             <CategoryFilter
                                 categories={categories}
                                 categoryFilter={changeCtg}
-                                productsCtg={productsCtg}
                                 active={active}
                                 setActive={setActive}
                             />
