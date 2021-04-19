@@ -8,6 +8,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import HomeNavigator from "./HomeNavigator";
 import AddProductNavigator from "./AddProductNavigator";
 import ProfileNavigator from "./ProfileNavigator";
+import MapNavigator from "./MapNavigator";
 // import VendorNavigator from "./VendorNavigator";
 const customColor = require("../constants/Color");
 
@@ -38,8 +39,8 @@ export default function Main() {
                 }}
             />
             <Tab.Screen
-                name="Vendor"
-                component={HomeNavigator}
+                name="Map"
+                component={MapNavigator}
                 options={{
                     tabBarIcon: ({ color }) => (
                         <FontAwesome5 name="map-marker-alt" color={color} size={30} />
