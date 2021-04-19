@@ -201,9 +201,7 @@ export default function ProductForm(props) {
                             onValueChange={(e) => [setPickerValue(e), setCategory(e)]}
                         >
                             {categories.map((c) => {
-                                return (
-                                    <Picker.Item key={c._id.$oid} label={c.name} value={c.name} />
-                                );
+                                return <Picker.Item key={c._id} label={c.name} value={c.name} />;
                             })}
                         </Picker>
                     </Item>
