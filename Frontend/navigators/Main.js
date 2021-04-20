@@ -9,7 +9,6 @@ import HomeNavigator from "./HomeNavigator";
 import AddProductNavigator from "./AddProductNavigator";
 import ProfileNavigator from "./ProfileNavigator";
 import MapNavigator from "./MapNavigator";
-// import VendorNavigator from "./VendorNavigator";
 const customColor = require("../constants/Color");
 
 const Tab = createBottomTabNavigator();

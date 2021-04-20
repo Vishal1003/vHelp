@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useContext, useState } from "react";
 import {
     View,
     Text,
@@ -6,39 +6,49 @@ import {
     TextInput,
     Platform,
     StyleSheet,
-    StatusBar,
-    Alert
+    StatusBar
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
 const customColor = require("../../constants/Color");
 
+import { loginVendor } from "../../redux/actions/AuthAction";
+import AuthContext from "../../redux/stores/AuthContext";
 const LoginScreen = ({ navigation }) => {
-    const [data, setData] = React.useState({
-        email: "",
-        password: "",
+    const context = useContext(AuthContext);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [data, setData] = useState({
         check_textInputChange: false,
         secureTextEntry: true,
         isValidUser: true,
         isValidPassword: true
     });
 
+    useEffect(() => {
+        if (context.state.isAuthenticated === true) {
+            navigation.navigate("Main");
+        } else {
+            navigation.navigate("LoginScreen");
+        }
+    }, [context.state.isAuthenticated]);
+
     const textInputChange = (val) => {
         if (val.trim().length >= 4) {
             setData({
                 ...data,
-                email: val,
                 check_textInputChange: true,
                 isValidUser: true
             });
+            setEmail(val);
         } else {
             setData({
                 ...data,
-                email: val,
                 check_textInputChange: false,
                 isValidUser: false
             });
+            setEmail(val);
         }
     };
 
@@ -46,15 +56,15 @@ const LoginScreen = ({ navigation }) => {
         if (val.trim().length >= 8) {
             setData({
                 ...data,
-                password: val,
                 isValidPassword: true
             });
+            setPassword(val);
         } else {
             setData({
                 ...data,
-                password: val,
                 isValidPassword: false
             });
+            setPassword(val);
         }
     };
 
@@ -77,6 +87,14 @@ const LoginScreen = ({ navigation }) => {
                 isValidUser: false
             });
         }
+    };
+
+    const handleSubmit = () => {
+        const vendor = {
+            email: email,
+            password: password
+        };
+        loginVendor(vendor, context.dispatch);
     };
 
     return (
@@ -138,15 +156,12 @@ const LoginScreen = ({ navigation }) => {
                     <Text style={{ color: customColor.dark, marginTop: 15 }}>Forgot password?</Text>
                 </TouchableOpacity>
                 <View style={styles.button}>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate("LoginScreen")}
-                        style={[styles.buttonContainer]}
-                    >
+                    <TouchableOpacity onPress={handleSubmit} style={[styles.buttonContainer]}>
                         <Text style={styles.buttonText}>Login</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => navigation.navigate("RegisterScreen")}
-                        style={[styles.buttonContainer, {backgroundColor: customColor.light}]}
+                        style={[styles.buttonContainer, { backgroundColor: customColor.light }]}
                     >
                         <Text style={styles.buttonText}>Register</Text>
                     </TouchableOpacity>

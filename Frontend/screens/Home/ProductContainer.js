@@ -8,6 +8,7 @@ import {
     ActivityIndicator
 } from "react-native";
 import { Header, Icon, Item, Input, Text } from "native-base";
+import { Drawer } from "react-native-paper";
 import ProductList from "./ProductList";
 import SearchedProduct from "../../components/Card/SearchedProduct";
 import Banner from "../../components/Shared/Banner";
@@ -106,7 +107,7 @@ const ProductContainer = (props) => {
 
     return isLoading == true ? (
         <SafeAreaView>
-            <View style={{ alignSelf: "center", marginTop: height/3 }}>
+            <View style={{ alignSelf: "center", marginTop: height / 3 }}>
                 <ActivityIndicator style={{ margin: 10 }} size="large" color="blue" />
                 <Text note>Loading Products...</Text>
             </View>
