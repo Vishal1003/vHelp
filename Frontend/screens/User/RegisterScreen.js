@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
@@ -12,6 +12,9 @@ import {
 import * as Animatable from "react-native-animatable";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
+
+import { Item, Picker, Icon } from "native-base";
+
 const customColor = require("../../constants/Color");
 
 const RegisterScreen = ({ navigation }) => {
@@ -23,6 +26,9 @@ const RegisterScreen = ({ navigation }) => {
         secureTextEntry: true,
         confirm_secureTextEntry: true
     });
+
+    const [usertype, setUsertype] = useState("0");
+    const [isValidType, setIsValidType] = useState(false);
 
     const textInputChange = (val) => {
         if (val.length !== 0) {
@@ -68,6 +74,15 @@ const RegisterScreen = ({ navigation }) => {
         });
     };
 
+    const selectUserTypeHandler = (type) => {
+        if (type === "0") {
+            setIsValidType(false);
+        } else {
+            setIsValidType(true);
+            setUsertype(type);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor="#009387" barStyle="light-content" />
@@ -76,7 +91,7 @@ const RegisterScreen = ({ navigation }) => {
             </View>
             <Animatable.View animation="fadeInUpBig" style={styles.footer}>
                 <ScrollView>
-                    <Text style={styles.text_footer}>Email</Text>
+                    <Text style={[styles.text_footer]}>Email</Text>
                     <View style={styles.action}>
                         <FontAwesome name="user-o" color="#05375a" size={20} />
                         <TextInput
@@ -92,16 +107,32 @@ const RegisterScreen = ({ navigation }) => {
                         ) : null}
                     </View>
 
-                    <Text
-                        style={[
-                            styles.text_footer,
-                            {
-                                marginTop: 10
-                            }
-                        ]}
-                    >
-                        Password
-                    </Text>
+                    <Text style={[styles.text_footer, { marginTop: 10 }]}>User Type</Text>
+                    <View style={{ paddingTop: 10, paddingBottom: 10 }}>
+                        <Item picker>
+                            <Picker
+                                mode="dropdown"
+                                iosIcon={<Icon name="arrow-down" />}
+                                style={{ width: "100%", height: 20 }}
+                                placeholder="Select User Type"
+                                selectedValue={usertype}
+                                onValueChange={(type) => {
+                                    selectUserTypeHandler(type);
+                                }}
+                            >
+                                <Picker.Item label="Select..." value="0" />
+                                <Picker.Item label="General User" value="user" />
+                                <Picker.Item label="Vendor" value="vendor" />
+                            </Picker>
+                        </Item>
+                    </View>
+                    {isValidType ? null : (
+                        <Animatable.View animation="fadeInLeft" duration={500}>
+                            <Text style={styles.errorMsg}>select a valid user type</Text>
+                        </Animatable.View>
+                    )}
+
+                    <Text style={[styles.text_footer, { marginTop: 10 }]}>Password</Text>
                     <View style={styles.action}>
                         <Feather name="lock" color="#05375a" size={20} />
                         <TextInput
@@ -120,16 +151,7 @@ const RegisterScreen = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
 
-                    <Text
-                        style={[
-                            styles.text_footer,
-                            {
-                                marginTop: 10
-                            }
-                        ]}
-                    >
-                        Confirm Password
-                    </Text>
+                    <Text style={[styles.text_footer, { marginTop: 10 }]}>Confirm Password</Text>
                     <View style={styles.action}>
                         <Feather name="lock" color="#05375a" size={20} />
                         <TextInput
@@ -157,10 +179,14 @@ const RegisterScreen = ({ navigation }) => {
 
                         <TouchableOpacity
                             onPress={() => navigation.goBack()}
-                            style={[styles.buttonContainer, {marginTop: 15, backgroundColor: customColor.light}]}
+                            style={[
+                                styles.buttonContainer,
+                                { marginTop: 15, backgroundColor: customColor.light }
+                            ]}
                         >
                             <Text style={styles.buttonText}>Log In</Text>
-                        </TouchableOpacity></View>
+                        </TouchableOpacity>
+                    </View>
                 </ScrollView>
             </Animatable.View>
         </View>

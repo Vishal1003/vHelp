@@ -105,7 +105,7 @@ const LoginScreen = ({ navigation }) => {
                 </View>
                 {data.isValidUser ? null : (
                     <Animatable.View animation="fadeInLeft" duration={500}>
-                        <Text style={styles.errorMsg}>email must be 4 characters long.</Text>
+                        <Text style={styles.errorMsg}>email wrong</Text>
                     </Animatable.View>
                 )}
 
