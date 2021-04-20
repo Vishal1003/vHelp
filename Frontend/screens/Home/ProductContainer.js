@@ -106,11 +106,9 @@ const ProductContainer = (props) => {
 
     return isLoading == true ? (
         <SafeAreaView>
-            <View style={{ alignSelf: "center", marginTop: "50%" }}>
+            <View style={{ alignSelf: "center", marginTop: height/3 }}>
                 <ActivityIndicator style={{ margin: 10 }} size="large" color="blue" />
-                <Text style={{ fontSize: 30, fontWeight: "bold", color: "blue" }}>
-                    Loading Products
-                </Text>
+                <Text note>Loading Products...</Text>
             </View>
         </SafeAreaView>
     ) : (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     View,
     Text,
@@ -93,7 +93,7 @@ export default function ProductForm(props) {
         }
     };
 
-    renderInner = () => (
+    const renderInner = () => (
         <View style={styles.panel}>
             <View style={{ alignItems: "center" }}>
                 <Text style={styles.panelTitle}>Upload Photo</Text>
@@ -107,13 +107,13 @@ export default function ProductForm(props) {
             <TouchableOpacity style={styles.panelButton} onPress={choosePhotoFromLibrary}>
                 <Text style={styles.panelButtonTitle}>Choose From Library</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.panelButton} onPress={() => this.bs.current.snapTo(1)}>
+            <TouchableOpacity style={styles.panelButton} onPress={() => bs.current.snapTo(1)}>
                 <Text style={styles.panelButtonTitle}>Cancel</Text>
             </TouchableOpacity>
         </View>
     );
 
-    renderHeader = () => (
+    const renderHeader = () => (
         <View style={styles.header}>
             <View style={styles.panelHeader}>
                 <View style={styles.panelHandle} />
@@ -121,8 +121,8 @@ export default function ProductForm(props) {
         </View>
     );
 
-    bs = React.createRef();
-    fall = new Animated.Value(1);
+    const bs = useRef();
+    const fall = new Animated.Value(1);
 
     return (
         <Container>
@@ -141,14 +141,14 @@ export default function ProductForm(props) {
             </Header>
             <Animated.View
                 style={{
-                    opacity: Animated.add(0.1, Animated.multiply(this.fall, 1.0))
+                    opacity: Animated.add(0.1, Animated.multiply(fall, 1.0))
                 }}
             >
                 <FormContainer>
                     <View style={styles.imageContainer}>
                         <Image style={styles.image} source={{ uri: image }} />
                         <TouchableOpacity
-                            onPress={() => this.bs.current.snapTo(0)}
+                            onPress={() => bs.current.snapTo(0)}
                             style={styles.imagePicker}
                         >
                             <Icon style={{ color: "white" }} name="camera" />
@@ -189,16 +189,18 @@ export default function ProductForm(props) {
                         onChangeText={(text) => setDescription(text)}
                     />
 
-                    <Item picker>
+                    <View style={styles.label}>
+                        <Text>Select Category</Text>
+                    </View>
+                    <Item picker style={{width:"80%"}}>
                         <Picker
                             mode="dropdown"
                             iosIcon={<Icon color={"#007aff"} name="arrow-down" />}
                             placeholder="Select your Category"
                             style={{ width: Platform.OS === "ios" ? undefined : 120 }}
                             selectedValue={pickerValue}
-                            placeholderStyle={{ color: "#007aff" }}
-                            placeholderIconColor="#007aff"
                             onValueChange={(e) => [setPickerValue(e), setCategory(e)]}
+                            style={{ height: 40 }}
                         >
                             {categories.map((c) => {
                                 return <Picker.Item key={c._id} label={c.name} value={c.name} />;
@@ -225,12 +227,12 @@ export default function ProductForm(props) {
                 </FormContainer>
             </Animated.View>
             <BottomSheet
-                ref={this.bs}
+                ref={bs}
                 snapPoints={[330, 0]}
-                renderContent={this.renderInner}
-                renderHeader={this.renderHeader}
+                renderContent={renderInner}
+                renderHeader={renderHeader}
                 initialSnap={1}
-                callbackNode={this.fall}
+                callbackNode={fall}
                 enabledGestureInteraction={true}
             />
         </Container>
