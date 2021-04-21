@@ -1,21 +1,26 @@
-import { SET_CURRENT_VENDOR } from "../actions/AuthAction";
-
-const isNotValid = (value)=>{
-    value === undefined || 
-    value === null ||
-    (typeof value === "object" && Object.keys(value).length === 0) ||
-    (typeof value === "string" && value.trim().length === 0);
+import { LOGIN_CURRENT_USER, LOGOUT_CURRENT_USER, SET_ERROR_MESSAGE } from "../actions/actionTypes";
+const initialState = {
+    token: {},
+    user_data: {},
+    error_message: "",
+    is_authenticated: false
 };
-
-export default function AuthReducer(state, action) {
+export default function AuthReducer(state = initialState, action) {
     switch (action.type) {
-        case SET_CURRENT_VENDOR:
+        case LOGIN_CURRENT_USER:
+            return {
+                is_authenticated: true,
+                user_data: action.user_data,
+                token: action.token,
+                error_message: ""
+            };
+        case SET_ERROR_MESSAGE:
             return {
                 ...state,
-                isAuthenticated: !isNotValid(action.payload),
-                vendor: action.payload,
-                vendorProfile: action.vendorProfile
+                error_message: action.error_message
             };
+        case LOGOUT_CURRENT_USER:
+            return initialState;
         default:
             return state;
     }

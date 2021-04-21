@@ -10,10 +10,11 @@ import AddProductNavigator from "./AddProductNavigator";
 import ProfileNavigator from "./ProfileNavigator";
 import MapNavigator from "./MapNavigator";
 const customColor = require("../constants/Color");
-
+import { useSelector } from "react-redux";
 const Tab = createBottomTabNavigator();
 
 export default function Main() {
+    const token = useSelector((state) => state.token);
     return (
         <Tab.Navigator
             initialRouteName="Home"
@@ -46,8 +47,7 @@ export default function Main() {
                     )
                 }}
             />
-            {/* {context.stateUser.user.isVendor == true ? ( */}
-            {true ? (
+            {token.isVendor === true ? (
                 <Tab.Screen
                     name="AddItem"
                     component={AddProductNavigator}

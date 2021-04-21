@@ -1,12 +1,36 @@
 import { Body, Button, Header, Left, Right } from "native-base";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { View, SafeAreaView, StyleSheet, ScrollView } from "react-native";
 import { Avatar, Title, Caption, Text, TouchableRipple } from "react-native-paper";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
-const ProfileScreen = (props) => {
+import { logoutUser } from "../../redux/actions/AuthAction";
+
+const arrayBufferToBase64 = (buffer) => {
+    return require("base64-arraybuffer").encode(buffer);
+};
+
+const ProfileScreen = ({ navigation }) => {
+    const user_data = useSelector((state) => state.user_data);
+    const dispatch = useDispatch();
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [image, setImage] = useState("https://i.pravatar.cc/150?img=6");
+    useEffect(() => {
+        if (isLoggedIn) {
+            var base64Flag = "data:";
+            base64Flag += user_data.image.contentType;
+            base64Flag += ";base64,";
+            setImage(base64Flag + arrayBufferToBase64(user_data.image.data.data));
+        }
+    }, [user_data]);
+    const handleLogout = () => {
+        setIsLoggedIn(false);
+        logoutUser(dispatch);
+        navigation.navigate("LoginScreen");
+    };
     return (
         <SafeAreaView style={styles.container}>
             <Header style={{ backgroundColor: "#fff" }}>
@@ -27,7 +51,7 @@ const ProfileScreen = (props) => {
                     <View style={{ flexDirection: "row", marginTop: 15 }}>
                         <Avatar.Image
                             source={{
-                                uri: "https://i.pravatar.cc/150?img=6"
+                                uri: image
                             }}
                             size={80}
                         />
@@ -41,9 +65,11 @@ const ProfileScreen = (props) => {
                                     }
                                 ]}
                             >
-                                John Doe
+                                {isLoggedIn ? user_data.name : ""}
                             </Title>
-                            <Caption style={styles.caption}>@j_doe</Caption>
+                            <Caption style={styles.caption}>
+                                @{isLoggedIn ? user_data.name : ""}
+                            </Caption>
                         </View>
                     </View>
                 </View>
@@ -59,7 +85,9 @@ const ProfileScreen = (props) => {
                     </View>
                     <View style={styles.row}>
                         <Icon name="email" color="#777777" size={20} />
-                        <Text style={{ color: "#777777", marginLeft: 20 }}>john_doe@email.com</Text>
+                        <Text style={{ color: "#777777", marginLeft: 20 }}>
+                            {isLoggedIn ? user_data.email : ""}
+                        </Text>
                     </View>
                 </View>
                 <View
@@ -77,7 +105,7 @@ const ProfileScreen = (props) => {
                     </TouchableRipple>
                     <TouchableRipple
                         onPress={() => {
-                            props.navigation.navigate("Vendor List");
+                            navigation.navigate("Vendor List");
                         }}
                     >
                         <View style={styles.menuItem}>
@@ -103,7 +131,7 @@ const ProfileScreen = (props) => {
                     </TouchableRipple>
                     <TouchableRipple
                         onPress={() => {
-                            props.navigation.navigate("Edit Profile");
+                            navigation.navigate("Edit Profile");
                         }}
                     >
                         <View style={styles.menuItem}>
@@ -111,7 +139,7 @@ const ProfileScreen = (props) => {
                             <Text style={styles.menuItemText}>Settings</Text>
                         </View>
                     </TouchableRipple>
-                    <TouchableRipple onPress={() => {}}>
+                    <TouchableRipple onPress={handleLogout}>
                         <View style={styles.menuItem}>
                             <Icon name="logout" color="#00008B" size={25} />
                             <Text style={styles.menuItemText}>Logout</Text>

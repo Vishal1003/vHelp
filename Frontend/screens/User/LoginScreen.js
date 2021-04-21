@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -13,12 +13,20 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
 const customColor = require("../../constants/Color");
 
-import { loginVendor } from "../../redux/actions/AuthAction";
-import AuthContext from "../../redux/stores/AuthContext";
+import { loginUser } from "../../redux/actions/AuthAction";
+import { useSelector, useDispatch } from "react-redux";
+
 const LoginScreen = ({ navigation }) => {
-    const context = useContext(AuthContext);
+    // Redux data
+    const is_authenticated = useSelector((state) => state.is_authenticated);
+    const error_message = useSelector((state) => state.error_message);
+    const dispatch = useDispatch();
+
+    // Login Data
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    // Component Data
     const [data, setData] = useState({
         check_textInputChange: false,
         secureTextEntry: true,
@@ -27,12 +35,12 @@ const LoginScreen = ({ navigation }) => {
     });
 
     useEffect(() => {
-        if (context.state.isAuthenticated === true) {
+        if (is_authenticated === true) {
             navigation.navigate("Main");
         } else {
             navigation.navigate("LoginScreen");
         }
-    }, [context.state.isAuthenticated]);
+    }, [is_authenticated]);
 
     const textInputChange = (val) => {
         if (val.trim().length >= 4) {
@@ -90,11 +98,11 @@ const LoginScreen = ({ navigation }) => {
     };
 
     const handleSubmit = () => {
-        const vendor = {
+        const user = {
             email: email,
             password: password
         };
-        loginVendor(vendor, context.dispatch);
+        loginUser(user, dispatch);
     };
 
     return (
@@ -155,6 +163,11 @@ const LoginScreen = ({ navigation }) => {
                 <TouchableOpacity>
                     <Text style={{ color: customColor.dark, marginTop: 15 }}>Forgot password?</Text>
                 </TouchableOpacity>
+                {error_message != "" && (
+                    <Animatable.View animation="fadeInLeft" duration={500}>
+                        <Text style={styles.errorMsg}>{error_message}</Text>
+                    </Animatable.View>
+                )}
                 <View style={styles.button}>
                     <TouchableOpacity onPress={handleSubmit} style={[styles.buttonContainer]}>
                         <Text style={styles.buttonText}>Login</Text>

@@ -1,51 +1,75 @@
 import jwt_decode from "jwt-decode";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// const { REST_API_URL } = require("../../constants/URLs");
 const backendURL = `https://vhelp-rest.herokuapp.com`;
 import axios from "axios";
+import { LOGIN_CURRENT_USER, LOGOUT_CURRENT_USER, SET_ERROR_MESSAGE } from "./actionTypes";
 const querystring = require("query-string");
 
-export const SET_CURRENT_VENDOR = "SET_CURRENT_VENDOR";
-
-export const setCurrentVendor = (decoded, vendor) => {
+// For user and vendor both, isVendor in decoded token
+export const loginCurrentUser = (decoded, user_data) => {
     return {
-        type: SET_CURRENT_VENDOR,
-        payload: decoded,
-        vendorProfile: vendor
+        type: LOGIN_CURRENT_USER,
+        token: decoded,
+        user_data: user_data
     };
 };
 
-export const logoutVendor = (dispatch) => {
-    AsyncStorage.removeItem("jwt");
-    dispatch(setCurrentVendor({}));
+export const setErrorMessage = (error_message) => {
+    return {
+        type: SET_ERROR_MESSAGE,
+        error_message: error_message
+    };
 };
 
-export const loginVendor = (vendor, dispatch) => {
-    axios
-        .post(
-            `${backendURL}/api/vendor/login`,
-            querystring.stringify({
-                email: vendor.email,
-                password: vendor.password
-            }),
-            {
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                }
+export const logoutCurrentUser = () => {
+    return { type: LOGOUT_CURRENT_USER };
+};
+
+export const logoutUser = (dispatch) => {
+    AsyncStorage.removeItem("jwt");
+    dispatch(logoutCurrentUser());
+};
+
+export const loginUser = (user, dispatch) => {
+    (async () => {
+        const requestData = querystring.stringify({
+            email: user.email,
+            password: user.password
+        });
+        const requestConfig = {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
             }
-        )
-        .then((res) => {
-            if (res.data.success === true) {
-                const token = res.data.token;
+        };
+        try {
+            // try login as a vendor
+            let res = await axios.post(
+                `${backendURL}/api/vendor/login`,
+                requestData,
+                requestConfig
+            );
+            res = res.data;
+            if (res.success === true) {
+                const token = res.token;
                 AsyncStorage.setItem("jwt", token);
                 const decoded = jwt_decode(token);
-                dispatch(setCurrentVendor(decoded, vendor));
+                dispatch(loginCurrentUser(decoded, res.vendor));
             } else {
-                logoutVendor(dispatch);
+                // try login as a user
+                res = await axios.post(`${backendURL}/api/user/login`, requestData, requestConfig);
+                res = res.data;
+                if (res.success === true) {
+                    const token = res.token;
+                    AsyncStorage.setItem("jwt", token);
+                    const decoded = jwt_decode(token);
+                    dispatch(loginCurrentUser(decoded, res.user));
+                } else {
+                    dispatch(setErrorMessage(res.message));
+                }
             }
-        })
-        .catch((err) => {
+        } catch (err) {
+            dispatch(setErrorMessage("Backend Error"));
             console.log("API call error", err);
-            logoutVendor(dispatch);
-        });
+        }
+    })();
 };

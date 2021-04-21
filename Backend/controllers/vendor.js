@@ -15,10 +15,8 @@ exports.postLogin = async (req, res, next) => {
     const vendor = await Vendor.findOne({ email: email });
     if (!vendor) {
         return res
-            .status(401)
             .json({ success: false, message: "email or password does not match" });
     }
-    console.log(email);
     if (bcrypt.compareSync(password, vendor.password)) {
         const token = jwt.sign({ vendorId: vendor._id, isVendor: true }, process.env.JWT_SECRET, {
             expiresIn: "1d"
@@ -27,7 +25,7 @@ exports.postLogin = async (req, res, next) => {
         //   httpOnly: true,
         //   maxAge: 24 * 60 * 60 * 1000,
         // });
-        return res.status(200).json({
+        return res.json({
             success: true,
             vendor,
             token: token,
@@ -35,7 +33,6 @@ exports.postLogin = async (req, res, next) => {
         });
     } else {
         return res
-            .status(401)
             .json({ success: false, message: "email or password does not match" });
     }
 };
@@ -46,14 +43,14 @@ exports.postRegister = async (req, res, next) => {
     let vendor = await Vendor.findOne({ email: email });
     if (vendor) {
         return res
-            .status(404)
+            
             .json({ success: false, message: "Vendor already registered with that email" });
     }
 
     // Check if image is available
     const file = req.file;
     if (!file) {
-        return res.status(400).json({ success: false, message: "No image file found" });
+        return res.json({ success: false, message: "No image file found" });
     }
 
     // Hashing Password
@@ -69,9 +66,9 @@ exports.postRegister = async (req, res, next) => {
 
     vendor = await vendor.save();
     if (!vendor) {
-        return res.status(400).json({ success: false, message: "Vendor cannot be registered" });
+        return res.json({ success: false, message: "Vendor cannot be registered" });
     }
-    res.status(200).json({ success: true, message: "Vendor registered successfully", vendor });
+    res.json({ success: true, message: "Vendor registered successfully", vendor });
 };
 
 // GET list of all items of that vendor
@@ -80,10 +77,10 @@ exports.getItems = async (req, res, next) => {
     const items = await Item.find({ seller: vendorId });
     if (items) {
         return res
-            .status(200)
+            
             .json({ success: true, message: "Items found successfully", items: items });
     } else {
-        return res.status(400).json({ success: false, message: "Could not retrieve items" });
+        return res.json({ success: false, message: "Could not retrieve items" });
     }
 };
 
@@ -92,18 +89,18 @@ exports.postAddItem = async (req, res, next) => {
     let { name, cost, category, description } = req.body;
     // Check if the vendor is registered (error not possible using frontend)
     const vendor = await Vendor.findById(req.user.vendorId).select("_id");
-    if (!vendor) return res.status(404).json({ success: false, message: "Invalid vendor" });
+    if (!vendor) return res.json({ success: false, message: "Invalid vendor" });
 
     // Check if the category is supported (error not possible using frontend)
     const __category__ = await Category.findOne({ name: category });
     if (!__category__) {
-        return res.status(400).json({ success: false, message: "That category is not supported" });
+        return res.json({ success: false, message: "That category is not supported" });
     }
 
     // Check if product image is present
     const file = req.file;
     if (!file) {
-        return res.status(400).json({ success: false, message: "No image file found" });
+        return res.json({ success: false, message: "No image file found" });
     }
 
     let item = new Item({
@@ -117,9 +114,9 @@ exports.postAddItem = async (req, res, next) => {
     item.image.contentType = file.mimetype;
     item = await item.save();
 
-    if (!item) return res.status(400).json({ success: false, message: "Error creating that item" });
+    if (!item) return res.json({ success: false, message: "Error creating that item" });
 
-    res.status(200).json({
+    res.json({
         success: true,
         message: "Item added successfully",
         item: item
@@ -132,26 +129,26 @@ exports.putItem = async (req, res, next) => {
 
     // Check if the vendor is registered (error not possible using frontend)
     const vendor = await Vendor.findById(req.user.vendorId).select("_id");
-    if (!vendor) return res.status(404).json({ success: false, message: "Invalid vendor" });
+    if (!vendor) return res.json({ success: false, message: "Invalid vendor" });
 
     // Check if the category is supported (error not possible using frontend)
     const __category__ = await Category.findOne({ name: category });
     if (!__category__) {
-        return res.status(400).json({ success: false, message: "That category is not supported" });
+        return res.json({ success: false, message: "That category is not supported" });
     }
 
     // Check if product image is present
     const file = req.file;
     if (!file) {
-        return res.status(400).json({ success: false, message: "No image file found" });
+        return res.json({ success: false, message: "No image file found" });
     }
 
     const itemId = req.params.id;
     if (!isValidId(itemId)) {
-        return res.status(400).json({ success: false, message: "Invalid item id" });
+        return res.json({ success: false, message: "Invalid item id" });
     }
     const product = await Item.findById(itemId);
-    if (!product) return res.status(400).json({ success: false, message: "No item found" });
+    if (!product) return res.json({ success: false, message: "No item found" });
     let updates = {};
     if (name) {
         updates.name = name;
@@ -173,10 +170,10 @@ exports.putItem = async (req, res, next) => {
     let item = await Item.findByIdAndUpdate(itemId, { $set: updates }, { new: true });
     if (item) {
         return res
-            .status(200)
+            
             .json({ success: true, message: "Item updated successfully", item: item });
     } else {
-        return res.status(404).json({ success: false, message: "Item not found" });
+        return res.json({ success: false, message: "Item not found" });
     }
 };
 
@@ -184,14 +181,14 @@ exports.putItem = async (req, res, next) => {
 exports.deleteItem = async (req, res, next) => {
     const itemId = req.params.id;
     if (!isValidId(itemId)) {
-        return res.status(400).json({ success: false, message: "Invalid Item Id" });
+        return res.json({ success: false, message: "Invalid Item Id" });
     }
     const item = await Item.findByIdAndDelete(itemId);
     if (item) {
         return res
-            .status(200)
+            
             .json({ success: true, message: "Item removed successfully", item: item });
     } else {
-        return res.status(404).json({ success: false, message: "Item Not Found" });
+        return res.json({ success: false, message: "Item Not Found" });
     }
 };

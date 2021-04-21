@@ -14,7 +14,7 @@ exports.getAllProducts = async (req, res, next) => {
     let max_cost = req.query.max_cost;
     if (category_id) {
         if (!isValidId(category_id)) {
-            return res.status(400).json({ success: false, message: "Invalid Category Id" });
+            return res.json({ success: false, message: "Invalid Category Id" });
         }
         query.category = category_id;
     } else if (category_name) {
@@ -31,37 +31,37 @@ exports.getAllProducts = async (req, res, next) => {
         query.cost = { $lte: max_cost };
     }
     const items = await Item.find(query).populate("category").populate("seller", "-password");
-    if (!items) return res.status(404).json({ success: false, message: "No Items found!" });
-    return res.status(200).json({ success: true, message: "Products found successfully", items });
+    if (!items) return res.json({ success: false, message: "No Items found!" });
+    return res.json({ success: true, message: "Products found successfully", items });
 };
 
 exports.getOneProduct = async (req, res, next) => {
     if (!isValidId(req.params.id)) {
-        return res.status(400).json({ success: false, message: "Invalid Item Id" });
+        return res.json({ success: false, message: "Invalid Item Id" });
     }
     const item = await Item.findById(req.params.id)
         .populate("category")
         .populate("seller", "-password");
     if (!item)
-        return res.status(400).json({ success: false, message: "No product found with that id" });
-    res.status(200).json({ success: true, message: "Product found successfully", item });
+        return res.json({ success: false, message: "No product found with that id" });
+    res.json({ success: true, message: "Product found successfully", item });
 };
 
 exports.getAllVendors = async (req, res, next) => {
     const vendors = await Vendor.find().select("-password");
-    if (!vendors) return res.status(404).json({ success: false, message: "No vendor found" });
-    res.status(200).json({ success: true, message: "Vendors found successfully", vendors });
+    if (!vendors) return res.json({ success: false, message: "No vendor found" });
+    res.json({ success: true, message: "Vendors found successfully", vendors });
 };
 
 exports.getOneVendor = async (req, res, next) => {
     if (!isValidId(req.params.id)) {
-        return res.status(400).json({ success: false, message: "Invalid Vendor Id" });
+        return res.json({ success: false, message: "Invalid Vendor Id" });
     }
     const vendor = await Vendor.findById(req.params.id).select("-password");
     if (!vendor)
-        return res.status(404).json({ success: false, message: "No vendor found with that Id" });
+        return res.json({ success: false, message: "No vendor found with that Id" });
     const items = await Item.find({ seller: vendor._id });
-    res.status(200).json({ success: true, message: "Vendor found successfully", vendor, items });
+    res.json({ success: true, message: "Vendor found successfully", vendor, items });
 };
 
 exports.postCategory = async (req, res, next) => {
@@ -69,13 +69,13 @@ exports.postCategory = async (req, res, next) => {
     let category = new Category({ name: name });
     category = await category.save();
     if (!category) {
-        return res.status(400).json({
+        return res.json({
             success: false,
             message: "Error creating that category"
         });
     }
 
-    res.status(200).json({
+    res.json({
         success: true,
         message: "Category added successfully",
         category: category
@@ -85,9 +85,9 @@ exports.postCategory = async (req, res, next) => {
 exports.getCategory = async (req, res, next) => {
     const categories = await Category.find();
     if (!categories) {
-        return res.status(404).json({ success: false, message: "No categories found" });
+        return res.json({ success: false, message: "No categories found" });
     }
-    res.status(200).json({
+    res.json({
         success: true,
         message: "Categories found successfully",
         categories: categories

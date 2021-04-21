@@ -1,13 +1,14 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
 
 exports.postLogin = async (req, res, next) => {
     let { email, password } = req.body;
     const user = await User.findOne({ email: email });
     if (!user) {
         return res
-            .status(401)
+            
             .json({ success: false, message: "email or password does not match" });
     }
     if (bcrypt.compareSync(password, user.password)) {
@@ -19,11 +20,11 @@ exports.postLogin = async (req, res, next) => {
         //   maxAge: 24 * 60 * 60 * 1000,
         // });
         return res
-            .status(200)
+            
             .json({ success: true, message: "Logged in successfully", user, token: token });
     } else {
         return res
-            .status(401)
+            
             .json({ success: false, message: "email or password does not match" });
     }
 };
@@ -34,14 +35,14 @@ exports.postRegister = async (req, res, next) => {
     let user = await User.findOne({ email: email });
     if (user) {
         return res
-            .status(404)
+            
             .json({ success: false, message: "User already registered with that email" });
     }
 
     // Check if image is available
     const file = req.file;
     if (!file) {
-        return res.status(400).json({ success: false, message: "No image file found" });
+        return res.json({ success: false, message: "No image file found" });
     }
     // Hashing Password
     const hashedPassword = await bcrypt.hash(password, 8);
@@ -61,7 +62,7 @@ exports.postRegister = async (req, res, next) => {
     user = await user.save();
 
     if (!user) {
-        return res.status(400).json({ success: false, message: "User cannot be registered" });
+        return res.json({ success: false, message: "User cannot be registered" });
     }
-    res.status(200).json({ success: true, message: "User registered successfully", user });
+    res.json({ success: true, message: "User registered successfully", user });
 };
