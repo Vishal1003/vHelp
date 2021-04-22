@@ -65,10 +65,10 @@ const ProfileScreen = ({ navigation }) => {
                                     }
                                 ]}
                             >
-                                {user_data.hasOwnProperty("name") ? user_data.name : "Name"}
+                                {user_data.hasOwnProperty("name") ? user_data.name : "User"}
                             </Title>
                             <Caption style={styles.caption}>
-                                @{user_data.hasOwnProperty("name") ? user_data.name : "Name"}
+                                @{user_data.hasOwnProperty("name") ? user_data.name : "user"}
                             </Caption>
                         </View>
                     </View>

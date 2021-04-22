@@ -7,7 +7,8 @@ import {
     ImageBackground,
     TextInput,
     StyleSheet,
-    Platform
+    Platform,
+    ScrollView
 } from "react-native";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -26,6 +27,9 @@ const arrayBufferToBase64 = (buffer) => {
 const EditProfileScreen = () => {
     const [image, setImage] = useState("https://i.pravatar.cc/150?img=6");
     const user_data = useSelector((state) => state.user_data);
+    const [email, setEmail] = useState(user_data.email);
+    const [name, setName] = useState(user_data.name);
+    const token = useSelector((state) => state.token);
     useEffect(() => {
         if (user_data.hasOwnProperty("image")) {
             var base64Flag = "data:";
@@ -89,7 +93,7 @@ const EditProfileScreen = () => {
     var fall = new Animated.Value(1);
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <BottomSheet
                 ref={bs}
                 snapPoints={[330, 0]}
@@ -105,7 +109,7 @@ const EditProfileScreen = () => {
                     opacity: Animated.add(0.1, Animated.multiply(fall, 1.0))
                 }}
             >
-                <View style={{ alignItems: "center" }}>
+                <View style={{ alignItems: "center", marginBottom: 30 }}>
                     <TouchableOpacity onPress={() => bs.current.snapTo(0)}>
                         <View
                             style={{
@@ -147,36 +151,18 @@ const EditProfileScreen = () => {
                             </ImageBackground>
                         </View>
                     </TouchableOpacity>
-                    <Text style={{ marginTop: 10, fontSize: 18, fontWeight: "bold" }}>
-                        John Doe
-                    </Text>
                 </View>
 
                 <View style={styles.action}>
                     <FontAwesome name="user-o" size={20} />
                     <TextInput
-                        placeholder="First Name"
+                        placeholder="Name"
                         placeholderTextColor="#666666"
                         autoCorrect={false}
-                        style={styles.textInput}
-                    />
-                </View>
-                <View style={styles.action}>
-                    <FontAwesome name="user-o" size={20} />
-                    <TextInput
-                        placeholder="Last Name"
-                        placeholderTextColor="#666666"
-                        autoCorrect={false}
-                        style={styles.textInput}
-                    />
-                </View>
-                <View style={styles.action}>
-                    <Feather name="phone" size={20} />
-                    <TextInput
-                        placeholder="Phone"
-                        placeholderTextColor="#666666"
-                        keyboardType="number-pad"
-                        autoCorrect={false}
+                        value={name}
+                        onChangeText={(val) => {
+                            setName(val);
+                        }}
                         style={styles.textInput}
                     />
                 </View>
@@ -186,33 +172,63 @@ const EditProfileScreen = () => {
                         placeholder="Email"
                         placeholderTextColor="#666666"
                         keyboardType="email-address"
+                        value={email}
+                        onChangeText={(val) => {
+                            setEmail(val);
+                        }}
                         autoCorrect={false}
                         style={styles.textInput}
                     />
                 </View>
-                <View style={styles.action}>
-                    <FontAwesome name="globe" size={20} />
-                    <TextInput
-                        placeholder="Country"
-                        placeholderTextColor="#666666"
-                        autoCorrect={false}
-                        style={styles.textInput}
-                    />
-                </View>
-                <View style={styles.action}>
-                    <Icon name="map-marker-outline" size={20} />
-                    <TextInput
-                        placeholder="City"
-                        placeholderTextColor="#666666"
-                        autoCorrect={false}
-                        style={styles.textInput}
-                    />
-                </View>
+                {!token.isVendor && (
+                    <View style={styles.action}>
+                        <FontAwesome name="globe" size={20} />
+                        <TextInput
+                            placeholder="Country"
+                            placeholderTextColor="#666666"
+                            autoCorrect={false}
+                            style={styles.textInput}
+                        />
+                    </View>
+                )}
+                {!token.isVendor && (
+                    <View style={styles.action}>
+                        <Icon name="map-marker-outline" size={20} />
+                        <TextInput
+                            placeholder="City"
+                            placeholderTextColor="#666666"
+                            autoCorrect={false}
+                            style={styles.textInput}
+                        />
+                    </View>
+                )}
+                {!token.isVendor && (
+                    <View style={styles.action}>
+                        <Icon name="home" size={20} />
+                        <TextInput
+                            placeholder="Street"
+                            placeholderTextColor="#666666"
+                            autoCorrect={false}
+                            style={styles.textInput}
+                        />
+                    </View>
+                )}
+                {!token.isVendor && (
+                    <View style={styles.action}>
+                        <Icon name="post-outline" size={20} />
+                        <TextInput
+                            placeholder="Postal Code"
+                            placeholderTextColor="#666666"
+                            autoCorrect={false}
+                            style={styles.textInput}
+                        />
+                    </View>
+                )}
                 <TouchableOpacity style={styles.commandButton} onPress={() => {}}>
                     <Text style={styles.panelButtonTitle}>Submit</Text>
                 </TouchableOpacity>
             </Animated.View>
-        </View>
+        </ScrollView>
     );
 };
 
