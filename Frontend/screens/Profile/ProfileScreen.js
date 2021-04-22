@@ -19,7 +19,7 @@ const ProfileScreen = ({ navigation }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(true);
     const [image, setImage] = useState("https://i.pravatar.cc/150?img=6");
     useEffect(() => {
-        if (isLoggedIn) {
+        if (isLoggedIn && user_data.hasOwnProperty("image")) {
             var base64Flag = "data:";
             base64Flag += user_data.image.contentType;
             base64Flag += ";base64,";
@@ -65,10 +65,10 @@ const ProfileScreen = ({ navigation }) => {
                                     }
                                 ]}
                             >
-                                {isLoggedIn ? user_data.name : ""}
+                                {user_data.hasOwnProperty("name") ? user_data.name : "Name"}
                             </Title>
                             <Caption style={styles.caption}>
-                                @{isLoggedIn ? user_data.name : ""}
+                                @{user_data.hasOwnProperty("name") ? user_data.name : "Name"}
                             </Caption>
                         </View>
                     </View>

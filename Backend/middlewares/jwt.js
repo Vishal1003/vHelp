@@ -7,13 +7,7 @@ function authJwt() {
         algorithms: ["HS256"],
         isRevoked: isRevoked
     }).unless({
-        path: [
-            { url: /\/api\/index(.*)/, methods: ["GET", "OPTIONS"] },
-            "/api/user/login",
-            "/api/user/register",
-            "/api/vendor/login",
-            "/api/vendor/register"
-        ]
+        path: [{ url: /\/api\/index(.*)/, methods: ["GET", "POST", "OPTIONS"] }, "/"]
     });
 }
 

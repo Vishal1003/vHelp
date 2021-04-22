@@ -2,7 +2,6 @@ const Item = require("../models/item");
 const bcrypt = require("bcryptjs");
 const Vendor = require("../models/vendor");
 const Category = require("../models/category");
-const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const fs = require("fs");
 
@@ -10,75 +9,12 @@ function isValidId(id) {
     return mongoose.Types.ObjectId.isValid(id);
 }
 
-exports.postLogin = async (req, res, next) => {
-    let { email, password } = req.body;
-    const vendor = await Vendor.findOne({ email: email });
-    if (!vendor) {
-        return res
-            .json({ success: false, message: "email or password does not match" });
-    }
-    if (bcrypt.compareSync(password, vendor.password)) {
-        const token = jwt.sign({ vendorId: vendor._id, isVendor: true }, process.env.JWT_SECRET, {
-            expiresIn: "1d"
-        });
-        // res.cookie('jwt', token, {
-        //   httpOnly: true,
-        //   maxAge: 24 * 60 * 60 * 1000,
-        // });
-        return res.json({
-            success: true,
-            vendor,
-            token: token,
-            message: "Logged in successfully"
-        });
-    } else {
-        return res
-            .json({ success: false, message: "email or password does not match" });
-    }
-};
-
-exports.postRegister = async (req, res, next) => {
-    let { name, email, password } = req.body;
-    // Check if vendor exist already
-    let vendor = await Vendor.findOne({ email: email });
-    if (vendor) {
-        return res
-            
-            .json({ success: false, message: "Vendor already registered with that email" });
-    }
-
-    // Check if image is available
-    const file = req.file;
-    if (!file) {
-        return res.json({ success: false, message: "No image file found" });
-    }
-
-    // Hashing Password
-    const hashedPassword = await bcrypt.hash(password, 8);
-    vendor = new Vendor({
-        name: name,
-        email: email,
-        password: hashedPassword
-    });
-
-    vendor.image.data = fs.readFileSync(file.path);
-    vendor.image.contentType = file.mimetype;
-
-    vendor = await vendor.save();
-    if (!vendor) {
-        return res.json({ success: false, message: "Vendor cannot be registered" });
-    }
-    res.json({ success: true, message: "Vendor registered successfully", vendor });
-};
-
 // GET list of all items of that vendor
 exports.getItems = async (req, res, next) => {
     const vendorId = req.user.vendorId;
     const items = await Item.find({ seller: vendorId });
     if (items) {
-        return res
-            
-            .json({ success: true, message: "Items found successfully", items: items });
+        return res.json({ success: true, message: "Items found successfully", items: items });
     } else {
         return res.json({ success: false, message: "Could not retrieve items" });
     }
@@ -169,9 +105,7 @@ exports.putItem = async (req, res, next) => {
     }
     let item = await Item.findByIdAndUpdate(itemId, { $set: updates }, { new: true });
     if (item) {
-        return res
-            
-            .json({ success: true, message: "Item updated successfully", item: item });
+        return res.json({ success: true, message: "Item updated successfully", item: item });
     } else {
         return res.json({ success: false, message: "Item not found" });
     }
@@ -185,9 +119,7 @@ exports.deleteItem = async (req, res, next) => {
     }
     const item = await Item.findByIdAndDelete(itemId);
     if (item) {
-        return res
-            
-            .json({ success: true, message: "Item removed successfully", item: item });
+        return res.json({ success: true, message: "Item removed successfully", item: item });
     } else {
         return res.json({ success: false, message: "Item Not Found" });
     }

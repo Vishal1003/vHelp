@@ -13,13 +13,14 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
 const customColor = require("../../constants/Color");
 
-import { loginUser } from "../../redux/actions/AuthAction";
+import { setErrorMessage, loginUser } from "../../redux/actions/AuthAction";
 import { useSelector, useDispatch } from "react-redux";
 
 const LoginScreen = ({ navigation }) => {
     // Redux data
     const is_authenticated = useSelector((state) => state.is_authenticated);
     const error_message = useSelector((state) => state.error_message);
+    const success_message = useSelector((state) => state.success_message);
     const dispatch = useDispatch();
 
     // Login Data
@@ -37,8 +38,6 @@ const LoginScreen = ({ navigation }) => {
     useEffect(() => {
         if (is_authenticated === true) {
             navigation.navigate("Main");
-        } else {
-            navigation.navigate("LoginScreen");
         }
     }, [is_authenticated]);
 
@@ -98,11 +97,19 @@ const LoginScreen = ({ navigation }) => {
     };
 
     const handleSubmit = () => {
+        if (password.length < 8) {
+            dispatch(setErrorMessage("Password must be 8 characters long"));
+            return;
+        }
         const user = {
             email: email,
             password: password
         };
         loginUser(user, dispatch);
+    };
+
+    const handleOnClickRegister = () => {
+        navigation.navigate("RegisterScreen");
     };
 
     return (
@@ -154,12 +161,6 @@ const LoginScreen = ({ navigation }) => {
                         )}
                     </TouchableOpacity>
                 </View>
-                {data.isValidPassword ? null : (
-                    <Animatable.View animation="fadeInLeft" duration={500}>
-                        <Text style={styles.errorMsg}>Password must be 8 characters long.</Text>
-                    </Animatable.View>
-                )}
-
                 <TouchableOpacity>
                     <Text style={{ color: customColor.dark, marginTop: 15 }}>Forgot password?</Text>
                 </TouchableOpacity>
@@ -168,12 +169,17 @@ const LoginScreen = ({ navigation }) => {
                         <Text style={styles.errorMsg}>{error_message}</Text>
                     </Animatable.View>
                 )}
+                {success_message != "" && (
+                    <Animatable.View animation="fadeInLeft" duration={500}>
+                        <Text style={styles.successMsg}>{success_message}</Text>
+                    </Animatable.View>
+                )}
                 <View style={styles.button}>
                     <TouchableOpacity onPress={handleSubmit} style={[styles.buttonContainer]}>
                         <Text style={styles.buttonText}>Login</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress={() => navigation.navigate("RegisterScreen")}
+                        onPress={handleOnClickRegister}
                         style={[styles.buttonContainer, { backgroundColor: customColor.light }]}
                     >
                         <Text style={styles.buttonText}>Register</Text>
@@ -254,6 +260,10 @@ const styles = StyleSheet.create({
     },
     errorMsg: {
         color: "#FF0000",
+        fontSize: 14
+    },
+    successMsg: {
+        color: "#0000FF",
         fontSize: 14
     },
     button: {

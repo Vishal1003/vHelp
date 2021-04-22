@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
     View,
@@ -24,12 +24,16 @@ const arrayBufferToBase64 = (buffer) => {
 };
 
 const EditProfileScreen = () => {
+    const [image, setImage] = useState("https://i.pravatar.cc/150?img=6");
     const user_data = useSelector((state) => state.user_data);
-    var base64Flag = "data:";
-    base64Flag += user_data.image.contentType;
-    base64Flag += ";base64,";
-    const image = base64Flag + arrayBufferToBase64(user_data.image.data.data);
-
+    useEffect(() => {
+        if (user_data.hasOwnProperty("image")) {
+            var base64Flag = "data:";
+            base64Flag += user_data.image.contentType;
+            base64Flag += ";base64,";
+            setImage(base64Flag + arrayBufferToBase64(user_data.image.data.data));
+        }
+    }, [user_data]);
     const takePhotoFromCamera = async () => {
         let result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -38,7 +42,9 @@ const EditProfileScreen = () => {
             quality: 1
         });
 
-        // if (!result.cancelled) {setImage(result.uri);}
+        if (!result.cancelled) {
+            setImage(result.uri);
+        }
     };
 
     const choosePhotoFromLibrary = async () => {
@@ -48,12 +54,12 @@ const EditProfileScreen = () => {
             aspect: [4, 3],
             quality: 1
         });
-        // if (!result.cancelled) {
-        //     setImage(result.uri);
-        // }
+        if (!result.cancelled) {
+            setImage(result.uri);
+        }
     };
 
-    renderInner = () => (
+    const renderInner = () => (
         <View style={styles.panel}>
             <View style={{ alignItems: "center" }}>
                 <Text style={styles.panelTitle}>Upload Photo</Text>
@@ -71,7 +77,7 @@ const EditProfileScreen = () => {
         </View>
     );
 
-    renderHeader = () => (
+    const renderHeader = () => (
         <View style={styles.header}>
             <View style={styles.panelHeader}>
                 <View style={styles.panelHandle} />
@@ -79,8 +85,8 @@ const EditProfileScreen = () => {
         </View>
     );
 
-    bs = React.useRef();
-    fall = new Animated.Value(1);
+    var bs = React.useRef();
+    var fall = new Animated.Value(1);
 
     return (
         <View style={styles.container}>

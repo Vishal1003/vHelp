@@ -28,12 +28,6 @@ const storage = multer.diskStorage({
 
 const uploadOptions = multer({ storage: storage });
 
-// Login
-router.post("/login", controller.postLogin);
-
-// Register
-router.post("/register", uploadOptions.single("image"), controller.postRegister);
-
 // Modification operations on Items
 router.post("/item", uploadOptions.single("image"), controller.postAddItem);
 router.put("/item/:id", uploadOptions.single("image"), controller.putItem);

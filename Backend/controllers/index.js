@@ -1,10 +1,67 @@
 const Item = require("../models/item");
 const Vendor = require("../models/vendor");
+const User = require("../models/user");
 const Category = require("../models/category");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 function isValidId(id) {
     return require("mongoose").Types.ObjectId.isValid(id);
 }
+
+exports.postLogin = async (req, res, next) => {
+    let { email, password } = req.body;
+    let isVendor = false;
+    let user = await User.findOne({ email: email });
+    if (!user) {
+        user = await Vendor.findOne({ email: email });
+        if (!user) {
+            return res.json({ success: false, message: "Email or password does not match" });
+        } else {
+            isVendor = true;
+        }
+    }
+    if (bcrypt.compareSync(password, user.password)) {
+        const token = jwt.sign({ userId: user._id, isVendor }, process.env.JWT_SECRET, {
+            expiresIn: "1d"
+        });
+        return res.json({ success: true, message: "Logged in successfully", user, token });
+    } else {
+        return res.json({ success: false, message: "Email or password does not match" });
+    }
+};
+
+exports.postRegister = async (req, res, next) => {
+    let { email, password, user_type } = req.body;
+    // Check if user exists already
+    let user = await User.findOne({ email: email });
+    if (user) {
+        return res.json({ success: false, message: "User already registered with that email" });
+    }
+    user = await Vendor.findOne({ email: email });
+    if (user) {
+        return res.json({ success: false, message: "Vendor already registered with that email" });
+    }
+
+    // Hashing Password
+    const hashedPassword = await bcrypt.hash(password, 8);
+    if (user_type === "user") {
+        user = new User({
+            email: email,
+            password: hashedPassword
+        });
+    } else {
+        user = new Vendor({
+            email: email,
+            password: hashedPassword
+        });
+    }
+    user = await user.save();
+    if (!user) {
+        return res.json({ success: false, message: "User cannot be registered" });
+    }
+    res.json({ success: true, message: "User registered successfully", user });
+};
 
 exports.getAllProducts = async (req, res, next) => {
     let query = {};
@@ -42,8 +99,7 @@ exports.getOneProduct = async (req, res, next) => {
     const item = await Item.findById(req.params.id)
         .populate("category")
         .populate("seller", "-password");
-    if (!item)
-        return res.json({ success: false, message: "No product found with that id" });
+    if (!item) return res.json({ success: false, message: "No product found with that id" });
     res.json({ success: true, message: "Product found successfully", item });
 };
 
@@ -58,8 +114,7 @@ exports.getOneVendor = async (req, res, next) => {
         return res.json({ success: false, message: "Invalid Vendor Id" });
     }
     const vendor = await Vendor.findById(req.params.id).select("-password");
-    if (!vendor)
-        return res.json({ success: false, message: "No vendor found with that Id" });
+    if (!vendor) return res.json({ success: false, message: "No vendor found with that Id" });
     const items = await Item.find({ seller: vendor._id });
     res.json({ success: true, message: "Vendor found successfully", vendor, items });
 };

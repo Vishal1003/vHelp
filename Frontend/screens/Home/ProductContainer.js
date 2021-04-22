@@ -8,7 +8,6 @@ import {
     ActivityIndicator
 } from "react-native";
 import { Header, Icon, Item, Input, Text } from "native-base";
-import { Drawer } from "react-native-paper";
 import ProductList from "./ProductList";
 import SearchedProduct from "../../components/Card/SearchedProduct";
 import Banner from "../../components/Shared/Banner";
@@ -17,7 +16,7 @@ import CategoryFilter from "./CategoryFilter";
 // const data = require("../../assets/data/products.json");
 // const itemCategory = require("../../assets/data/categories.json");
 
-const backendURL = `https://vhelp-rest.herokuapp.com`;
+import { REST_API_URL } from "../../constants/URLs";
 import axios from "axios";
 
 const { height } = Dimensions.get("window");
@@ -40,7 +39,7 @@ const ProductContainer = (props) => {
     useEffect(() => {
         const fetchAPI = async () => {
             setIsLoading(true);
-            let res = await axios.get(`${backendURL}/api/index/items`);
+            let res = await axios.get(`${REST_API_URL}/api/index/items`);
             if (res.data.success === true) {
                 for (const x in res.data.items) {
                     var base64Flag = "data:";
@@ -56,7 +55,7 @@ const ProductContainer = (props) => {
             } else {
                 throw new Error(res.data.message);
             }
-            res = await axios.get(`${backendURL}/api/index/category`);
+            res = await axios.get(`${REST_API_URL}/api/index/category`);
             if (res.data.success === true) {
                 setCategories(res.data.categories);
             } else {

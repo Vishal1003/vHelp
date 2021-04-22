@@ -2,6 +2,12 @@ const express = require("express");
 const controller = require("../controllers/index");
 const router = express.Router();
 
+// POST login user as a vendor or non-vendor
+router.post("/login", controller.postLogin);
+
+// POST register user as a vendor or non-vendor
+router.post("/register", controller.postRegister);
+
 // GET all products
 router.get("/items", controller.getAllProducts);
 

@@ -2,8 +2,7 @@ const mongoose = require("mongoose");
 
 const vendorSchema = mongoose.Schema({
     name: {
-        type: String,
-        required: true
+        type: String
     },
     email: {
         type: String,

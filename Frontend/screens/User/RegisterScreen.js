@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -14,10 +14,16 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
 
 import { Item, Picker, Icon } from "native-base";
-
+import { useSelector, useDispatch } from "react-redux";
+import { setErrorMessage, registerUser } from "../../redux/actions/AuthAction";
+import MESSAGES from "../../constants/Messages";
 const customColor = require("../../constants/Color");
 
 const RegisterScreen = ({ navigation }) => {
+    const error_message = useSelector((state) => state.error_message);
+    const success_message = useSelector((state) => state.success_message);
+    const dispatch = useDispatch();
+
     const [data, setData] = React.useState({
         email: "",
         password: "",
@@ -29,6 +35,12 @@ const RegisterScreen = ({ navigation }) => {
 
     const [usertype, setUsertype] = useState("0");
     const [isValidType, setIsValidType] = useState(false);
+
+    useEffect(() => {
+        if (success_message === MESSAGES.REGISTERED_SUCCESSFULLY) {
+            navigation.navigate("LoginScreen");
+        }
+    }, [success_message]);
 
     const textInputChange = (val) => {
         if (val.length !== 0) {
@@ -83,6 +95,21 @@ const RegisterScreen = ({ navigation }) => {
         }
     };
 
+    const handleRegister = () => {
+        if (!isValidType) {
+            dispatch(setErrorMessage("Please select valid user type"));
+            return;
+        }
+        if (data.password != data.confirm_password) {
+            dispatch(setErrorMessage("Passwords does not match"));
+            return;
+        } else if (data.password.length < 8) {
+            dispatch(setErrorMessage("Password must be 8 characters long"));
+            return;
+        }
+        const user = { email: data.email, password: data.password, user_type: usertype };
+        registerUser(user, dispatch);
+    };
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor="#009387" barStyle="light-content" />
@@ -90,7 +117,7 @@ const RegisterScreen = ({ navigation }) => {
                 <Text style={styles.text_header}>Register Now!</Text>
             </View>
             <Animatable.View animation="fadeInUpBig" style={styles.footer}>
-                <ScrollView>
+                <ScrollView showsVerticalScrollIndicator={false}>
                     <Text style={[styles.text_footer]}>Email</Text>
                     <View style={styles.action}>
                         <FontAwesome name="user-o" color="#05375a" size={20} />
@@ -126,12 +153,6 @@ const RegisterScreen = ({ navigation }) => {
                             </Picker>
                         </Item>
                     </View>
-                    {isValidType ? null : (
-                        <Animatable.View animation="fadeInLeft" duration={500}>
-                            <Text style={styles.errorMsg}>select a valid user type</Text>
-                        </Animatable.View>
-                    )}
-
                     <Text style={[styles.text_footer, { marginTop: 10 }]}>Password</Text>
                     <View style={styles.action}>
                         <Feather name="lock" color="#05375a" size={20} />
@@ -169,11 +190,18 @@ const RegisterScreen = ({ navigation }) => {
                             )}
                         </TouchableOpacity>
                     </View>
+                    {error_message != "" && (
+                        <Animatable.View animation="fadeInLeft" duration={500}>
+                            <Text style={styles.errorMsg}>{error_message}</Text>
+                        </Animatable.View>
+                    )}
+                    {success_message != "" && (
+                        <Animatable.View animation="fadeInLeft" duration={500}>
+                            <Text style={styles.successMsg}>{success_message}</Text>
+                        </Animatable.View>
+                    )}
                     <View style={styles.button}>
-                        <TouchableOpacity
-                            onPress={() => navigation.navigate("LoginScreen")}
-                            style={[styles.buttonContainer]}
-                        >
+                        <TouchableOpacity onPress={handleRegister} style={[styles.buttonContainer]}>
                             <Text style={styles.buttonText}>Register</Text>
                         </TouchableOpacity>
 
@@ -262,6 +290,10 @@ const styles = StyleSheet.create({
     },
     errorMsg: {
         color: "#FF0000",
+        fontSize: 14
+    },
+    successMsg: {
+        color: "#0000FF",
         fontSize: 14
     },
     button: {
