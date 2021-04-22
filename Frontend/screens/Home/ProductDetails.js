@@ -1,32 +1,69 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, ScrollView, Button } from "react-native";
-import { Left, Right, Container, H1 } from "native-base";
+import { StyleSheet, ScrollView, Image } from "react-native";
+import {
+    Text,
+    Left,
+    Right,
+    Body,
+    Container,
+    H1,
+    H3,
+    Content,
+    Card,
+    CardItem,
+    Icon,
+    Button
+} from "native-base";
 export default function ProductDetails(props) {
     const [item, setItem] = React.useState(props.route.params.item);
     return (
         <Container style={styles.container}>
-            <ScrollView style={{ marginBottom: 80, padding: 5 }}>
-                <View>
-                    <Image
-                        style={styles.imageContainer}
-                        source={{ uri: item.image }}
-                        resizeMode="contain"
-                        style={styles.image}
-                    />
-                </View>
-                <View style={styles.contentContainer}>
-                    <H1 style={styles.contentHeader}>{item.name}</H1>
-                    <Text style={styles.contentText}>{item.category.name}</Text>
-                </View>
+            <ScrollView>
+                <Content>
+                    <Card>
+                        <CardItem cardBody>
+                            <Image
+                                style={{ height: 200, width: null, flex: 1 }}
+                                source={{ uri: item.image }}
+                            />
+                        </CardItem>
+                        <CardItem>
+                            <Body>
+                                <H1 style={{ fontWeight: "bold" }}>
+                                    {item.name} | <H3>{item.category.name}</H3>
+                                </H1>
+                            </Body>
+                        </CardItem>
+                        <CardItem cardBody>
+                            <Text>{item.description}</Text>
+                        </CardItem>
+                        <CardItem>
+                            <Left>
+                                <Text>₹{item.cost}</Text>
+                            </Left>
+                            <Body />
+                            <Right>
+                                <Text>{item.seller.name}</Text>
+                            </Right>
+                        </CardItem>
+                        <CardItem>
+                            <Left>
+                                <Button transparent>
+                                    <Icon active name="thumbs-up" />
+                                    <Text>10 Likes</Text>
+                                </Button>
+                            </Left>
+                            <Body />
+                            <Right>
+                                <Button transparent>
+                                    <Icon active name="chatbubbles" />
+                                    <Text>2 comments</Text>
+                                </Button>
+                            </Right>
+                        </CardItem>
+                    </Card>
+                </Content>
             </ScrollView>
-            <View style={styles.bottomContainer}>
-                <Left>
-                    <Text style={styles.price}>$ {item.cost}</Text>
-                </Left>
-                <Right>
-                    <Button title="Add" color="#841584"></Button>
-                </Right>
-            </View>
         </Container>
     );
 }
@@ -36,14 +73,9 @@ const styles = StyleSheet.create({
         height: "100%"
     },
     imageContainer: {
-        backgroundColor: "white",
-        padding: 0,
-        margin: 0
-    },
-    image: {
-        borderRadius: 20,
-        width: "100%",
-        height: 250
+        height: 200,
+        width: null,
+        flex: 1
     },
     contentContainer: {
         marginTop: 20,

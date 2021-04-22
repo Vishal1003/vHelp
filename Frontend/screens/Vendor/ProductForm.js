@@ -22,14 +22,22 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 
 const customColor = require("../../constants/Color");
 
-const categories = require("../../assets/data/categories.json");
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+const querystring = require("query-string");
+import { REST_API_URL } from "../../constants/URLs";
+import { useSelector } from "react-redux";
+const FormData = require("form-data");
 
 export default function ProductForm(props) {
+    const user_data = useSelector((state) => state.user_data);
     const [pickerValue, setPickerValue] = useState();
     const [name, setName] = useState();
     const [cost, setCost] = useState();
     const [description, setDescription] = useState();
     const [image, setImage] = useState();
+    const [imageType, setImageType] = useState("");
+    const [categories, setCategories] = useState([]);
     const [category, setCategory] = useState();
     const [item, setItem] = useState(null);
     useEffect(() => {
@@ -46,6 +54,20 @@ export default function ProductForm(props) {
             setCategory(props.route.params.item.category);
             setLongDesc(props.route.params.item.longdesc);
         }
+
+        // Categories
+        (async () => {
+            try {
+                let res = await axios.get(`${REST_API_URL}/api/index/category`);
+                if (res.data.success === true) {
+                    setCategories(res.data.categories);
+                } else {
+                    throw new Error(res.data.message);
+                }
+            } catch (error) {
+                console.log("API call error", error);
+            }
+        })();
         // Image Picker
         (async () => {
             if (Platform.OS !== "web") {
@@ -66,31 +88,70 @@ export default function ProductForm(props) {
 
     const takePhotoFromCamera = async () => {
         let result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1
-        });
-
-        if (!result.cancelled) setImage(result.uri);
-    };
-
-    const choosePhotoFromLibrary = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1
         });
         if (!result.cancelled) {
             setImage(result.uri);
+            let __image_type__ = image.match(/(jpeg|png|jpg)/g);
+            setImageType(__image_type__[0]);
+        }
+    };
+
+    const choosePhotoFromLibrary = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1
+        });
+        if (!result.cancelled) {
+            setImage(result.uri);
+            let __image_type__ = image.match(/(jpeg|png|jpg)/g);
+            setImageType(__image_type__[0]);
         }
     };
 
     const addProduct = () => {
         if (name == "" || cost == "" || description == "" || image === undefined) {
             ToastAndroid.show("Please fill out the form completely", ToastAndroid.SHORT);
+            return;
         }
+        let form = new FormData();
+        form.append("image", {
+            name: "image",
+            type: `image/${imageType}`,
+            uri: image
+        });
+        form.append("name", name);
+        form.append("cost", cost);
+        form.append("category", category);
+        form.append("userId", user_data._id);
+        form.append("description", description);
+        (async () => {
+            const token = await AsyncStorage.getItem("jwt");
+            const requestConfig = {
+                headers: {
+                    "Content-Type": `mutlipart/form-data; boundary=${form._boundary}`,
+                    Authorization: `Bearer ${token}`
+                }
+            };
+            try {
+                let response = await axios.post(
+                    `${REST_API_URL}/api/vendor/item`,
+                    form,
+                    requestConfig
+                );
+                response = response.data;
+                if (response.success === true) {
+                    props.navigation.navigate("Home");
+                }
+            } catch (error) {
+                console.log("API call error");
+            }
+        })();
     };
 
     const renderInner = () => (
@@ -192,7 +253,7 @@ export default function ProductForm(props) {
                     <View style={styles.label}>
                         <Text>Select Category</Text>
                     </View>
-                    <Item picker style={{width:"80%"}}>
+                    <Item picker style={{ width: "80%" }}>
                         <Picker
                             mode="dropdown"
                             iosIcon={<Icon color={"#007aff"} name="arrow-down" />}
@@ -207,10 +268,8 @@ export default function ProductForm(props) {
                             })}
                         </Picker>
                     </Item>
-
-                    {/* {err ? <Error message={err} /> : null} */}
                     <TouchableOpacity
-                        onPress={() => addProduct()}
+                        onPress={addProduct}
                         style={[styles.buttonContainer, { marginTop: 20 }]}
                     >
                         <Text style={styles.buttonText}>CONFIRM</Text>
