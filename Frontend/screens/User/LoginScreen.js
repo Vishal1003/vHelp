@@ -36,6 +36,7 @@ const LoginScreen = ({ navigation }) => {
     });
 
     useEffect(() => {
+        console.log(is_authenticated);
         if (is_authenticated === true) {
             navigation.navigate("Main");
         }
