@@ -41,7 +41,8 @@ const LoginScreen = ({ navigation }) => {
         }
     }, [is_authenticated]);
 
-    const textInputChange = (val) => {
+    const textInputChange = (email) => {
+        let val = email.trim().toLowerCase();
         if (val.trim().length >= 4) {
             setData({
                 ...data,
@@ -97,10 +98,6 @@ const LoginScreen = ({ navigation }) => {
     };
 
     const handleSubmit = () => {
-        if (password.length < 8) {
-            dispatch(setErrorMessage("Password must be 8 characters long"));
-            return;
-        }
         const user = {
             email: email,
             password: password

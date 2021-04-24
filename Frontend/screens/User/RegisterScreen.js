@@ -42,7 +42,8 @@ const RegisterScreen = ({ navigation }) => {
         }
     }, [success_message]);
 
-    const textInputChange = (val) => {
+    const textInputChange = (email) => {
+        let val = email.trim().toLowerCase();
         if (val.length !== 0) {
             setData({
                 ...data,

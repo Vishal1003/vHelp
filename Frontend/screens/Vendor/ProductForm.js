@@ -95,6 +95,7 @@ export default function ProductForm(props) {
         });
         if (!result.cancelled) {
             setImage(result.uri);
+            console.log(result.uri);
             let __image_type__ = image.match(/(jpeg|png|jpg)/g);
             setImageType(__image_type__[0]);
         }
@@ -119,6 +120,9 @@ export default function ProductForm(props) {
             ToastAndroid.show("Please fill out the form completely", ToastAndroid.SHORT);
             return;
         }
+
+        console.log(image);
+
         let form = new FormData();
         form.append("image", {
             name: "image",

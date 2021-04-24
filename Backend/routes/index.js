@@ -26,4 +26,7 @@ router.post("/category", controller.postCategory);
 // GET all categories for the products
 router.get("/category", controller.getCategory);
 
+// verify JWT
+router.post("/verify", controller.verifyJWT);
+
 module.exports = router;

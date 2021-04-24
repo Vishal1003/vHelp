@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { useSelector } from "react-redux";
 import {
     View,
@@ -93,7 +93,135 @@ const EditProfileScreen = () => {
     var fall = new Animated.Value(1);
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <Fragment>
+            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+                <Animated.View
+                    style={{
+                        margin: 20,
+                        opacity: Animated.add(0.1, Animated.multiply(fall, 1.0))
+                    }}
+                >
+                    <View style={{ alignItems: "center", marginBottom: 30 }}>
+                        <TouchableOpacity onPress={() => bs.current.snapTo(0)}>
+                            <View
+                                style={{
+                                    height: 100,
+                                    width: 100,
+                                    borderRadius: 15,
+                                    justifyContent: "center",
+                                    alignItems: "center"
+                                }}
+                            >
+                                <ImageBackground
+                                    source={{
+                                        uri: image
+                                    }}
+                                    style={{ height: 100, width: 100 }}
+                                    imageStyle={{ borderRadius: 15 }}
+                                >
+                                    <View
+                                        style={{
+                                            flex: 1,
+                                            justifyContent: "center",
+                                            alignItems: "center"
+                                        }}
+                                    >
+                                        <Icon
+                                            name="camera"
+                                            size={35}
+                                            color="grey"
+                                            style={{
+                                                opacity: 0.7,
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                borderWidth: 1,
+                                                borderColor: "grey",
+                                                borderRadius: 10
+                                            }}
+                                        />
+                                    </View>
+                                </ImageBackground>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.action}>
+                        <FontAwesome name="user-o" size={20} />
+                        <TextInput
+                            placeholder="Name"
+                            placeholderTextColor="#666666"
+                            autoCorrect={false}
+                            value={name}
+                            onChangeText={(val) => {
+                                setName(val);
+                            }}
+                            style={styles.textInput}
+                        />
+                    </View>
+                    <View style={styles.action}>
+                        <FontAwesome name="envelope-o" size={20} />
+                        <TextInput
+                            placeholder="Email"
+                            placeholderTextColor="#666666"
+                            keyboardType="email-address"
+                            value={email}
+                            onChangeText={(val) => {
+                                setEmail(val);
+                            }}
+                            autoCorrect={false}
+                            style={styles.textInput}
+                        />
+                    </View>
+                    {!token.isVendor && (
+                        <View style={styles.action}>
+                            <FontAwesome name="globe" size={20} />
+                            <TextInput
+                                placeholder="Country"
+                                placeholderTextColor="#666666"
+                                autoCorrect={false}
+                                style={styles.textInput}
+                            />
+                        </View>
+                    )}
+                    {!token.isVendor && (
+                        <View style={styles.action}>
+                            <Icon name="map-marker-outline" size={20} />
+                            <TextInput
+                                placeholder="City"
+                                placeholderTextColor="#666666"
+                                autoCorrect={false}
+                                style={styles.textInput}
+                            />
+                        </View>
+                    )}
+                    {!token.isVendor && (
+                        <View style={styles.action}>
+                            <Icon name="home" size={20} />
+                            <TextInput
+                                placeholder="Street"
+                                placeholderTextColor="#666666"
+                                autoCorrect={false}
+                                style={styles.textInput}
+                            />
+                        </View>
+                    )}
+                    {!token.isVendor && (
+                        <View style={styles.action}>
+                            <Icon name="post-outline" size={20} />
+                            <TextInput
+                                placeholder="Postal Code"
+                                placeholderTextColor="#666666"
+                                autoCorrect={false}
+                                style={styles.textInput}
+                            />
+                        </View>
+                    )}
+                    <TouchableOpacity style={styles.commandButton} onPress={() => {}}>
+                        <Text style={styles.panelButtonTitle}>Submit</Text>
+                    </TouchableOpacity>
+                </Animated.View>
+            </ScrollView>
+
             <BottomSheet
                 ref={bs}
                 snapPoints={[330, 0]}
@@ -103,132 +231,7 @@ const EditProfileScreen = () => {
                 callbackNode={fall}
                 enabledGestureInteraction={true}
             />
-            <Animated.View
-                style={{
-                    margin: 20,
-                    opacity: Animated.add(0.1, Animated.multiply(fall, 1.0))
-                }}
-            >
-                <View style={{ alignItems: "center", marginBottom: 30 }}>
-                    <TouchableOpacity onPress={() => bs.current.snapTo(0)}>
-                        <View
-                            style={{
-                                height: 100,
-                                width: 100,
-                                borderRadius: 15,
-                                justifyContent: "center",
-                                alignItems: "center"
-                            }}
-                        >
-                            <ImageBackground
-                                source={{
-                                    uri: image
-                                }}
-                                style={{ height: 100, width: 100 }}
-                                imageStyle={{ borderRadius: 15 }}
-                            >
-                                <View
-                                    style={{
-                                        flex: 1,
-                                        justifyContent: "center",
-                                        alignItems: "center"
-                                    }}
-                                >
-                                    <Icon
-                                        name="camera"
-                                        size={35}
-                                        color="grey"
-                                        style={{
-                                            opacity: 0.7,
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            borderWidth: 1,
-                                            borderColor: "grey",
-                                            borderRadius: 10
-                                        }}
-                                    />
-                                </View>
-                            </ImageBackground>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.action}>
-                    <FontAwesome name="user-o" size={20} />
-                    <TextInput
-                        placeholder="Name"
-                        placeholderTextColor="#666666"
-                        autoCorrect={false}
-                        value={name}
-                        onChangeText={(val) => {
-                            setName(val);
-                        }}
-                        style={styles.textInput}
-                    />
-                </View>
-                <View style={styles.action}>
-                    <FontAwesome name="envelope-o" size={20} />
-                    <TextInput
-                        placeholder="Email"
-                        placeholderTextColor="#666666"
-                        keyboardType="email-address"
-                        value={email}
-                        onChangeText={(val) => {
-                            setEmail(val);
-                        }}
-                        autoCorrect={false}
-                        style={styles.textInput}
-                    />
-                </View>
-                {!token.isVendor && (
-                    <View style={styles.action}>
-                        <FontAwesome name="globe" size={20} />
-                        <TextInput
-                            placeholder="Country"
-                            placeholderTextColor="#666666"
-                            autoCorrect={false}
-                            style={styles.textInput}
-                        />
-                    </View>
-                )}
-                {!token.isVendor && (
-                    <View style={styles.action}>
-                        <Icon name="map-marker-outline" size={20} />
-                        <TextInput
-                            placeholder="City"
-                            placeholderTextColor="#666666"
-                            autoCorrect={false}
-                            style={styles.textInput}
-                        />
-                    </View>
-                )}
-                {!token.isVendor && (
-                    <View style={styles.action}>
-                        <Icon name="home" size={20} />
-                        <TextInput
-                            placeholder="Street"
-                            placeholderTextColor="#666666"
-                            autoCorrect={false}
-                            style={styles.textInput}
-                        />
-                    </View>
-                )}
-                {!token.isVendor && (
-                    <View style={styles.action}>
-                        <Icon name="post-outline" size={20} />
-                        <TextInput
-                            placeholder="Postal Code"
-                            placeholderTextColor="#666666"
-                            autoCorrect={false}
-                            style={styles.textInput}
-                        />
-                    </View>
-                )}
-                <TouchableOpacity style={styles.commandButton} onPress={() => {}}>
-                    <Text style={styles.panelButtonTitle}>Submit</Text>
-                </TouchableOpacity>
-            </Animated.View>
-        </ScrollView>
+        </Fragment>
     );
 };
 

@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import {
     View,
     StyleSheet,
     SafeAreaView,
     ScrollView,
     Dimensions,
-    ActivityIndicator
+    ActivityIndicator,
+    FlatList
 } from "react-native";
 import { Header, Icon, Item, Input, Text } from "native-base";
 import ProductList from "./ProductList";
@@ -104,14 +105,11 @@ const ProductContainer = (props) => {
         }
     };
 
-    return isLoading == true ? (
-        <SafeAreaView>
-            <View style={{ alignSelf: "center", marginTop: height / 3 }}>
-                <ActivityIndicator style={{ margin: 10 }} size="large" color="blue" />
-                <Text note>Loading Products...</Text>
-            </View>
-        </SafeAreaView>
-    ) : (
+    const renderItem = ({ item }) => {
+        <ProductList key={item.name} item={item} navigation={props.navigation} />;
+    };
+
+    return (
         <SafeAreaView>
             <Header searchBar rounded>
                 <Item>
@@ -130,38 +128,48 @@ const ProductContainer = (props) => {
                     productsFiltered={productsFiltered}
                 />
             ) : (
-                <ScrollView>
+                <View>
                     <View>
-                        <View>
-                            <Banner />
-                        </View>
-                        <SafeAreaView>
-                            <CategoryFilter
-                                categories={categories}
-                                categoryFilter={changeCtg}
-                                active={active}
-                                setActive={setActive}
-                            />
-                        </SafeAreaView>
-                        {productsCtg.length > 0 ? (
-                            <SafeAreaView style={styles.listContainer}>
-                                {productsCtg.map((item) => {
-                                    return (
-                                        <ProductList
-                                            key={item.name}
-                                            item={item}
-                                            navigation={props.navigation}
-                                        />
-                                    );
-                                })}
-                            </SafeAreaView>
-                        ) : (
-                            <View style={[styles.center, { height: height / 2 }]}>
-                                <Text>No products found</Text>
-                            </View>
-                        )}
+                        <Banner />
                     </View>
-                </ScrollView>
+                    {isLoading && (
+                        <SafeAreaView>
+                            <View style={{ alignSelf: "center", marginTop: height / 6 }}>
+                                <ActivityIndicator
+                                    style={{ margin: 10 }}
+                                    size="large"
+                                    color="blue"
+                                />
+                                <Text note>Loading Products...</Text>
+                            </View>
+                        </SafeAreaView>
+                    )}
+                    {!isLoading && (
+                        <Fragment>
+                            <SafeAreaView>
+                                <CategoryFilter
+                                    categories={categories}
+                                    categoryFilter={changeCtg}
+                                    active={active}
+                                    setActive={setActive}
+                                />
+                            </SafeAreaView>
+                            {productsCtg.length > 0 ? (
+                                <SafeAreaView style={styles.listContainer}>
+                                    <FlatList
+                                        data={productsCtg}
+                                        renderItem={renderItem}
+                                        keyExtractor={(item) => item.name}
+                                    />
+                                </SafeAreaView>
+                            ) : (
+                                <View style={[styles.center, { height: height / 2 }]}>
+                                    <Text>No products found</Text>
+                                </View>
+                            )}
+                        </Fragment>
+                    )}
+                </View>
             )}
         </SafeAreaView>
     );

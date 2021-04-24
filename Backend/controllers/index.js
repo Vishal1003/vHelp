@@ -148,3 +148,26 @@ exports.getCategory = async (req, res, next) => {
         categories: categories
     });
 };
+
+
+exports.verifyJWT = async (req, res, next) => {
+    const token = req.headers["x-access-token"];
+
+    if(!token) {
+        return res.json({success: false, message: "Authentication failed"});
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, data) => {
+        if(err) 
+            return res.json({success: false, message : "Authentication required!"});
+        
+        let user = await User.findById(data.userId).select("-password");
+        if(user)
+            return res.json({success: true, user});
+        user = await Vendor.findById(data.userId);
+        if(user)
+            return res.json({success: true, user});
+        
+        return res.json({success: false, message : "Failed Attempt!"})
+    })
+}
