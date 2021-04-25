@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -14,7 +15,9 @@ app.options("*", cors());
 // database connection
 mongoose
     .connect(process.env.MONGO_URI, {
+        useCreateIndex: true,
         useNewUrlParser: true,
+        useFindAndModify: false,
         useUnifiedTopology: true,
         dbName: "vHelp"
     })
@@ -24,7 +27,9 @@ mongoose
 // middlewares
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use("/public", express.static(__dirname + "/public"));
+app.use(express.static(path.join(__dirname, "public")));
+app.set("view engine", "ejs");
+app.set("views", "views");
 app.use(authJwt());
 app.use(errorHandler);
 
@@ -32,11 +37,13 @@ app.use(errorHandler);
 const vendorRoutes = require("./routes/vendor");
 const userRoutes = require("./routes/user");
 const indexRoutes = require("./routes/index");
+const homeRoute = require("./routes/home");
 
 app.use("/api/vendor", vendorRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/index", indexRoutes);
-
-app.listen(3000, () => {
-    console.log("Server Started!");
+app.use("/", homeRoute);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Server started @ ${PORT}`);
 });

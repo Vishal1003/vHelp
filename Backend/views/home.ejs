@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vHelp REST API</title>
+</head>
+<style>
+    table,
+    th,
+    td {
+        border: 1px solid black;
+    }
+</style>
+
+<body>
+    <h1>Routes</h1>
+    <table style="width:100%">
+        <tr>
+            <th>Method</th>
+            <th>Route</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <th colspan="3">INDEX</th>
+        </tr>
+        <tr>
+            <th>POST</th>
+            <td>/api/index/register</td>
+            <td>
+                <p>Add the user to the database.</p>
+                <p>Accepts the following fields: <b>email, password, user_type(vendor, user)</b>
+                </p>
+                <p>Returns user.</p>
+            </td>
+        </tr>
+        <tr>
+            <th>POST</th>
+            <td>/api/index/login</td>
+            <td>
+                <p>Login the user.</p>
+                <p>Accepts the following fields: <b>email, password</b>
+                </p>
+                <p>Returns user, token.</p>
+            </td>
+        </tr>
+        <tr>
+            <th>GET</th>
+            <td>/api/index/items</td>
+            <td>
+                <p>Get all <b>items</b> from all the vendors.</p>
+                <p>Query parameters: <b>min_cost, max_cost, category_id, category_name</b></p>
+            </td>
+        </tr>
+        <tr>
+            <th>GET</th>
+            <td>/api/index/items/:id</td>
+            <td>Get <b>item</b> corresponding to the given id. Item is populated with seller and category.</td>
+        </tr>
+        <tr>
+            <th>GET</th>
+            <td>/api/index/vendors</td>
+            <td>Get all <b>vendors</b>.</td>
+        </tr>
+        <tr>
+            <th>GET</th>
+            <td>/api/index/vendor/:id</td>
+            <td>Get <b>vendor</b> corresponding to the given id and all his <b>items</b>.</td>
+        </tr>
+        <tr>
+            <th>GET</th>
+            <td>/api/index/category</td>
+            <td>Get all <b>categories</b>.</td>
+        </tr>
+        <tr>
+            <th>POST</th>
+            <td>/api/index/category</td>
+            <td>
+                <p>Add the category to database.</p>
+                <p>Accepts the following fields: <b>name</b></p>
+            </td>
+        </tr>
+        <tr>
+            <th colspan="3">USER</th>
+        </tr>
+        <tr>
+            <th colspan="3">VENDOR</th>
+        </tr>
+        <tr>
+            <th>GET</th>
+            <td>/api/vendor/items</td>
+            <td>
+                <p>Returns the items corresponding to logged in vendor</p>
+            </td>
+        </tr>
+        <tr>
+            <th>POST</th>
+            <td>/api/vendor/item</td>
+            <td>
+                <p>Adds the item to the database corresponding to logged in vendor</p>
+                <p>Accepts the following fields: <b>name, cost, category, description, image </b>
+                </p>
+                <p>Returns new item</p>
+            </td>
+        </tr>
+        <tr>
+            <th>PUT</th>
+            <td>/api/vendor/item/:id</td>
+            <td>
+                <p>Update the item corresponding to the given id</p>
+                <p>Accepts the following fields: <b>name, cost, category, description, image </b>
+                </p>
+                <p>Returns updated item</p>
+            </td>
+        </tr>
+        <tr>
+            <th>DELETE</th>
+            <td>/api/vendor/item/:id</td>
+            <td>
+                <p>Delete the item corresponding to the given id</p>
+                </p>
+                <p>Returns deleted item</p>
+            </td>
+        </tr>
+    </table>
+
+</body>
+
+</html>

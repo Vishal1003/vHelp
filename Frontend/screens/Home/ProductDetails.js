@@ -24,7 +24,7 @@ export default function ProductDetails(props) {
                         <CardItem cardBody>
                             <Image
                                 style={{ height: 200, width: null, flex: 1 }}
-                                source={{ uri: item.image }}
+                                source={{ uri: item.imageUrl }}
                             />
                         </CardItem>
                         <CardItem>

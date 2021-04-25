@@ -4,6 +4,7 @@ const Vendor = require("../models/vendor");
 const Category = require("../models/category");
 const mongoose = require("mongoose");
 const fs = require("fs");
+const cloudinary = require("../utils/cloudinary");
 
 function isValidId(id) {
     return mongoose.Types.ObjectId.isValid(id);
@@ -22,12 +23,11 @@ exports.getItems = async (req, res, next) => {
 
 // POST a item
 exports.postAddItem = async (req, res, next) => {
-    let { name, cost, category, description } = req.body;
-    // Check if the vendor is registered (error not possible using frontend)
-    const vendor = await Vendor.findById(req.user.vendorId).select("_id");
+    let { name, cost, category, description, userId } = req.body;
+
+    const vendor = await Vendor.findById(userId).select("_id");
     if (!vendor) return res.json({ success: false, message: "Invalid vendor" });
 
-    // Check if the category is supported (error not possible using frontend)
     const __category__ = await Category.findOne({ name: category });
     if (!__category__) {
         return res.json({ success: false, message: "That category is not supported" });
@@ -39,15 +39,17 @@ exports.postAddItem = async (req, res, next) => {
         return res.json({ success: false, message: "No image file found" });
     }
 
+    const result = await cloudinary.uploader.upload(file.path);
+
     let item = new Item({
         name: name,
         cost: parseFloat(cost),
         category: __category__._id,
         description: description,
-        seller: vendor._id
+        seller: vendor._id,
+        imageUrl: result.secure_url,
+        cloudinary_id: result.public_id
     });
-    item.image.data = fs.readFileSync(file.path);
-    item.image.contentType = file.mimetype;
     item = await item.save();
 
     if (!item) return res.json({ success: false, message: "Error creating that item" });
@@ -99,9 +101,10 @@ exports.putItem = async (req, res, next) => {
         updates.description = description;
     }
     if (req.file) {
-        updates.image = {};
-        updates.image.data = fs.readFileSync(req.file.path);
-        updates.image.contentType = req.file.mimetype;
+        await cloudinary.uploader.destroy(product.cloudinary_id);
+        const result = await cloudinary.uploader.upload(req.file.path);
+        updates.imageUrl = result.secure_url;
+        updates.cloudinary_id = result.public_id;
     }
     let item = await Item.findByIdAndUpdate(itemId, { $set: updates }, { new: true });
     if (item) {
@@ -117,6 +120,8 @@ exports.deleteItem = async (req, res, next) => {
     if (!isValidId(itemId)) {
         return res.json({ success: false, message: "Invalid Item Id" });
     }
+    const product = await Item.findById(itemId);
+    await cloudinary.uploader.destroy(product.cloudinary_id);
     const item = await Item.findByIdAndDelete(itemId);
     if (item) {
         return res.json({ success: true, message: "Item removed successfully", item: item });

@@ -18,9 +18,12 @@ const itemSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    image: {
-        data: Buffer,
-        contentType: String
+    imageUrl: {
+        type: String,
+        required: true
+    },
+    cloudinary_id: {
+        type: String
     },
     seller: {
         type: mongoose.Schema.Types.ObjectId,

@@ -6,7 +6,7 @@ import { Container, Content, Card, CardItem, Text, Icon, Left, Body, Right } fro
 const { height } = Dimensions.get("window");
 
 export default function ProductCard(props) {
-    const { name, cost, image, seller, description } = props;
+    const { name, cost, imageUrl, seller, description } = props;
     return (
         <Container style={styles.container}>
             <Content>
@@ -19,7 +19,7 @@ export default function ProductCard(props) {
                     </CardItem>
                     <CardItem cardBody>
                         <Image
-                            source={{ uri: image }}
+                            source={{ uri: imageUrl }}
                             style={{ height: height / 4, width: null, flex: 1 }}
                         />
                     </CardItem>

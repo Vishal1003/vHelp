@@ -1,12 +1,11 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     StyleSheet,
     SafeAreaView,
     ScrollView,
     Dimensions,
-    ActivityIndicator,
-    FlatList
+    ActivityIndicator
 } from "react-native";
 import { Header, Icon, Item, Input, Text } from "native-base";
 import ProductList from "./ProductList";
@@ -21,10 +20,6 @@ import { REST_API_URL } from "../../constants/URLs";
 import axios from "axios";
 
 const { height } = Dimensions.get("window");
-
-const arrayBufferToBase64 = (buffer) => {
-    return require("base64-arraybuffer").encode(buffer);
-};
 
 const ProductContainer = (props) => {
     const [products, setProducts] = useState([]);
@@ -42,13 +37,6 @@ const ProductContainer = (props) => {
             setIsLoading(true);
             let res = await axios.get(`${REST_API_URL}/api/index/items`);
             if (res.data.success === true) {
-                for (const x in res.data.items) {
-                    var base64Flag = "data:";
-                    base64Flag += res.data.items[x].image.contentType;
-                    base64Flag += ";base64,";
-                    res.data.items[x].image =
-                        base64Flag + arrayBufferToBase64(res.data.items[x].image.data.data);
-                }
                 setProducts(res.data.items);
                 setProductsFiltered(res.data.items);
                 setInitialState(res.data.items);
@@ -105,11 +93,14 @@ const ProductContainer = (props) => {
         }
     };
 
-    const renderItem = ({ item }) => {
-        <ProductList key={item.name} item={item} navigation={props.navigation} />;
-    };
-
-    return (
+    return isLoading == true ? (
+        <SafeAreaView>
+            <View style={{ alignSelf: "center", marginTop: height / 3 }}>
+                <ActivityIndicator style={{ margin: 10 }} size="large" color="blue" />
+                <Text note>Loading Products...</Text>
+            </View>
+        </SafeAreaView>
+    ) : (
         <SafeAreaView>
             <Header searchBar rounded>
                 <Item>
@@ -128,48 +119,38 @@ const ProductContainer = (props) => {
                     productsFiltered={productsFiltered}
                 />
             ) : (
-                <View>
+                <ScrollView>
                     <View>
-                        <Banner />
-                    </View>
-                    {isLoading && (
+                        <View>
+                            <Banner />
+                        </View>
                         <SafeAreaView>
-                            <View style={{ alignSelf: "center", marginTop: height / 6 }}>
-                                <ActivityIndicator
-                                    style={{ margin: 10 }}
-                                    size="large"
-                                    color="blue"
-                                />
-                                <Text note>Loading Products...</Text>
-                            </View>
+                            <CategoryFilter
+                                categories={categories}
+                                categoryFilter={changeCtg}
+                                active={active}
+                                setActive={setActive}
+                            />
                         </SafeAreaView>
-                    )}
-                    {!isLoading && (
-                        <Fragment>
-                            <SafeAreaView>
-                                <CategoryFilter
-                                    categories={categories}
-                                    categoryFilter={changeCtg}
-                                    active={active}
-                                    setActive={setActive}
-                                />
+                        {productsCtg.length > 0 ? (
+                            <SafeAreaView style={styles.listContainer}>
+                                {productsCtg.map((item) => {
+                                    return (
+                                        <ProductList
+                                            key={item.name}
+                                            item={item}
+                                            navigation={props.navigation}
+                                        />
+                                    );
+                                })}
                             </SafeAreaView>
-                            {productsCtg.length > 0 ? (
-                                <SafeAreaView style={styles.listContainer}>
-                                    <FlatList
-                                        data={productsCtg}
-                                        renderItem={renderItem}
-                                        keyExtractor={(item) => item.name}
-                                    />
-                                </SafeAreaView>
-                            ) : (
-                                <View style={[styles.center, { height: height / 2 }]}>
-                                    <Text>No products found</Text>
-                                </View>
-                            )}
-                        </Fragment>
-                    )}
-                </View>
+                        ) : (
+                            <View style={[styles.center, { height: height / 2 }]}>
+                                <Text>No products found</Text>
+                            </View>
+                        )}
+                    </View>
+                </ScrollView>
             )}
         </SafeAreaView>
     );
