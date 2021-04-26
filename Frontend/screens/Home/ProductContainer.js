@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
     View,
+    RefreshControl,
     StyleSheet,
     SafeAreaView,
     ScrollView,
@@ -25,6 +26,7 @@ const ProductContainer = (props) => {
     const [products, setProducts] = useState([]);
     const [productsFiltered, setProductsFiltered] = useState([]);
     const [focus, setFocus] = useState();
+    const [refreshing, setRefreshing] = React.useState(false);
 
     const [categories, setCategories] = useState([]);
     const [active, setActive] = useState();
@@ -93,6 +95,30 @@ const ProductContainer = (props) => {
         }
     };
 
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        (async () => {
+            setIsLoading(true);
+            let res = await axios.get(`${REST_API_URL}/api/index/items`);
+            if (res.data.success === true) {
+                setProducts(res.data.items);
+                setProductsFiltered(res.data.items);
+                setInitialState(res.data.items);
+                setProductsCtg(res.data.items);
+            } else {
+                throw new Error(res.data.message);
+            }
+            res = await axios.get(`${REST_API_URL}/api/index/category`);
+            if (res.data.success === true) {
+                setCategories(res.data.categories);
+            } else {
+                throw new Error(res.data.message);
+            }
+            setIsLoading(false);
+            setRefreshing(false);
+        })();
+    }, []);
+
     return isLoading == true ? (
         <SafeAreaView>
             <View style={{ alignSelf: "center", marginTop: height / 3 }}>
@@ -119,7 +145,11 @@ const ProductContainer = (props) => {
                     productsFiltered={productsFiltered}
                 />
             ) : (
-                <ScrollView>
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
+                >
                     <View>
                         <View>
                             <Banner />

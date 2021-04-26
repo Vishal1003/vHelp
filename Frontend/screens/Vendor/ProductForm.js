@@ -95,8 +95,7 @@ export default function ProductForm(props) {
         });
         if (!result.cancelled) {
             setImage(result.uri);
-            console.log(result.uri);
-            let __image_type__ = image.match(/(jpeg|png|jpg)/g);
+            let __image_type__ = await result.uri.match(/(jpeg|png|jpg)/g);
             setImageType(__image_type__[0]);
         }
     };
@@ -110,19 +109,25 @@ export default function ProductForm(props) {
         });
         if (!result.cancelled) {
             setImage(result.uri);
-            let __image_type__ = image.match(/(jpeg|png|jpg)/g);
+            let __image_type__ = await result.uri.match(/(jpeg|png|jpg)/g);
             setImageType(__image_type__[0]);
         }
     };
 
     const addProduct = () => {
-        if (name == "" || cost == "" || description == "" || image === undefined) {
+        if (
+            name == undefined ||
+            cost == undefined ||
+            description == undefined ||
+            image == undefined
+        ) {
             ToastAndroid.show("Please fill out the form completely", ToastAndroid.SHORT);
             return;
         }
-
-        console.log(image);
-
+        if (name == "" || cost == "" || description == "" || image == "") {
+            ToastAndroid.show("Please fill out the form completely", ToastAndroid.SHORT);
+            return;
+        }
         let form = new FormData();
         form.append("image", {
             name: "image",
@@ -150,10 +155,11 @@ export default function ProductForm(props) {
                 );
                 response = response.data;
                 if (response.success === true) {
+                    ToastAndroid.show("Item added successfully", ToastAndroid.SHORT);
                     props.navigation.navigate("Home");
                 }
             } catch (error) {
-                console.log("API call error");
+                console.log("API call error", error);
             }
         })();
     };
