@@ -24,7 +24,6 @@ const customColor = require("../../constants/Color");
 
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-const querystring = require("query-string");
 import { REST_API_URL } from "../../constants/URLs";
 import { useSelector } from "react-redux";
 const FormData = require("form-data");
@@ -157,6 +156,8 @@ export default function ProductForm(props) {
                 if (response.success === true) {
                     ToastAndroid.show("Item added successfully", ToastAndroid.SHORT);
                     props.navigation.navigate("Home");
+                } else {
+                    ToastAndroid.show(response.message, ToastAndroid.SHORT);
                 }
             } catch (error) {
                 console.log("API call error", error);

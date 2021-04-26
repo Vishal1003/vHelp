@@ -36,7 +36,6 @@ const LoginScreen = ({ navigation }) => {
     });
 
     useEffect(() => {
-        console.log(is_authenticated);
         if (is_authenticated === true) {
             navigation.navigate("Main");
         }
@@ -124,6 +123,7 @@ const LoginScreen = ({ navigation }) => {
                         placeholder="Your Email"
                         placeholderTextColor="#666666"
                         style={[styles.textInput]}
+                        value={email}
                         autoCapitalize="none"
                         onChangeText={(val) => textInputChange(val)}
                         onEndEditing={(e) => handleValidUser(e.nativeEvent.text)}
@@ -149,6 +149,7 @@ const LoginScreen = ({ navigation }) => {
                         secureTextEntry={data.secureTextEntry ? true : false}
                         style={[styles.textInput]}
                         autoCapitalize="none"
+                        value={password}
                         onChangeText={(val) => handlePasswordChange(val)}
                     />
                     <TouchableOpacity onPress={updateSecureTextEntry}>
