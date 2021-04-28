@@ -12,9 +12,12 @@ const vendorSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    image: {
-        data: Buffer,
-        contentType: String
+    imageUrl: {
+        type : String,
+    },
+    contact : {
+        type : String,
+        required : true
     }
 });
 const Vendor = mongoose.model("Vendor", vendorSchema);

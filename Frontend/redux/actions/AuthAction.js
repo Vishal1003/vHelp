@@ -44,6 +44,8 @@ export const registerCurrentUser = () => {
 export const registerUser = (user, dispatch) => {
     (async () => {
         const requestData = querystring.stringify({
+            name: user.name,
+            contact: user.contact,
             email: user.email,
             password: user.password,
             user_type: user.user_type

@@ -12,6 +12,7 @@ import {
 import * as Animatable from "react-native-animatable";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import { Item, Picker, Icon } from "native-base";
 import { useSelector, useDispatch } from "react-redux";
@@ -59,6 +60,20 @@ const RegisterScreen = ({ navigation }) => {
         }
     };
 
+    const nameChangeHandler = (name) => {
+        setData({
+            ...data,
+            name: name
+        });
+    };
+
+    const phoneChangeHandler = (phone) => {
+        setData({
+            ...data,
+            contact: phone
+        });
+    };
+
     const handlePasswordChange = (val) => {
         setData({
             ...data,
@@ -101,6 +116,12 @@ const RegisterScreen = ({ navigation }) => {
             dispatch(setErrorMessage("Please select valid user type"));
             return;
         }
+
+        if (!data.name || !data.contact || !data.email || !data.password) {
+            dispatch(setErrorMessage("Please fill all details"));
+            return;
+        }
+
         if (data.password != data.confirm_password) {
             dispatch(setErrorMessage("Passwords does not match"));
             return;
@@ -108,7 +129,19 @@ const RegisterScreen = ({ navigation }) => {
             dispatch(setErrorMessage("Password must be 8 characters long"));
             return;
         }
-        const user = { email: data.email, password: data.password, user_type: usertype };
+
+        if (data.contact.length < 10) {
+            dispatch(setErrorMessage("Enter a valid contact number"));
+            return;
+        }
+
+        const user = {
+            email: data.email,
+            password: data.password,
+            user_type: usertype,
+            name: data.name,
+            contact: data.contact
+        };
         registerUser(user, dispatch);
     };
     return (
@@ -119,9 +152,39 @@ const RegisterScreen = ({ navigation }) => {
             </View>
             <Animatable.View animation="fadeInUpBig" style={styles.footer}>
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    <Text style={[styles.text_footer]}>Email</Text>
+                    {/* NAME */}
+                    <Text style={[styles.text_footer]}>Name</Text>
                     <View style={styles.action}>
-                        <FontAwesome name="user-o" color="#05375a" size={20} />
+                        <MaterialIcons name="drive-file-rename-outline" color="#05375a" size={20} />
+                        <TextInput
+                            placeholder="Full Name"
+                            style={styles.textInput}
+                            autoCapitalize="none"
+                            onChangeText={(val) => nameChangeHandler(val)}
+                        />
+                    </View>
+
+                    {/* CONTACT */}
+                    <Text style={[styles.text_footer, { marginTop: 10 }]}>Contact</Text>
+                    <View style={styles.action}>
+                        <FontAwesome name="phone" color="#05375a" size={20} />
+                        <TextInput
+                            placeholder="Contact Number"
+                            style={styles.textInput}
+                            autoCapitalize="none"
+                            onChangeText={(val) => phoneChangeHandler(val)}
+                        />
+                        {data.check_contactNumber ? (
+                            <Animatable.View animation="bounceIn">
+                                <Feather name="check-circle" color="green" size={20} />
+                            </Animatable.View>
+                        ) : null}
+                    </View>
+
+                    {/* EMAIL */}
+                    <Text style={[styles.text_footer, { marginTop: 10 }]}>Email</Text>
+                    <View style={styles.action}>
+                        <MaterialIcons name="alternate-email" color="#05375a" size={20} />
                         <TextInput
                             placeholder="Your Email"
                             style={styles.textInput}
@@ -135,6 +198,7 @@ const RegisterScreen = ({ navigation }) => {
                         ) : null}
                     </View>
 
+                    {/* USER TYPE */}
                     <Text style={[styles.text_footer, { marginTop: 10 }]}>User Type</Text>
                     <View style={{ paddingTop: 10, paddingBottom: 10 }}>
                         <Item picker>
@@ -154,6 +218,8 @@ const RegisterScreen = ({ navigation }) => {
                             </Picker>
                         </Item>
                     </View>
+
+                    {/* PASSWORD */}
                     <Text style={[styles.text_footer, { marginTop: 10 }]}>Password</Text>
                     <View style={styles.action}>
                         <Feather name="lock" color="#05375a" size={20} />
@@ -173,6 +239,7 @@ const RegisterScreen = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
 
+                    {/* CONFIRM PASSWORD */}
                     <Text style={[styles.text_footer, { marginTop: 10 }]}>Confirm Password</Text>
                     <View style={styles.action}>
                         <Feather name="lock" color="#05375a" size={20} />
@@ -191,6 +258,8 @@ const RegisterScreen = ({ navigation }) => {
                             )}
                         </TouchableOpacity>
                     </View>
+
+                    {/* ERROR MSGES */}
                     {error_message != "" && (
                         <Animatable.View animation="fadeInLeft" duration={500}>
                             <Text style={styles.errorMsg}>{error_message}</Text>
@@ -201,6 +270,8 @@ const RegisterScreen = ({ navigation }) => {
                             <Text style={styles.successMsg}>{success_message}</Text>
                         </Animatable.View>
                     )}
+
+                    {/* BUTTON_GRP */}
                     <View style={styles.button}>
                         <TouchableOpacity onPress={handleRegister} style={[styles.buttonContainer]}>
                             <Text style={styles.buttonText}>Register</Text>
