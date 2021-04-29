@@ -14,7 +14,7 @@ export default function ProductCard(props) {
                     <CardItem>
                         <Body>
                             <Text style={{ fontWeight: "bold" }}>{name}</Text>
-                            <Text note>{seller.name}</Text>
+                            <Text note>@{seller.name}</Text>
                         </Body>
                     </CardItem>
                     <CardItem cardBody>

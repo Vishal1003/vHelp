@@ -28,7 +28,7 @@ function MyStack() {
                 name="Vendor List"
                 component={VendorList}
                 options={{
-                    headerShown: true
+                    headerShown: false
                 }}
             />
         </Stack.Navigator>

@@ -3,12 +3,13 @@ import { View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 // Stacks
 import HomeNavigator from "./HomeNavigator";
 import AddProductNavigator from "./AddProductNavigator";
 import ProfileNavigator from "./ProfileNavigator";
 import MapNavigator from "./MapNavigator";
+import ContactNavigator from "./ContactNavigator";
 const customColor = require("../constants/Color");
 import { useSelector } from "react-redux";
 const Tab = createBottomTabNavigator();
@@ -60,11 +61,11 @@ export default function Main() {
             ) : null}
             <Tab.Screen
                 name="Chat"
-                component={HomeNavigator}
+                component={ContactNavigator}
                 options={{
                     tabBarIcon: ({ color }) => (
                         <View>
-                            <Icon name="wechat" color={color} size={30} />
+                            <MaterialCommunityIcons name="playlist-check" color={color} size={30} />
                             {/* <CartIcon /> */}
                         </View>
                     )

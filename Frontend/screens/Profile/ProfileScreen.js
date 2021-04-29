@@ -35,7 +35,7 @@ const ProfileScreen = ({ navigation }) => {
         <SafeAreaView style={styles.container}>
             <Header style={{ backgroundColor: "#fff" }}>
                 <Left>
-                    <Button transparent>
+                    <Button transparent onPress={() => navigation.goBack()}>
                         <Icon name="arrow-left" size={25} />
                     </Button>
                 </Left>
