@@ -3,7 +3,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import ProfileScreen from "../screens/Profile/ProfileScreen";
 import EditProfileScreen from "../screens/Profile/EditProfileScreen";
-import VendorList from "../screens/Vendor/VendorList";
+import UserDetail from "../components/ListOfUsers/UserDetail";
+import Contact from "../screens/Vendor/Contact";
 
 const Stack = createStackNavigator();
 
@@ -22,13 +23,6 @@ function MyStack() {
                 component={EditProfileScreen}
                 options={{
                     headerShown: true
-                }}
-            />
-            <Stack.Screen
-                name="Vendor List"
-                component={VendorList}
-                options={{
-                    headerShown: false
                 }}
             />
         </Stack.Navigator>

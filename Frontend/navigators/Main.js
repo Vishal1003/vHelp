@@ -60,7 +60,7 @@ export default function Main() {
                 />
             ) : null}
             <Tab.Screen
-                name="Chat"
+                name="Contact"
                 component={ContactNavigator}
                 options={{
                     tabBarIcon: ({ color }) => (

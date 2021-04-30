@@ -103,20 +103,6 @@ const ProfileScreen = ({ navigation }) => {
                             <Text style={styles.menuItemText}>Your Favorites</Text>
                         </View>
                     </TouchableRipple>
-                    <TouchableRipple
-                        onPress={() => {
-                            navigation.navigate("Vendor List");
-                        }}
-                    >
-                        <View style={styles.menuItem}>
-                            <MaterialIcons
-                                name="supervised-user-circle"
-                                color="#00008B"
-                                size={25}
-                            />
-                            <Text style={styles.menuItemText}>Verified Vendors</Text>
-                        </View>
-                    </TouchableRipple>
                     <TouchableRipple>
                         <View style={styles.menuItem}>
                             <Icon name="share-outline" color="#00008B" size={25} />

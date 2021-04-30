@@ -128,8 +128,8 @@ const ProductContainer = (props) => {
         </SafeAreaView>
     ) : (
         <SafeAreaView>
-            <Header searchBar rounded>
-                <Item>
+            <Header searchBar rounded style={{backgroundColor: "#F8F8F8", elevation: 10}}>
+                <Item style={{backgroundColor: "#E8E8E8", borderRadius: 20}}>
                     <Icon name="ios-search" />
                     <Input
                         placeholder="Search"

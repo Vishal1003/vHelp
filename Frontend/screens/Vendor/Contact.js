@@ -3,10 +3,10 @@ import React from "react";
 import { SafeAreaView, ScrollView } from "react-native";
 import ListOfUsers from "../../components/ListOfUsers/ListOfUsers";
 
-export default function Contact() {
+export default function Contact({ navigation }) {
     return (
         <ScrollView>
-            <ListOfUsers />
+            <ListOfUsers navigation={navigation} />
         </ScrollView>
     );
 }

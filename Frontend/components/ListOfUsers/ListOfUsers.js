@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Body, Header, Left, Right, Text, Title, Button } from "native-base";
+import { Header, Text, Item, Input, Icon } from "native-base";
 import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
@@ -7,17 +7,15 @@ import {
     SafeAreaView,
     ScrollView,
     StyleSheet,
-    View,
-    Linking
+    View
 } from "react-native";
-import { Card, ListItem, Avatar } from "react-native-elements";
 import { REST_API_URL } from "../../constants/URLs";
+import UserCard from "./UserCard";
 
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-
-export default function ListOfUsers(props) {
+export default function ListOfUsers({ navigation }) {
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState();
+    const [focus, setfocus] = useState(false);
 
     const { height } = Dimensions.get("screen");
 
@@ -37,61 +35,31 @@ export default function ListOfUsers(props) {
         setIsLoading(false);
     }, []);
 
-    const openCallDialer = (phone) => {
-        Linking.openURL(`tel:${phone}`);
-    };
-
     return (
         <SafeAreaView>
-            <Header style={{ backgroundColor: "#fff" }}>
-                <Left>
-                    <Button transparent onPress={() => navigation.goBack()}>
-                        <Icon name="arrow-left" size={25} />
-                    </Button>
-                </Left>
-                <Body>
-                    <Title style={{ color: "#000" }}>Verified Vendors</Title>
-                </Body>
-                <Right>
-                    <Button transparent></Button>
-                </Right>
+            <Header searchBar rounded style={{ backgroundColor: "#F8F8F8" }}>
+                <Item style={{ backgroundColor: "#E8E8E8", borderRadius: 20 }}>
+                    <Icon name="ios-search" />
+                    <Input
+                        placeholder="Search"
+                        // onChangeText={(text) => searchProduct(text)}
+                    />
+                    {focus == true ? <Icon name="ios-close" /> : null}
+                </Item>
             </Header>
-
-            {isLoading && (
+            {!isLoading ? (
+                <ScrollView containerStyle={{ padding: 0 }}>
+                    {users.map((u, i) => {
+                        return <UserCard key={i} users={u} navigation={navigation} />;
+                    })}
+                </ScrollView>
+            ) : (
                 <SafeAreaView>
                     <View style={{ alignSelf: "center", marginTop: height / 2 }}>
                         <ActivityIndicator style={{ margin: 10 }} size="large" color="blue" />
                         <Text note>Loading Data...</Text>
                     </View>
                 </SafeAreaView>
-            )}
-
-            {!isLoading && (
-                <ScrollView containerStyle={{ padding: 0 }}>
-                    {users.map((u, i) => (
-                        <Card containerStyle={{ padding: 0, margin: 0 }} key={i}>
-                            <ListItem>
-                                <Avatar
-                                    source={{
-                                        uri:
-                                            u.imageUrl === undefined
-                                                ? "https://i.pravatar.cc/150?img=30"
-                                                : u.imageUrl
-                                    }}
-                                />
-                                <ListItem.Content>
-                                    <ListItem.Title>{u.name}</ListItem.Title>
-                                </ListItem.Content>
-                                <ListItem.Chevron
-                                    iconProps={{ name: "phone", size: 20, color: "#843" }}
-                                    onPress={() => openCallDialer(u.contact)}
-                                />
-                                <ListItem.Chevron iconProps={{ color: "#fff" }} />
-                                <ListItem.Chevron iconStyle={{ color: "#000", fontSize: 20 }} />
-                            </ListItem>
-                        </Card>
-                    ))}
-                </ScrollView>
             )}
         </SafeAreaView>
     );
