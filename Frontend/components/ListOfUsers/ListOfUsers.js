@@ -50,7 +50,7 @@ export default function ListOfUsers({ navigation }) {
             {!isLoading ? (
                 <ScrollView containerStyle={{ padding: 0 }}>
                     {users.map((u, i) => {
-                        return <UserCard key={i} users={u} navigation={navigation} />;
+                        return <UserCard key={i} user={u} navigation={navigation} />;
                     })}
                 </ScrollView>
             ) : (
