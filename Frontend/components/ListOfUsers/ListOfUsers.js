@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     Dimensions,
+    RefreshControl,
     SafeAreaView,
     ScrollView,
     StyleSheet,
@@ -16,6 +17,7 @@ export default function ListOfUsers({ navigation }) {
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState();
     const [focus, setfocus] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
     const { height } = Dimensions.get("screen");
 
@@ -35,6 +37,21 @@ export default function ListOfUsers({ navigation }) {
         setIsLoading(false);
     }, []);
 
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        (async () => {
+            setIsLoading(true);
+            let res = await axios.get(`${REST_API_URL}/api/index/vendors`);
+            if (res.data.success === true) {
+                setUsers(res.data.vendors);
+            } else {
+                throw new Error(res.data.message);
+            }
+            setIsLoading(false);
+            setRefreshing(false);
+        })();
+    }, []);
+
     return (
         <SafeAreaView>
             <Header searchBar rounded style={{ backgroundColor: "#F8F8F8" }}>
@@ -48,7 +65,12 @@ export default function ListOfUsers({ navigation }) {
                 </Item>
             </Header>
             {!isLoading ? (
-                <ScrollView containerStyle={{ padding: 0 }}>
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
+                    containerStyle={{ padding: 0 }}
+                >
                     {users.map((u, i) => {
                         return <UserCard key={i} user={u} navigation={navigation} />;
                     })}

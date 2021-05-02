@@ -32,18 +32,22 @@ export default function ProductListItem(props) {
             <ListItem style={styles.container} containerStyle={{ borderRadius: 20 }}>
                 <Avatar
                     size={70}
-                    containerStyle={{ padding: 0, margin: 0 }}
                     source={{ uri: product.imageUrl }}
                 />
                 <ListItem.Content>
-                    <ListItem.Title>{product.name}</ListItem.Title>
+                    <ListItem.Title style={{ fontWeight: "bold" }}>{product.name}</ListItem.Title>
                     <ListItem.Subtitle>{product.description}</ListItem.Subtitle>
                     <StarRating ratings={3} reviews={99} />
                 </ListItem.Content>
                 <ListItem.Content>
-                    <ListItem.Title style={{fontWeight: "bold"}}><ListItem.Subtitle style={{ fontSize: 10 }}>Price : </ListItem.Subtitle>₹ {product.cost}</ListItem.Title>
+                    <ListItem.Title style={{ fontWeight: "bold" }}>
+                        <ListItem.Subtitle style={{ fontSize: 10 }}>Price : </ListItem.Subtitle>₹{" "}
+                        {product.cost}
+                    </ListItem.Title>
                     <ListItem.Subtitle>{product.category} Item</ListItem.Subtitle>
-                    <ListItem.Subtitle style={{ fontSize: 10 }}>Given price is the price per unit item. </ListItem.Subtitle>
+                    <ListItem.Subtitle style={{ fontSize: 10 }}>
+                        Given price is the price per unit item.{" "}
+                    </ListItem.Subtitle>
                 </ListItem.Content>
             </ListItem>
         </Fragment>
