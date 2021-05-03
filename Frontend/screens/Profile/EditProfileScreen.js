@@ -13,29 +13,33 @@ import {
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Feather from "react-native-vector-icons/Feather";
 
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 
 import * as ImagePicker from "expo-image-picker";
 
-const arrayBufferToBase64 = (buffer) => {
-    return require("base64-arraybuffer").encode(buffer);
-};
-
 const EditProfileScreen = () => {
-    const [image, setImage] = useState("https://i.pravatar.cc/150?img=6");
+    const [image, setImage] = useState(
+        "https://drive.google.com/uc?id=18CXkz-Lqgi04iiL9jV3CtRuoYg6lb3RV"
+    );
     const user_data = useSelector((state) => state.user_data);
-    const [email, setEmail] = useState(user_data.email);
-    const [name, setName] = useState(user_data.name);
+    const [email, setEmail] = useState("");
+    const [name, setName] = useState("");
+    const [contact, setContact] = useState("");
     const token = useSelector((state) => state.token);
     useEffect(() => {
-        if (user_data.hasOwnProperty("image")) {
-            var base64Flag = "data:";
-            base64Flag += user_data.image.contentType;
-            base64Flag += ";base64,";
-            setImage(base64Flag + arrayBufferToBase64(user_data.image.data.data));
+        if (user_data.imageUrl != undefined) {
+            setImage(user_data.imageUrl);
+        }
+        if (user_data.contact != undefined) {
+            setContact(user_data.contact);
+        }
+        if (user_data.name != undefined) {
+            setName(user_data.name);
+        }
+        if (user_data.email != undefined) {
+            setEmail(user_data.email);
         }
     }, [user_data]);
     const takePhotoFromCamera = async () => {
@@ -62,6 +66,8 @@ const EditProfileScreen = () => {
             setImage(result.uri);
         }
     };
+
+    const handleOnPressSubmit = async () => {};
 
     const renderInner = () => (
         <View style={styles.panel}>
@@ -172,6 +178,19 @@ const EditProfileScreen = () => {
                             style={styles.textInput}
                         />
                     </View>
+                    <View style={styles.action}>
+                        <FontAwesome name="phone" size={20} />
+                        <TextInput
+                            placeholder="Contact"
+                            placeholderTextColor="#666666"
+                            autoCorrect={false}
+                            value={contact}
+                            onChangeText={(val) => {
+                                setContact(val);
+                            }}
+                            style={styles.textInput}
+                        />
+                    </View>
                     {!token.isVendor && (
                         <View style={styles.action}>
                             <FontAwesome name="globe" size={20} />
@@ -216,7 +235,7 @@ const EditProfileScreen = () => {
                             />
                         </View>
                     )}
-                    <TouchableOpacity style={styles.commandButton} onPress={() => {}}>
+                    <TouchableOpacity style={styles.commandButton} onPress={handleOnPressSubmit}>
                         <Text style={styles.panelButtonTitle}>Submit</Text>
                     </TouchableOpacity>
                 </Animated.View>
