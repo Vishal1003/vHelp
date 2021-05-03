@@ -28,6 +28,7 @@ export default function ProductDetails(props) {
             let unDecodedToken = await AsyncStorage.getItem("jwt");
             const requestConfig = {
                 headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
                     Authorization: `Bearer ${unDecodedToken}`
                 }
             };
