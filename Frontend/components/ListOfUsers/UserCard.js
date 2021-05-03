@@ -3,7 +3,7 @@ import { Linking, TouchableOpacity } from "react-native";
 import { Card, ListItem, Avatar } from "react-native-elements";
 
 export default function UserCard(props) {
-    const u = props.users;
+    const u = props.user;
 
     const openCallDialer = (phone) => {
         Linking.openURL(`tel:${phone}`);

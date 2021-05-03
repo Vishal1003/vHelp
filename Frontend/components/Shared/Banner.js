@@ -9,8 +9,8 @@ const Banner = () => {
 
     useEffect(() => {
         setBannerData([
-            "https://images.vexels.com/media/users/3/126443/preview2/ff9af1e1edfa2c4a46c43b0c2040ce52-macbook-pro-touch-bar-banner.jpg",
-            "https://pbs.twimg.com/media/D7P_yLdX4AAvJWO.jpg",
+            "https://i.pinimg.com/originals/02/cd/62/02cd62d565293133bae12496bf9a519e.jpg",
+            "https://us.123rf.com/450wm/leya1703/leya17032103/leya1703210300007/166372479-traditional-indian-food-on-white-background-horizontal-flyer-vector-illustration-doodle-black-and-wh.jpg?ver=6",
             "https://www.yardproduct.com/blog/wp-content/uploads/2016/01/gardening-banner.jpg"
         ]);
 

@@ -1,17 +1,15 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { StyleSheet, ScrollView, Image, Dimensions, ToastAndroid } from "react-native";
+import {
+    StyleSheet,
+    ScrollView,
+    Dimensions,
+    ToastAndroid,
+    View,
+    ImageBackground
+} from "react-native";
 import {
     Text,
-    Left,
-    Right,
-    Body,
-    Container,
-    H1,
-    Content,
-    Card,
-    CardItem,
-    Button
 } from "native-base";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -19,6 +17,7 @@ import { REST_API_URL } from "../../constants/URLs";
 import axios from "axios";
 
 const { height, width } = Dimensions.get("window");
+const customColors = require("../../constants/Color");
 
 export default function ProductDetails(props) {
     const [item, setItem] = React.useState(props.route.params.item);
@@ -51,106 +50,124 @@ export default function ProductDetails(props) {
         })();
     };
     return (
-        <Container style={styles.container}>
-            <ScrollView>
-                <Content>
-                    <Card style={styles.cardContainer}>
-                        <CardItem cardBody>
-                            <Image
-                                style={{ height: 200, width: null, flex: 1 }}
-                                source={{ uri: item.imageUrl }}
-                            />
-                        </CardItem>
-                        <CardItem>
-                            <Body>
-                                <H1>
-                                    {item.name} | {item.category.name}
-                                </H1>
-                            </Body>
-                        </CardItem>
-                        <CardItem cardBody>
-                            <Text style={{ marginHorizontal: 20 }}>{item.description}</Text>
-                        </CardItem>
-                        <CardItem>
-                            <Left>
-                                <H1>₹{item.cost}</H1>
-                            </Left>
-                            <Body />
-                            <Right>
-                                <Text>{item.seller.name}</Text>
-                            </Right>
-                        </CardItem>
-                        {token.userId === item.seller._id ? (
-                            <CardItem>
-                                <Left />
-                                <Body>
-                                    <Button style={styles.button} onPress={handleDeleteItem}>
-                                        <Text>Delete</Text>
-                                    </Button>
-                                </Body>
-                                <Right />
-                            </CardItem>
-                        ) : (
-                            <CardItem>
-                                <Left />
-                                <Body>
-                                    <Button style={styles.button}>
-                                        <Text>Track</Text>
-                                    </Button>
-                                </Body>
-                                <Right />
-                            </CardItem>
-                        )}
-                    </Card>
-                </Content>
-            </ScrollView>
-        </Container>
+        <ScrollView>
+            <View>
+                <ImageBackground style={styles.imageStyle} source={{ uri: item.imageUrl }}>
+                    <View style={styles.imageTextConatiner}>
+                        <Text style={styles.imageText}>{item.name.toUpperCase()}</Text>
+                    </View>
+                    <View style={styles.imageTextConatiner2}>
+                        <Text style={styles.OuterText}>
+                            <Text note style={styles.imageText2}>
+                                CATEGORY : {  }
+                            </Text>
+                            {item.category.name}
+                        </Text>
+                    </View>
+                </ImageBackground>
+            </View>
+        </ScrollView>
+
+        // <Container style={styles.container}>
+        //     <ScrollView>
+        //         <Content>
+        //             <Card style={styles.cardContainer}>
+        //                 <CardItem cardBody>
+        //                     <Image
+        //                         style={{ height: 200, width: null, flex: 1 }}
+        //                         source={{ uri: item.imageUrl }}
+        //                     />
+        //                 </CardItem>
+        //                 <CardItem>
+        //                     <Body>
+        //                         <H1>
+        //                             {item.name} | {item.category.name}
+        //                         </H1>
+        //                     </Body>
+        //                 </CardItem>
+        //                 <CardItem cardBody>
+        //                     <Text style={{ marginHorizontal: 20 }}>{item.description}</Text>
+        //                 </CardItem>
+        //                 <CardItem>
+        //                     <Left>
+        //                         <H1>₹{item.cost}</H1>
+        //                     </Left>
+        //                     <Body />
+        //                     <Right>
+        //                         <Text>{item.seller.name}</Text>
+        //                     </Right>
+        //                 </CardItem>
+        //                 {token.userId === item.seller._id ? (
+        //                     <CardItem>
+        //                         <Left />
+        //                         <Body>
+        //                             <Button style={styles.button} onPress={handleDeleteItem}>
+        //                                 <Text>Delete</Text>
+        //                             </Button>
+        //                         </Body>
+        //                         <Right />
+        //                     </CardItem>
+        //                 ) : (
+        //                     <CardItem>
+        //                         <Left />
+        //                         <Body>
+        //                             <Button style={styles.button}>
+        //                                 <Text>Track</Text>
+        //                             </Button>
+        //                         </Body>
+        //                         <Right />
+        //                     </CardItem>
+        //                 )}
+        //             </Card>
+        //         </Content>
+        //     </ScrollView>
+        // </Container>
     );
 }
 const styles = StyleSheet.create({
-    container: {
-        position: "relative",
-        height: "100%",
-        backgroundColor: "gainsboro"
+    imageStyle: {
+        width: width,
+        height: height / 2.5
     },
-    cardContainer: {
-        height: height / 1.2,
-        width: width / 1.2,
-        marginLeft: width * 0.08,
-        marginTop: width * 0.08
-    },
-    imageContainer: {
-        height: 200,
-        width: null,
-        flex: 1
-    },
-    contentContainer: {
-        marginTop: 20,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    contentHeader: {
-        fontWeight: "bold",
-        marginBottom: 20
-    },
-    contentText: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginBottom: 20
-    },
-    bottomContainer: {
-        flexDirection: "row",
+    imageTextConatiner: {
         position: "absolute",
-        bottom: 0,
         left: 0,
-        backgroundColor: "white"
+        bottom: 0,
+        justifyContent: "flex-end",
+        alignItems: "flex-start",
+        width: width,
+        height: height / 10,
+        backgroundColor: "#E8E8E8",
+        opacity: 0.7
     },
-    button: {
-        borderRadius: 50
+    imageTextConatiner2: {
+        position: "absolute",
+        right: 0,
+        bottom: 0,
+        justifyContent: "flex-end",
+        alignItems: "flex-end",
+        width: width,
+        height: height / 10
     },
-    price: {
+    imageText: {
         fontSize: 24,
-        margin: 20,
-        color: "red"
+        fontWeight: "bold",
+        color: customColors.dark,
+        paddingLeft: 10,
+        paddingBottom: 10
+    },
+    imageText2: {
+        color: customColors.dark,
+        fontWeight : "100",
+        paddingRight: 10,
+        paddingBottom: 10,
+        fontSize : 10,
+    },
+    OuterText: {
+        fontSize: 15,
+        fontWeight: "bold",
+        color: customColors.dark,
+        paddingRight: 10,
+        paddingBottom: 10
     }
 });
