@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
     StyleSheet,
@@ -23,11 +23,27 @@ const customColors = require("../../constants/Color");
 
 export default function ProductDetails(props) {
     const [item, setItem] = React.useState(props.route.params.item);
+    const [similarProducts, setSimilarProducts] = useState([]);
+    const [vendorProducts, setVendorProducts] = useState([]);
+
     const token = useSelector((state) => state.token);
 
     useEffect(() => {
-        console.log(item)
-    })
+        // console.log(item);
+
+        const fetchAPI = async () => {
+            try {
+                let response = await axios.get(
+                    `${REST_API_URL}/api/index/category/${item.category._id}`
+                );
+                setSimilarProducts(response.data);
+            } catch (e) {
+                console.log("API error");
+            }
+        };
+
+        fetchAPI();
+    });
 
     const handleDeleteItem = () => {
         (async () => {
@@ -74,43 +90,85 @@ export default function ProductDetails(props) {
                 </ImageBackground>
             </View>
 
-            <View>
-                <ListItem>
-                    <ListItem.Content>
-                        <ListItem.Subtitle style={{ fontSize: 10, marginBottom: height / 50 }}>
-                            PRICE : {"  "}
-                            <ListItem.Title style={{ fontWeight: "bold" }}>
-                                ₹ {item.cost}
-                            </ListItem.Title>
-                            {"  "}
-                            (PER UNIT ITEM)
-                        </ListItem.Subtitle>
-                        <ListItem.Subtitle style={{ fontSize: 10, marginBottom: height / 50 }}>
-                            DESCRIPTION : {"  "}
-                            <ListItem.Title>{item.description}</ListItem.Title>
-                        </ListItem.Subtitle>
-                        <ListItem.Subtitle style={{ fontSize: 10, marginBottom: height / 50 }}>
-                            RATINGS : {"  "}
-                            <StarRating ratings={3} reviews={99} />
-                        </ListItem.Subtitle>
-                        <ListItem.Subtitle style={{ fontSize: 10 }}>
-                            SELLER : {"  "}
-                            <ListItem.Title style={{ fontSize: 15 }}>{item.seller.name}</ListItem.Title>
-                        </ListItem.Subtitle>
-                    </ListItem.Content>
-                    <View style={styles.imageTextConatiner2}>
-                        <TouchableOpacity style={styles.mapSticker}>
-                            <Icon size={30} name="location-pin" />
-                            <Text style={{ fontSize: 10 }}>LOCATE</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.imageTextConatiner2}>
-                        <TouchableOpacity style={styles.callSticker}>
-                            <Icon size={30} name="phone" />
-                            <Text style={{ fontSize: 10 }}>CALL</Text>
-                        </TouchableOpacity>
-                    </View>
-                </ListItem>
+            <ListItem>
+                <ListItem.Content>
+                    <ListItem.Subtitle style={{ fontSize: 10, marginBottom: height / 50 }}>
+                        PRICE : {"  "}
+                        <ListItem.Title style={{ fontWeight: "bold" }}>
+                            ₹ {item.cost}
+                        </ListItem.Title>
+                        {"  "}
+                        (PER UNIT ITEM)
+                    </ListItem.Subtitle>
+                    <ListItem.Subtitle style={{ fontSize: 10, marginBottom: height / 50 }}>
+                        DESCRIPTION : {"  "}
+                        <ListItem.Title>{item.description}</ListItem.Title>
+                    </ListItem.Subtitle>
+                    <ListItem.Subtitle style={{ fontSize: 10, marginBottom: height / 50 }}>
+                        RATINGS : {"  "}
+                        <StarRating ratings={3} reviews={99} />
+                    </ListItem.Subtitle>
+                    <ListItem.Subtitle style={{ fontSize: 10 }}>
+                        SELLER : {"  "}
+                        <ListItem.Title style={{ fontSize: 15 }}>{item.seller.name}</ListItem.Title>
+                    </ListItem.Subtitle>
+                </ListItem.Content>
+                <View style={styles.imageTextConatiner2}>
+                    <TouchableOpacity style={styles.mapSticker}>
+                        <Icon size={30} name="location-pin" />
+                        <Text style={{ fontSize: 10 }}>LOCATE</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.imageTextConatiner2}>
+                    <TouchableOpacity style={styles.callSticker}>
+                        <Icon size={30} name="phone" />
+                        <Text style={{ fontSize: 10 }}>CALL</Text>
+                    </TouchableOpacity>
+                </View>
+            </ListItem>
+
+            <View
+                style={[
+                    styles.card,
+                    {
+                        backgroundColor: "#fff",
+                        marginTop: 10
+                    }
+                ]}
+            >
+                <Text note style={{ margin: 20 }}>
+                    More from this category{" "}
+                </Text>
+                <ScrollView
+                    showsHorizontalScrollIndicator={false}
+                    bounces={true}
+                    horizontal={true}
+                    style={{ backgroundColor: "#f2f2f2" }}
+                >
+                    <View></View>
+                </ScrollView>
+            </View>
+
+            <View
+                style={[
+                    styles.card,
+                    {
+                        backgroundColor: "#fff",
+                        marginTop: 10
+                    }
+                ]}
+            >
+                <Text note style={{ margin: 20 }}>
+                    More from this vendor{" "}
+                </Text>
+                <ScrollView
+                    showsHorizontalScrollIndicator={false}
+                    bounces={true}
+                    horizontal={true}
+                    style={{ backgroundColor: "#f2f2f2" }}
+                >
+                    <View></View>
+                </ScrollView>
             </View>
         </ScrollView>
 
