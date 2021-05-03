@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
     StyleSheet,
@@ -6,15 +6,17 @@ import {
     Dimensions,
     ToastAndroid,
     View,
-    ImageBackground
+    ImageBackground,
+    TouchableOpacity
 } from "react-native";
-import {
-    Text,
-} from "native-base";
+import { Text } from "native-base";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { REST_API_URL } from "../../constants/URLs";
 import axios from "axios";
+import { ListItem } from "react-native-elements";
+import StarRating from "../../components/Card/StarRating";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const { height, width } = Dimensions.get("window");
 const customColors = require("../../constants/Color");
@@ -22,6 +24,11 @@ const customColors = require("../../constants/Color");
 export default function ProductDetails(props) {
     const [item, setItem] = React.useState(props.route.params.item);
     const token = useSelector((state) => state.token);
+
+    useEffect(() => {
+        console.log(item)
+    })
+
     const handleDeleteItem = () => {
         (async () => {
             let unDecodedToken = await AsyncStorage.getItem("jwt");
@@ -50,7 +57,7 @@ export default function ProductDetails(props) {
     };
     return (
         <ScrollView>
-            <View>
+            <View style={{ borderColor: "gainsboro", borderBottomWidth: 1 }}>
                 <ImageBackground style={styles.imageStyle} source={{ uri: item.imageUrl }}>
                     <View style={styles.imageTextConatiner}>
                         <Text style={styles.imageText}>{item.name.toUpperCase()}</Text>
@@ -58,12 +65,51 @@ export default function ProductDetails(props) {
                     <View style={styles.imageTextConatiner2}>
                         <Text style={styles.OuterText}>
                             <Text note style={styles.imageText2}>
-                                CATEGORY : {  }
+                                CATEGORY : {}
                             </Text>
                             {item.category.name}
                         </Text>
                     </View>
                 </ImageBackground>
+            </View>
+
+            <View>
+                <ListItem>
+                    <ListItem.Content>
+                        <ListItem.Subtitle style={{ fontSize: 10, marginBottom: height / 50 }}>
+                            PRICE : {"  "}
+                            <ListItem.Title style={{ fontWeight: "bold" }}>
+                                ₹ {item.cost}
+                            </ListItem.Title>
+                            {"  "}
+                            (PER UNIT ITEM)
+                        </ListItem.Subtitle>
+                        <ListItem.Subtitle style={{ fontSize: 10, marginBottom: height / 50 }}>
+                            DESCRIPTION : {"  "}
+                            <ListItem.Title>{item.description}</ListItem.Title>
+                        </ListItem.Subtitle>
+                        <ListItem.Subtitle style={{ fontSize: 10, marginBottom: height / 50 }}>
+                            RATINGS : {"  "}
+                            <StarRating ratings={3} reviews={99} />
+                        </ListItem.Subtitle>
+                        <ListItem.Subtitle style={{ fontSize: 10 }}>
+                            SELLER : {"  "}
+                            <ListItem.Title style={{ fontSize: 15 }}>{item.seller.name}</ListItem.Title>
+                        </ListItem.Subtitle>
+                    </ListItem.Content>
+                    <View style={styles.imageTextConatiner2}>
+                        <TouchableOpacity style={styles.mapSticker}>
+                            <Icon size={30} name="location-pin" />
+                            <Text style={{ fontSize: 10 }}>LOCATE</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.imageTextConatiner2}>
+                        <TouchableOpacity style={styles.callSticker}>
+                            <Icon size={30} name="phone" />
+                            <Text style={{ fontSize: 10 }}>CALL</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ListItem>
             </View>
         </ScrollView>
 
@@ -124,6 +170,14 @@ export default function ProductDetails(props) {
     );
 }
 const styles = StyleSheet.create({
+    card: {
+        backgroundColor: "#E8E8E8",
+        height: height / 4,
+        width: width,
+        backgroundColor: "#F8F8F8",
+        borderRadius: 10,
+        elevation: 10
+    },
     imageStyle: {
         width: width,
         height: height / 2.5
@@ -157,10 +211,10 @@ const styles = StyleSheet.create({
     },
     imageText2: {
         color: customColors.dark,
-        fontWeight : "100",
+        fontWeight: "100",
         paddingRight: 10,
         paddingBottom: 10,
-        fontSize : 10,
+        fontSize: 10
     },
     OuterText: {
         fontSize: 15,
@@ -168,5 +222,26 @@ const styles = StyleSheet.create({
         color: customColors.dark,
         paddingRight: 10,
         paddingBottom: 10
+    },
+    mapSticker: {
+        height: 60,
+        width: 50,
+        backgroundColor: customColors.light,
+        marginRight: 10,
+        alignItems: "center",
+        justifyContent: "center",
+        borderTopRightRadius: 15,
+        elevation: 10
+    },
+
+    callSticker: {
+        height: 60,
+        width: 50,
+        backgroundColor: customColors.light,
+        marginRight: 70,
+        alignItems: "center",
+        justifyContent: "center",
+        borderTopRightRadius: 15,
+        elevation: 10
     }
 });
