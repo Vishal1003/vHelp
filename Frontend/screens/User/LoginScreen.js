@@ -24,8 +24,8 @@ const LoginScreen = ({ navigation }) => {
     const dispatch = useDispatch();
 
     // Login Data
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("ritiksingla28@gmail.com");
+    const [password, setPassword] = useState("ritiksingla28");
 
     // Component Data
     const [data, setData] = useState({
