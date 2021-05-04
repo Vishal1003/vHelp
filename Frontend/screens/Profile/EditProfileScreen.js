@@ -35,6 +35,15 @@ const EditProfileScreen = ({ navigation }) => {
     const [name, setName] = useState("");
     const [contact, setContact] = useState("");
     const [imageType, setImageType] = useState("");
+
+    // Only for user-type data
+    const [userAddress, setUserAddress] = useState({
+        country: "",
+        city: "",
+        street: "",
+        postal_code: ""
+    });
+
     const token = useSelector((state) => state.token);
     const dispatch = useDispatch();
     useEffect(() => {
@@ -53,6 +62,9 @@ const EditProfileScreen = ({ navigation }) => {
         }
         if (user_data.email != undefined) {
             setEmail(user_data.email);
+        }
+        if (user_data.address != undefined) {
+            setUserAddress({ ...userAddress, ...user_data.address });
         }
     }, [user_data]);
     const takePhotoFromCamera = async () => {
@@ -99,6 +111,12 @@ const EditProfileScreen = ({ navigation }) => {
         form.append("name", name);
         form.append("email", email);
         form.append("contact", contact);
+        if (!token.isVendor) {
+            form.append("street", userAddress.street);
+            form.append("country", userAddress.country);
+            form.append("city", userAddress.city);
+            form.append("postal_code", userAddress.postal_code);
+        }
         (async () => {
             const token = await AsyncStorage.getItem("jwt");
             const requestConfig = {
@@ -108,14 +126,18 @@ const EditProfileScreen = ({ navigation }) => {
                 }
             };
             try {
-                let response = await axios.put(
-                    `${REST_API_URL}/api/vendor/vendor`,
-                    form,
-                    requestConfig
-                );
+                let url = `${REST_API_URL}/api/vendor/vendor`;
+                if (!token.isVendor) {
+                    url = `${REST_API_URL}/api/user/user`;
+                }
+                let response = await axios.put(url, form, requestConfig);
                 response = response.data;
                 if (response.success === true) {
-                    updateCurrentUser(dispatch, response.vendor);
+                    if (token.isVendor) {
+                        updateCurrentUser(dispatch, response.vendor);
+                    } else {
+                        updateCurrentUser(dispatch, response.user);
+                    }
                     ToastAndroid.show(response.message, ToastAndroid.SHORT);
                     navigation.goBack();
                 } else {
@@ -255,7 +277,11 @@ const EditProfileScreen = ({ navigation }) => {
                             <TextInput
                                 placeholder="Country"
                                 placeholderTextColor="#666666"
+                                value={userAddress.country}
                                 autoCorrect={false}
+                                onChangeText={(val) => {
+                                    setUserAddress({ ...userAddress, country: val });
+                                }}
                                 style={styles.textInput}
                             />
                         </View>
@@ -266,7 +292,11 @@ const EditProfileScreen = ({ navigation }) => {
                             <TextInput
                                 placeholder="City"
                                 placeholderTextColor="#666666"
+                                value={userAddress.city}
                                 autoCorrect={false}
+                                onChangeText={(val) => {
+                                    setUserAddress({ ...userAddress, city: val });
+                                }}
                                 style={styles.textInput}
                             />
                         </View>
@@ -276,7 +306,11 @@ const EditProfileScreen = ({ navigation }) => {
                             <Icon name="home" size={20} />
                             <TextInput
                                 placeholder="Street"
+                                value={userAddress.street}
                                 placeholderTextColor="#666666"
+                                onChangeText={(val) => {
+                                    setUserAddress({ ...userAddress, street: val });
+                                }}
                                 autoCorrect={false}
                                 style={styles.textInput}
                             />
@@ -287,7 +321,11 @@ const EditProfileScreen = ({ navigation }) => {
                             <Icon name="post-outline" size={20} />
                             <TextInput
                                 placeholder="Postal Code"
+                                value={userAddress.postal_code}
                                 placeholderTextColor="#666666"
+                                onChangeText={(val) => {
+                                    setUserAddress({ ...userAddress, postal_code: val });
+                                }}
                                 autoCorrect={false}
                                 style={styles.textInput}
                             />
