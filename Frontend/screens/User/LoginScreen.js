@@ -6,7 +6,8 @@ import {
     TextInput,
     Platform,
     StyleSheet,
-    StatusBar
+    StatusBar,
+    ToastAndroid
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -40,6 +41,17 @@ const LoginScreen = ({ navigation }) => {
             navigation.navigate("Main");
         }
     }, [is_authenticated]);
+
+    useEffect(() => {
+        if (error_message.length > 0) {
+            ToastAndroid.show(error_message, ToastAndroid.SHORT);
+        }
+    }, [error_message]);
+    useEffect(() => {
+        if (success_message.length > 0) {
+            ToastAndroid.show(success_message, ToastAndroid.SHORT);
+        }
+    }, [success_message]);
 
     const textInputChange = (email) => {
         let val = email.trim().toLowerCase();
@@ -160,19 +172,14 @@ const LoginScreen = ({ navigation }) => {
                         )}
                     </TouchableOpacity>
                 </View>
+                {data.isValidPassword ? null : (
+                    <Animatable.View animation="fadeInLeft" duration={500}>
+                        <Text style={styles.errorMsg}>invalid password</Text>
+                    </Animatable.View>
+                )}
                 <TouchableOpacity>
                     <Text style={{ color: customColor.dark, marginTop: 15 }}>Forgot password?</Text>
                 </TouchableOpacity>
-                {error_message != "" && (
-                    <Animatable.View animation="fadeInLeft" duration={500}>
-                        <Text style={styles.errorMsg}>{error_message}</Text>
-                    </Animatable.View>
-                )}
-                {success_message != "" && (
-                    <Animatable.View animation="fadeInLeft" duration={500}>
-                        <Text style={styles.successMsg}>{success_message}</Text>
-                    </Animatable.View>
-                )}
                 <View style={styles.button}>
                     <TouchableOpacity onPress={handleSubmit} style={[styles.buttonContainer]}>
                         <Text style={styles.buttonText}>Login</Text>

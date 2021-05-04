@@ -1,15 +1,22 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
     View,
     Text,
     TouchableOpacity,
     ImageBackground,
     TextInput,
+    ToastAndroid,
     StyleSheet,
     Platform,
     ScrollView
 } from "react-native";
+
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { REST_API_URL } from "../../constants/URLs";
+const FormData = require("form-data");
+import { updateCurrentUser } from "../../redux/actions/AuthAction";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -19,7 +26,7 @@ import Animated from "react-native-reanimated";
 
 import * as ImagePicker from "expo-image-picker";
 
-const EditProfileScreen = () => {
+const EditProfileScreen = ({ navigation }) => {
     const [image, setImage] = useState(
         "https://drive.google.com/uc?id=18CXkz-Lqgi04iiL9jV3CtRuoYg6lb3RV"
     );
@@ -27,10 +34,16 @@ const EditProfileScreen = () => {
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
     const [contact, setContact] = useState("");
+    const [imageType, setImageType] = useState("");
     const token = useSelector((state) => state.token);
+    const dispatch = useDispatch();
     useEffect(() => {
         if (user_data.imageUrl != undefined) {
             setImage(user_data.imageUrl);
+            let __image_type__ = user_data.imageUrl.match(/(jpeg|png|jpg)/g);
+            if (__image_type__ != null) {
+                setImageType(__image_type__[0]);
+            }
         }
         if (user_data.contact != undefined) {
             setContact(user_data.contact);
@@ -52,6 +65,10 @@ const EditProfileScreen = () => {
 
         if (!result.cancelled) {
             setImage(result.uri);
+            let __image_type__ = await result.uri.match(/(jpeg|png|jpg)/g);
+            if (imageType != null) {
+                setImageType(__image_type__[0]);
+            }
         }
     };
 
@@ -64,10 +81,51 @@ const EditProfileScreen = () => {
         });
         if (!result.cancelled) {
             setImage(result.uri);
+            let __image_type__ = await result.uri.match(/(jpeg|png|jpg)/g);
+            if (imageType != null) {
+                setImageType(__image_type__[0]);
+            }
         }
     };
-
-    const handleOnPressSubmit = async () => {};
+    const handleOnPressSubmit = async () => {
+        let form = new FormData();
+        if (imageType != "") {
+            form.append("image", {
+                name: "image",
+                type: `image/${imageType}`,
+                uri: image
+            });
+        }
+        form.append("name", name);
+        form.append("email", email);
+        form.append("contact", contact);
+        (async () => {
+            const token = await AsyncStorage.getItem("jwt");
+            const requestConfig = {
+                headers: {
+                    "Content-Type": `mutlipart/form-data; boundary=${form._boundary}`,
+                    Authorization: `Bearer ${token}`
+                }
+            };
+            try {
+                let response = await axios.put(
+                    `${REST_API_URL}/api/vendor/vendor`,
+                    form,
+                    requestConfig
+                );
+                response = response.data;
+                if (response.success === true) {
+                    updateCurrentUser(dispatch, response.vendor);
+                    ToastAndroid.show(response.message, ToastAndroid.SHORT);
+                    navigation.goBack();
+                } else {
+                    ToastAndroid.show(response.message, ToastAndroid.SHORT);
+                }
+            } catch (error) {
+                console.log("API call error", error);
+            }
+        })();
+    };
 
     const renderInner = () => (
         <View style={styles.panel}>

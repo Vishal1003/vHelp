@@ -16,8 +16,8 @@ const ProfileScreen = ({ navigation }) => {
     const [image, setImage] = useState(
         "https://drive.google.com/uc?id=18CXkz-Lqgi04iiL9jV3CtRuoYg6lb3RV"
     );
-    const [name, setName] = useState("John Doe");
-    const [contact, setContact] = useState("+91-900000009");
+    const [name, setName] = useState("Name");
+    const [contact, setContact] = useState("");
 
     useEffect(() => {
         if (user_data.imageUrl != undefined) {

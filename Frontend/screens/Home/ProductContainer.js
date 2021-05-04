@@ -6,6 +6,7 @@ import {
     SafeAreaView,
     ScrollView,
     Dimensions,
+    ToastAndroid,
     ActivityIndicator
 } from "react-native";
 import { Header, Icon, Item, Input, Text } from "native-base";
@@ -14,6 +15,7 @@ import SearchedProduct from "../../components/Card/SearchedProduct";
 import Banner from "../../components/Shared/Banner";
 import CategoryFilter from "./CategoryFilter";
 
+import { useSelector } from "react-redux";
 // const data = require("../../assets/data/products.json");
 // const itemCategory = require("../../assets/data/categories.json");
 
@@ -33,6 +35,9 @@ const ProductContainer = (props) => {
     const [initialState, setInitialState] = useState([]);
     const [productsCtg, setProductsCtg] = useState([]);
     const [isLoading, setIsLoading] = useState();
+
+    const error_message = useSelector((state) => state.error_message);
+    const success_message = useSelector((state) => state.success_message);
 
     useEffect(() => {
         const fetchAPI = async () => {
@@ -66,6 +71,17 @@ const ProductContainer = (props) => {
             setInitialState();
         };
     }, []);
+
+    useEffect(() => {
+        if (error_message.length > 0) {
+            ToastAndroid.show(error_message, ToastAndroid.SHORT);
+        }
+    }, [error_message]);
+    useEffect(() => {
+        if (success_message.length > 0) {
+            ToastAndroid.show(success_message, ToastAndroid.SHORT);
+        }
+    }, [success_message]);
 
     const searchProduct = (text) => {
         setProductsFiltered(
@@ -128,8 +144,8 @@ const ProductContainer = (props) => {
         </SafeAreaView>
     ) : (
         <SafeAreaView>
-            <Header searchBar rounded style={{backgroundColor: "#F8F8F8", elevation: 10}}>
-                <Item style={{backgroundColor: "#E8E8E8", borderRadius: 20}}>
+            <Header searchBar rounded style={{ backgroundColor: "#F8F8F8", elevation: 10 }}>
+                <Item style={{ backgroundColor: "#E8E8E8", borderRadius: 20 }}>
                     <Icon name="ios-search" />
                     <Input
                         placeholder="Search"
