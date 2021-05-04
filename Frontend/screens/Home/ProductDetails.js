@@ -9,7 +9,7 @@ import {
     ImageBackground,
     TouchableOpacity
 } from "react-native";
-import { Text } from "native-base";
+import { Image, Text } from "native-base";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { REST_API_URL } from "../../constants/URLs";
@@ -17,6 +17,7 @@ import axios from "axios";
 import { ListItem } from "react-native-elements";
 import StarRating from "../../components/Card/StarRating";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import SimilarProducts from "../../components/Card/SimilarProducts";
 
 const { height, width } = Dimensions.get("window");
 const customColors = require("../../constants/Color");
@@ -36,14 +37,21 @@ export default function ProductDetails(props) {
                 let response = await axios.get(
                     `${REST_API_URL}/api/index/category/${item.category._id}`
                 );
-                setSimilarProducts(response.data);
+                if (response.data.success == true) {
+                    setSimilarProducts(response.data.data);
+                    // console.log(similarProducts);
+                }
             } catch (e) {
                 console.log("API error");
             }
         };
 
         fetchAPI();
-    });
+
+        return () => {
+            setSimilarProducts([]);
+        };
+    }, []);
 
     const handleDeleteItem = () => {
         (async () => {
@@ -74,6 +82,7 @@ export default function ProductDetails(props) {
     };
     return (
         <ScrollView>
+            {/* Product Image */}
             <View style={{ borderColor: "gainsboro", borderBottomWidth: 1 }}>
                 <ImageBackground style={styles.imageStyle} source={{ uri: item.imageUrl }}>
                     <View style={styles.imageTextConatiner}>
@@ -90,6 +99,7 @@ export default function ProductDetails(props) {
                 </ImageBackground>
             </View>
 
+            {/* Product  Details*/}
             <ListItem>
                 <ListItem.Content>
                     <ListItem.Subtitle style={{ fontSize: 10, marginBottom: height / 50 }}>
@@ -145,7 +155,9 @@ export default function ProductDetails(props) {
                     horizontal={true}
                     style={{ backgroundColor: "#f2f2f2" }}
                 >
-                    <View></View>
+                    {/* {similarProducts.map((product, i) => {
+                        return <Image source={{ uri: product.imageUrl }} key={i} />;
+                    })} */}
                 </ScrollView>
             </View>
 
