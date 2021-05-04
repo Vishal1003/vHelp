@@ -5,25 +5,29 @@ import { View, SafeAreaView, StyleSheet, ScrollView } from "react-native";
 import { Avatar, Title, Caption, Text, TouchableRipple } from "react-native-paper";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import { logoutUser } from "../../redux/actions/AuthAction";
-
-const arrayBufferToBase64 = (buffer) => {
-    return require("base64-arraybuffer").encode(buffer);
-};
 
 const ProfileScreen = ({ navigation }) => {
     const user_data = useSelector((state) => state.user_data);
     const dispatch = useDispatch();
+    const token = useSelector((state) => state.token);
     const [isLoggedIn, setIsLoggedIn] = useState(true);
-    const [image, setImage] = useState("https://i.pravatar.cc/150?img=6");
+    const [image, setImage] = useState(
+        "https://drive.google.com/uc?id=18CXkz-Lqgi04iiL9jV3CtRuoYg6lb3RV"
+    );
+    const [name, setName] = useState("Name");
+    const [contact, setContact] = useState("");
+
     useEffect(() => {
-        if (isLoggedIn && user_data.hasOwnProperty("image")) {
-            var base64Flag = "data:";
-            base64Flag += user_data.image.contentType;
-            base64Flag += ";base64,";
-            setImage(base64Flag + arrayBufferToBase64(user_data.image.data.data));
+        if (user_data.imageUrl != undefined) {
+            setImage(user_data.imageUrl);
+        }
+        if (user_data.contact != undefined) {
+            setContact(user_data.contact);
+        }
+        if (user_data.name != undefined) {
+            setName(user_data.name);
         }
     }, [user_data]);
     const handleLogout = () => {
@@ -65,23 +69,23 @@ const ProfileScreen = ({ navigation }) => {
                                     }
                                 ]}
                             >
-                                {user_data.hasOwnProperty("name") ? user_data.name : "User"}
+                                {name}
                             </Title>
-                            <Caption style={styles.caption}>
-                                @{user_data.hasOwnProperty("name") ? user_data.name : "user"}
-                            </Caption>
+                            <Caption style={styles.caption}>@{name}</Caption>
                         </View>
                     </View>
                 </View>
 
                 <View style={styles.userInfoSection}>
-                    <View style={styles.row}>
-                        <Icon name="map-marker-radius" color="#777777" size={20} />
-                        <Text style={{ color: "#777777", marginLeft: 20 }}>Kolkata, India</Text>
-                    </View>
+                    {!token.isVendor && (
+                        <View style={styles.row}>
+                            <Icon name="map-marker-radius" color="#777777" size={20} />
+                            <Text style={{ color: "#777777", marginLeft: 20 }}>Kolkata, India</Text>
+                        </View>
+                    )}
                     <View style={styles.row}>
                         <Icon name="phone" color="#777777" size={20} />
-                        <Text style={{ color: "#777777", marginLeft: 20 }}>+91-900000009</Text>
+                        <Text style={{ color: "#777777", marginLeft: 20 }}>{contact}</Text>
                     </View>
                     <View style={styles.row}>
                         <Icon name="email" color="#777777" size={20} />

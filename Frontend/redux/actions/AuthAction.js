@@ -14,6 +14,13 @@ export const loginCurrentUser = (decoded, user_data) => {
     };
 };
 
+export const updateCurrentUser = (dispatch, user_data) => {
+    dispatch({
+        type: ACTION_TYPES.UPDATE_CURRENT_USER,
+        user_data: user_data
+    });
+};
+
 export const setErrorMessage = (error_message) => {
     return {
         type: ACTION_TYPES.SET_ERROR_MESSAGE,

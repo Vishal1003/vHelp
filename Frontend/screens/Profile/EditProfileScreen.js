@@ -1,41 +1,70 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
     View,
     Text,
     TouchableOpacity,
     ImageBackground,
     TextInput,
+    ToastAndroid,
     StyleSheet,
     Platform,
     ScrollView
 } from "react-native";
 
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { REST_API_URL } from "../../constants/URLs";
+const FormData = require("form-data");
+import { updateCurrentUser } from "../../redux/actions/AuthAction";
+
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Feather from "react-native-vector-icons/Feather";
 
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 
 import * as ImagePicker from "expo-image-picker";
 
-const arrayBufferToBase64 = (buffer) => {
-    return require("base64-arraybuffer").encode(buffer);
-};
-
-const EditProfileScreen = () => {
-    const [image, setImage] = useState("https://i.pravatar.cc/150?img=6");
+const EditProfileScreen = ({ navigation }) => {
+    const [image, setImage] = useState(
+        "https://drive.google.com/uc?id=18CXkz-Lqgi04iiL9jV3CtRuoYg6lb3RV"
+    );
     const user_data = useSelector((state) => state.user_data);
-    const [email, setEmail] = useState(user_data.email);
-    const [name, setName] = useState(user_data.name);
+    const [email, setEmail] = useState("");
+    const [name, setName] = useState("");
+    const [contact, setContact] = useState("");
+    const [imageType, setImageType] = useState("");
+
+    // Only for user-type data
+    const [userAddress, setUserAddress] = useState({
+        country: "",
+        city: "",
+        street: "",
+        postal_code: ""
+    });
+
     const token = useSelector((state) => state.token);
+    const dispatch = useDispatch();
     useEffect(() => {
-        if (user_data.hasOwnProperty("image")) {
-            var base64Flag = "data:";
-            base64Flag += user_data.image.contentType;
-            base64Flag += ";base64,";
-            setImage(base64Flag + arrayBufferToBase64(user_data.image.data.data));
+        if (user_data.imageUrl != undefined) {
+            setImage(user_data.imageUrl);
+            let __image_type__ = user_data.imageUrl.match(/(jpeg|png|jpg)/g);
+            if (__image_type__ != null) {
+                setImageType(__image_type__[0]);
+            }
+        }
+        if (user_data.contact != undefined) {
+            setContact(user_data.contact);
+        }
+        if (user_data.name != undefined) {
+            setName(user_data.name);
+        }
+        if (user_data.email != undefined) {
+            setEmail(user_data.email);
+        }
+        if (user_data.address != undefined) {
+            setUserAddress({ ...userAddress, ...user_data.address });
         }
     }, [user_data]);
     const takePhotoFromCamera = async () => {
@@ -48,6 +77,10 @@ const EditProfileScreen = () => {
 
         if (!result.cancelled) {
             setImage(result.uri);
+            let __image_type__ = await result.uri.match(/(jpeg|png|jpg)/g);
+            if (imageType != null) {
+                setImageType(__image_type__[0]);
+            }
         }
     };
 
@@ -60,7 +93,60 @@ const EditProfileScreen = () => {
         });
         if (!result.cancelled) {
             setImage(result.uri);
+            let __image_type__ = await result.uri.match(/(jpeg|png|jpg)/g);
+            if (imageType != null) {
+                setImageType(__image_type__[0]);
+            }
         }
+    };
+    const handleOnPressSubmit = async () => {
+        let form = new FormData();
+        if (imageType != "") {
+            form.append("image", {
+                name: "image",
+                type: `image/${imageType}`,
+                uri: image
+            });
+        }
+        form.append("name", name);
+        form.append("email", email);
+        form.append("contact", contact);
+        if (!token.isVendor) {
+            form.append("street", userAddress.street);
+            form.append("country", userAddress.country);
+            form.append("city", userAddress.city);
+            form.append("postal_code", userAddress.postal_code);
+        }
+        (async () => {
+            const token = await AsyncStorage.getItem("jwt");
+            const requestConfig = {
+                headers: {
+                    "Content-Type": `mutlipart/form-data; boundary=${form._boundary}`,
+                    Authorization: `Bearer ${token}`
+                }
+            };
+            try {
+                let url = `${REST_API_URL}/api/vendor/vendor`;
+                if (!token.isVendor) {
+                    url = `${REST_API_URL}/api/user/user`;
+                }
+                let response = await axios.put(url, form, requestConfig);
+                response = response.data;
+                if (response.success === true) {
+                    if (token.isVendor) {
+                        updateCurrentUser(dispatch, response.vendor);
+                    } else {
+                        updateCurrentUser(dispatch, response.user);
+                    }
+                    ToastAndroid.show(response.message, ToastAndroid.SHORT);
+                    navigation.goBack();
+                } else {
+                    ToastAndroid.show(response.message, ToastAndroid.SHORT);
+                }
+            } catch (error) {
+                console.log("API call error", error);
+            }
+        })();
     };
 
     const renderInner = () => (
@@ -172,13 +258,30 @@ const EditProfileScreen = () => {
                             style={styles.textInput}
                         />
                     </View>
+                    <View style={styles.action}>
+                        <FontAwesome name="phone" size={20} />
+                        <TextInput
+                            placeholder="Contact"
+                            placeholderTextColor="#666666"
+                            autoCorrect={false}
+                            value={contact}
+                            onChangeText={(val) => {
+                                setContact(val);
+                            }}
+                            style={styles.textInput}
+                        />
+                    </View>
                     {!token.isVendor && (
                         <View style={styles.action}>
                             <FontAwesome name="globe" size={20} />
                             <TextInput
                                 placeholder="Country"
                                 placeholderTextColor="#666666"
+                                value={userAddress.country}
                                 autoCorrect={false}
+                                onChangeText={(val) => {
+                                    setUserAddress({ ...userAddress, country: val });
+                                }}
                                 style={styles.textInput}
                             />
                         </View>
@@ -189,7 +292,11 @@ const EditProfileScreen = () => {
                             <TextInput
                                 placeholder="City"
                                 placeholderTextColor="#666666"
+                                value={userAddress.city}
                                 autoCorrect={false}
+                                onChangeText={(val) => {
+                                    setUserAddress({ ...userAddress, city: val });
+                                }}
                                 style={styles.textInput}
                             />
                         </View>
@@ -199,7 +306,11 @@ const EditProfileScreen = () => {
                             <Icon name="home" size={20} />
                             <TextInput
                                 placeholder="Street"
+                                value={userAddress.street}
                                 placeholderTextColor="#666666"
+                                onChangeText={(val) => {
+                                    setUserAddress({ ...userAddress, street: val });
+                                }}
                                 autoCorrect={false}
                                 style={styles.textInput}
                             />
@@ -210,13 +321,17 @@ const EditProfileScreen = () => {
                             <Icon name="post-outline" size={20} />
                             <TextInput
                                 placeholder="Postal Code"
+                                value={userAddress.postal_code}
                                 placeholderTextColor="#666666"
+                                onChangeText={(val) => {
+                                    setUserAddress({ ...userAddress, postal_code: val });
+                                }}
                                 autoCorrect={false}
                                 style={styles.textInput}
                             />
                         </View>
                     )}
-                    <TouchableOpacity style={styles.commandButton} onPress={() => {}}>
+                    <TouchableOpacity style={styles.commandButton} onPress={handleOnPressSubmit}>
                         <Text style={styles.panelButtonTitle}>Submit</Text>
                     </TouchableOpacity>
                 </Animated.View>

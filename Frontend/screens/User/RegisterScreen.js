@@ -3,6 +3,7 @@ import {
     View,
     Text,
     TouchableOpacity,
+    ToastAndroid,
     TextInput,
     Platform,
     StyleSheet,
@@ -36,10 +37,17 @@ const RegisterScreen = ({ navigation }) => {
 
     const [usertype, setUsertype] = useState("0");
     const [isValidType, setIsValidType] = useState(false);
-
+    useEffect(() => {
+        if (error_message.length > 0) {
+            ToastAndroid.show(error_message, ToastAndroid.SHORT);
+        }
+    }, [error_message]);
     useEffect(() => {
         if (success_message === MESSAGES.REGISTERED_SUCCESSFULLY) {
             navigation.navigate("LoginScreen");
+        }
+        if (success_message.length > 0) {
+            ToastAndroid.show(success_message, ToastAndroid.SHORT);
         }
     }, [success_message]);
 
@@ -258,18 +266,6 @@ const RegisterScreen = ({ navigation }) => {
                             )}
                         </TouchableOpacity>
                     </View>
-
-                    {/* ERROR MSGES */}
-                    {error_message != "" && (
-                        <Animatable.View animation="fadeInLeft" duration={500}>
-                            <Text style={styles.errorMsg}>{error_message}</Text>
-                        </Animatable.View>
-                    )}
-                    {success_message != "" && (
-                        <Animatable.View animation="fadeInLeft" duration={500}>
-                            <Text style={styles.successMsg}>{success_message}</Text>
-                        </Animatable.View>
-                    )}
 
                     {/* BUTTON_GRP */}
                     <View style={styles.button}>

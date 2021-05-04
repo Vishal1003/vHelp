@@ -19,6 +19,11 @@ export default function AuthReducer(state = initialState, action) {
                 error_message: "",
                 success_message: MESSAGES.LOGGEDIN_SUCCESSFULLY
             };
+        case ACTION_TYPES.UPDATE_CURRENT_USER:
+            return {
+                ...state,
+                user_data: action.user_data
+            };
         case ACTION_TYPES.SET_ERROR_MESSAGE:
             return {
                 ...state,
