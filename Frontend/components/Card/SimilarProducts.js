@@ -1,18 +1,16 @@
 import { Image } from "native-base";
-import React, { useEffect } from "react";
+import React from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { ListItem } from "react-native-elements";
 
 const { height, width } = Dimensions.get("screen");
 export default function SimilarProducts(props) {
     const similarProducts = props.products;
-    useEffect(() => {
-        console.log(similarProducts.imageUrl);
-    }, []);
+
     return (
         <View>
-            {/* <Image style={styles.image} source={{ uri: `${similarProducts.imageUrl}` }} /> */}
-            {/* <View style={styles.cardContent}>
+            <Image style={styles.image} source={{ uri: `${similarProducts.imageUrl}` }} />
+            <View style={styles.cardContent}>
                 <ListItem
                     style={[styles.listItemStyle, { marginTop: 0 }]}
                     containerStyle={{ borderRadius: 10 }}
@@ -30,7 +28,7 @@ export default function SimilarProducts(props) {
                     <ListItem.Subtitle style={{ fontSize: 10 }}>Contact :</ListItem.Subtitle>
                     <ListItem.Title>{similarProducts.name}</ListItem.Title>
                 </ListItem>
-            </View> */}
+            </View>
         </View>
     );
 }

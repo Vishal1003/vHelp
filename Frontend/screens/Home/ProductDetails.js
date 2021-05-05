@@ -15,7 +15,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { REST_API_URL } from "../../constants/URLs";
 import axios from "axios";
-import { ListItem } from "react-native-elements";
+import { Avatar, ListItem } from "react-native-elements";
 import StarRating from "../../components/Card/StarRating";
 import Icon from "react-native-vector-icons/MaterialIcons";
 // import SimilarProducts from "../../components/Card/SimilarProducts";
@@ -28,8 +28,8 @@ export default function ProductDetails(props) {
     const [similarProducts, setSimilarProducts] = useState([]);
     const [vendorProducts, setVendorProducts] = useState([]);
     const scrollRef = useRef();
-    let similarProductImages = [];
-    let vendorProductImages = [];
+    let similarProductsData = [];
+    let vendorProductData = [];
 
     // const token = useSelector((state) => state.token);
     useEffect(() => {
@@ -86,12 +86,17 @@ export default function ProductDetails(props) {
     //     })();
     // };
     if (similarProducts.length > 0) {
-        similarProductImages = [];
+        similarProductsData = [];
         similarProducts.forEach((item) => {
-            similarProductImages.push(
-                <TouchableOpacity
+            similarProductsData.push(
+                <ListItem
+                    containerStyle={{
+                        borderRadius: 20,
+                        width: width / 1.5,
+                        marginRight: 10,
+                        elevation: 5
+                    }}
                     key={item._id}
-                    style={[styles.card, { height: 100, width: 200, marginHorizontal: 10 }]}
                     onPress={() => {
                         setItem(item);
                         scrollRef.current.scrollTo({
@@ -100,22 +105,38 @@ export default function ProductDetails(props) {
                         });
                     }}
                 >
-                    <Image
-                        key={item._id}
-                        style={{ height: 100, width: 200 }}
-                        source={{ uri: item.imageUrl }}
-                    />
-                </TouchableOpacity>
+                    <Avatar size={70} source={{ uri: item.imageUrl }} />
+                    <ListItem.Content>
+                        <ListItem.Title style={{ fontWeight: "bold" }}>{item.name}</ListItem.Title>
+                        <ListItem.Subtitle>
+                            {item.description.substring(0, Math.min(item.description.length, 15))}
+                            ...
+                        </ListItem.Subtitle>
+                        <ListItem.Subtitle style={{ fontSize: 12 }}>
+                            Price :{" "}
+                            <ListItem.Subtitle style={{ fontWeight: "bold", color: "#000" }}>
+                                {" "}
+                                ₹ {item.cost}
+                            </ListItem.Subtitle>
+                        </ListItem.Subtitle>
+                        <StarRating ratings={3} reviews={99} />
+                    </ListItem.Content>
+                </ListItem>
             );
         });
     }
     if (vendorProducts.length > 0) {
-        vendorProductImages = [];
+        vendorProductData = [];
         vendorProducts.forEach((item) => {
-            vendorProductImages.push(
-                <TouchableOpacity
+            vendorProductData.push(
+                <ListItem
+                    containerStyle={{
+                        borderRadius: 20,
+                        width: width / 1.5,
+                        marginRight: 10,
+                        elevation: 5
+                    }}
                     key={item._id}
-                    style={[styles.card, { height: 100, width: 200, marginHorizontal: 10 }]}
                     onPress={() => {
                         setItem(item);
                         scrollRef.current.scrollTo({
@@ -124,12 +145,23 @@ export default function ProductDetails(props) {
                         });
                     }}
                 >
-                    <Image
-                        key={item._id}
-                        style={{ height: 100, width: 200 }}
-                        source={{ uri: item.imageUrl }}
-                    />
-                </TouchableOpacity>
+                    <Avatar size={70} source={{ uri: item.imageUrl }} />
+                    <ListItem.Content>
+                        <ListItem.Title style={{ fontWeight: "bold" }}>{item.name}</ListItem.Title>
+                        <ListItem.Subtitle>
+                            {item.description.substring(0, Math.min(item.description.length, 15))}
+                            ...
+                        </ListItem.Subtitle>
+                        <ListItem.Subtitle style={{ fontSize: 12 }}>
+                            Price :{" "}
+                            <ListItem.Subtitle style={{ fontWeight: "bold", color: "#000" }}>
+                                {" "}
+                                ₹ {item.cost}
+                            </ListItem.Subtitle>
+                        </ListItem.Subtitle>
+                        <StarRating ratings={3} reviews={99} />
+                    </ListItem.Content>
+                </ListItem>
             );
         });
     }
@@ -196,7 +228,7 @@ export default function ProductDetails(props) {
                     {
                         backgroundColor: "#fff",
                         marginTop: 10,
-                        height: 200
+                        height: 200,
                     }
                 ]}
             >
@@ -212,7 +244,7 @@ export default function ProductDetails(props) {
                 >
                     {similarProducts.length > 0 && (
                         <View style={{ flex: 1, flexDirection: "row" }}>
-                            {similarProductImages.map((image) => {
+                            {similarProductsData.map((image) => {
                                 return image;
                             })}
                         </View>
@@ -242,7 +274,7 @@ export default function ProductDetails(props) {
                 >
                     {vendorProducts.length > 0 && (
                         <View style={{ flex: 1, flexDirection: "row" }}>
-                            {vendorProductImages.map((image) => {
+                            {vendorProductData.map((image) => {
                                 return image;
                             })}
                         </View>
@@ -257,7 +289,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#E8E8E8",
         height: height / 4,
         width: width,
-        backgroundColor: "#F8F8F8",
+        // backgroundColor: "#F8F8F8",
         borderRadius: 10,
         elevation: 10
     },
@@ -338,5 +370,37 @@ const styles = StyleSheet.create({
     center: {
         justifyContent: "center",
         alignItems: "center"
+    },
+    image: {
+        height: height / 3,
+        width: width / 3,
+        borderRadius: 10,
+        margin: 10,
+        marginRight: 0
+    },
+    cardContent: {
+        width: (2 * width) / 3,
+        margin: 10,
+        marginLeft: 5,
+        backgroundColor: "#F8F8F8",
+        borderRadius: 10
+    },
+
+    listItemStyle: {
+        elevation: 2,
+        marginTop: 5
+    },
+    listContainer: {
+        flex: 1,
+        flexDirection: "row",
+        alignItems: "flex-start",
+        flexWrap: "wrap",
+        backgroundColor: "gainsboro",
+        marginBottom: 50
+    },
+
+    cardImage: {
+        width: width,
+        height: height / 10
     }
 });
