@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import {
     StyleSheet,
@@ -7,9 +7,10 @@ import {
     ToastAndroid,
     View,
     ImageBackground,
-    TouchableOpacity
+    TouchableOpacity,
+    Image,
+    Text
 } from "react-native";
-import { Image, Text } from "native-base";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { REST_API_URL } from "../../constants/URLs";
@@ -17,7 +18,7 @@ import axios from "axios";
 import { ListItem } from "react-native-elements";
 import StarRating from "../../components/Card/StarRating";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import SimilarProducts from "../../components/Card/SimilarProducts";
+// import SimilarProducts from "../../components/Card/SimilarProducts";
 
 const { height, width } = Dimensions.get("window");
 const customColors = require("../../constants/Color");
@@ -26,12 +27,12 @@ export default function ProductDetails(props) {
     const [item, setItem] = React.useState(props.route.params.item);
     const [similarProducts, setSimilarProducts] = useState([]);
     const [vendorProducts, setVendorProducts] = useState([]);
+    const scrollRef = useRef();
+    let similarProductImages = [];
+    let vendorProductImages = [];
 
-    const token = useSelector((state) => state.token);
-
+    // const token = useSelector((state) => state.token);
     useEffect(() => {
-        // console.log(item);
-
         const fetchAPI = async () => {
             try {
                 let response = await axios.get(
@@ -39,49 +40,101 @@ export default function ProductDetails(props) {
                 );
                 if (response.data.success == true) {
                     setSimilarProducts(response.data.data);
-                    // console.log(similarProducts);
+                }
+
+                response = await axios.get(`${REST_API_URL}/api/index/seller/${item.seller._id}`);
+                if (response.data.success == true) {
+                    setVendorProducts(response.data.data);
                 }
             } catch (e) {
                 console.log("API error");
             }
         };
-
         fetchAPI();
 
         return () => {
             setSimilarProducts([]);
+            setVendorProducts([]);
         };
-    }, []);
+    }, [item]);
 
-    const handleDeleteItem = () => {
-        (async () => {
-            let unDecodedToken = await AsyncStorage.getItem("jwt");
-            const requestConfig = {
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                    Authorization: `Bearer ${unDecodedToken}`
-                }
-            };
-            try {
-                let response = await axios.delete(
-                    `${REST_API_URL}/api/vendor/item/${item._id}`,
-                    {},
-                    requestConfig
-                );
-                response = response.data;
-                if (response.success === true) {
-                    props.navigation.navigate("Home");
-                    ToastAndroid.show("Item removed successfully", ToastAndroid.SHORT);
-                } else {
-                    ToastAndroid.show(response.message, ToastAndroid.SHORT);
-                }
-            } catch (error) {
-                console.log("API call error", error);
-            }
-        })();
-    };
+    // const handleDeleteItem = () => {
+    //     (async () => {
+    //         let unDecodedToken = await AsyncStorage.getItem("jwt");
+    //         const requestConfig = {
+    //             headers: {
+    //                 "Content-Type": "application/x-www-form-urlencoded",
+    //                 Authorization: `Bearer ${unDecodedToken}`
+    //             }
+    //         };
+    //         try {
+    //             let response = await axios.delete(
+    //                 `${REST_API_URL}/api/vendor/item/${item._id}`,
+    //                 {},
+    //                 requestConfig
+    //             );
+    //             response = response.data;
+    //             if (response.success === true) {
+    //                 props.navigation.navigate("Home");
+    //                 ToastAndroid.show("Item removed successfully", ToastAndroid.SHORT);
+    //             } else {
+    //                 ToastAndroid.show(response.message, ToastAndroid.SHORT);
+    //             }
+    //         } catch (error) {
+    //             console.log("API call error", error);
+    //         }
+    //     })();
+    // };
+    if (similarProducts.length > 0) {
+        similarProductImages = [];
+        similarProducts.forEach((item) => {
+            similarProductImages.push(
+                <TouchableOpacity
+                    key={item._id}
+                    style={[styles.card, { height: 100, width: 200, marginHorizontal: 10 }]}
+                    onPress={() => {
+                        setItem(item);
+                        scrollRef.current.scrollTo({
+                            y: 0,
+                            animated: true
+                        });
+                    }}
+                >
+                    <Image
+                        key={item._id}
+                        style={{ height: 100, width: 200 }}
+                        source={{ uri: item.imageUrl }}
+                    />
+                </TouchableOpacity>
+            );
+        });
+    }
+    if (vendorProducts.length > 0) {
+        vendorProductImages = [];
+        vendorProducts.forEach((item) => {
+            vendorProductImages.push(
+                <TouchableOpacity
+                    key={item._id}
+                    style={[styles.card, { height: 100, width: 200, marginHorizontal: 10 }]}
+                    onPress={() => {
+                        setItem(item);
+                        scrollRef.current.scrollTo({
+                            y: 0,
+                            animated: true
+                        });
+                    }}
+                >
+                    <Image
+                        key={item._id}
+                        style={{ height: 100, width: 200 }}
+                        source={{ uri: item.imageUrl }}
+                    />
+                </TouchableOpacity>
+            );
+        });
+    }
     return (
-        <ScrollView>
+        <ScrollView ref={scrollRef}>
             {/* Product Image */}
             <View style={{ borderColor: "gainsboro", borderBottomWidth: 1 }}>
                 <ImageBackground style={styles.imageStyle} source={{ uri: item.imageUrl }}>
@@ -142,7 +195,8 @@ export default function ProductDetails(props) {
                     styles.card,
                     {
                         backgroundColor: "#fff",
-                        marginTop: 10
+                        marginTop: 10,
+                        height: 200
                     }
                 ]}
             >
@@ -152,12 +206,17 @@ export default function ProductDetails(props) {
                 <ScrollView
                     showsHorizontalScrollIndicator={false}
                     bounces={true}
+                    nestedScrollEnabled={true}
                     horizontal={true}
-                    style={{ backgroundColor: "#f2f2f2" }}
+                    style={{ backgroundColor: "#f2f2f2", padding: 10 }}
                 >
-                    {/* {similarProducts.map((product, i) => {
-                        return <Image source={{ uri: product.imageUrl }} key={i} />;
-                    })} */}
+                    {similarProducts.length > 0 && (
+                        <View style={{ flex: 1, flexDirection: "row" }}>
+                            {similarProductImages.map((image) => {
+                                return image;
+                            })}
+                        </View>
+                    )}
                 </ScrollView>
             </View>
 
@@ -166,7 +225,8 @@ export default function ProductDetails(props) {
                     styles.card,
                     {
                         backgroundColor: "#fff",
-                        marginTop: 10
+                        marginTop: 10,
+                        height: 200
                     }
                 ]}
             >
@@ -176,68 +236,20 @@ export default function ProductDetails(props) {
                 <ScrollView
                     showsHorizontalScrollIndicator={false}
                     bounces={true}
+                    nestedScrollEnabled={true}
                     horizontal={true}
-                    style={{ backgroundColor: "#f2f2f2" }}
+                    style={{ backgroundColor: "#f2f2f2", padding: 10 }}
                 >
-                    <View></View>
+                    {vendorProducts.length > 0 && (
+                        <View style={{ flex: 1, flexDirection: "row" }}>
+                            {vendorProductImages.map((image) => {
+                                return image;
+                            })}
+                        </View>
+                    )}
                 </ScrollView>
             </View>
         </ScrollView>
-
-        // <Container style={styles.container}>
-        //     <ScrollView>
-        //         <Content>
-        //             <Card style={styles.cardContainer}>
-        //                 <CardItem cardBody>
-        //                     <Image
-        //                         style={{ height: 200, width: null, flex: 1 }}
-        //                         source={{ uri: item.imageUrl }}
-        //                     />
-        //                 </CardItem>
-        //                 <CardItem>
-        //                     <Body>
-        //                         <H1>
-        //                             {item.name} | {item.category.name}
-        //                         </H1>
-        //                     </Body>
-        //                 </CardItem>
-        //                 <CardItem cardBody>
-        //                     <Text style={{ marginHorizontal: 20 }}>{item.description}</Text>
-        //                 </CardItem>
-        //                 <CardItem>
-        //                     <Left>
-        //                         <H1>₹{item.cost}</H1>
-        //                     </Left>
-        //                     <Body />
-        //                     <Right>
-        //                         <Text>{item.seller.name}</Text>
-        //                     </Right>
-        //                 </CardItem>
-        //                 {token.userId === item.seller._id ? (
-        //                     <CardItem>
-        //                         <Left />
-        //                         <Body>
-        //                             <Button style={styles.button} onPress={handleDeleteItem}>
-        //                                 <Text>Delete</Text>
-        //                             </Button>
-        //                         </Body>
-        //                         <Right />
-        //                     </CardItem>
-        //                 ) : (
-        //                     <CardItem>
-        //                         <Left />
-        //                         <Body>
-        //                             <Button style={styles.button}>
-        //                                 <Text>Track</Text>
-        //                             </Button>
-        //                         </Body>
-        //                         <Right />
-        //                     </CardItem>
-        //                 )}
-        //             </Card>
-        //         </Content>
-        //     </ScrollView>
-        // </Container>
     );
 }
 const styles = StyleSheet.create({
@@ -314,5 +326,17 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderTopRightRadius: 15,
         elevation: 10
+    },
+    listContainer: {
+        flex: 1,
+        flexDirection: "row",
+        alignItems: "flex-start",
+        flexWrap: "wrap",
+        backgroundColor: "gainsboro",
+        marginBottom: 50
+    },
+    center: {
+        justifyContent: "center",
+        alignItems: "center"
     }
 });
