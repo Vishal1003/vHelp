@@ -1,19 +1,39 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { Dimensions, Image, StyleSheet } from "react-native";
 import StarRating from "./StarRating";
-import { Container, Content, Card, CardItem, Text, Icon, Left, Body, Right } from "native-base";
+import { Content, Card, CardItem, Text, Icon, Left, Body, Right } from "native-base";
+import ThemeContext from "../../context/ThemeContext";
 
 const { height } = Dimensions.get("window");
 
 export default function ProductCard(props) {
     const { name, cost, imageUrl, seller, description } = props;
+    const themeContext = useContext(ThemeContext);
     return (
         <Content>
-            <Card style={{ elevation: 5 }}>
-                <CardItem>
+            <Card
+                style={{
+                    elevation: 5
+                }}
+            >
+                <CardItem
+                    style={{ backgroundColor: themeContext[themeContext.current_theme].background }}
+                >
                     <Body>
-                        <Text style={{ fontWeight: "bold" }}>{name}</Text>
-                        <Text note>@{seller.name}</Text>
+                        <Text
+                            style={{
+                                color: themeContext[themeContext.current_theme].foreground,
+                                fontWeight: "bold"
+                            }}
+                        >
+                            {name}
+                        </Text>
+                        <Text
+                            style={{ color: themeContext[themeContext.current_theme].foreground }}
+                            note
+                        >
+                            @{seller.name}
+                        </Text>
                     </Body>
                 </CardItem>
                 <CardItem cardBody>
@@ -22,7 +42,9 @@ export default function ProductCard(props) {
                         style={{ height: height / 4, width: null, flex: 1 }}
                     />
                 </CardItem>
-                <CardItem>
+                <CardItem
+                    style={{ backgroundColor: themeContext[themeContext.current_theme].background }}
+                >
                     <Left>
                         <StarRating ratings={4} reviews={99} />
                     </Left>
@@ -30,12 +52,25 @@ export default function ProductCard(props) {
                         <Icon active name="chatbubbles" />
                     </Right>
                 </CardItem>
-                <CardItem>
-                    <Text note>Price : </Text>
-                    <Text>{cost} $</Text>
+                <CardItem
+                    style={{ backgroundColor: themeContext[themeContext.current_theme].background }}
+                >
+                    <Text
+                        style={{ color: themeContext[themeContext.current_theme].foreground }}
+                        note
+                    >
+                        Price :{" "}
+                    </Text>
+                    <Text style={{ color: themeContext[themeContext.current_theme].foreground }}>
+                        {cost} $
+                    </Text>
                 </CardItem>
-                <CardItem>
-                    <Text>{description}</Text>
+                <CardItem
+                    style={{ backgroundColor: themeContext[themeContext.current_theme].background }}
+                >
+                    <Text style={{ color: themeContext[themeContext.current_theme].foreground }}>
+                        {description}
+                    </Text>
                 </CardItem>
             </Card>
         </Content>

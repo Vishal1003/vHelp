@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import ThemeContext from "../../context/ThemeContext";
 import {
     View,
     RefreshControl,
@@ -9,11 +10,14 @@ import {
     ToastAndroid,
     ActivityIndicator
 } from "react-native";
-import { Header, Icon, Item, Input, Text } from "native-base";
+import { Header, Icon, Item, Input, Text, Left, Right, Body } from "native-base";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { Switch } from "react-native-paper";
 import ProductList from "./ProductList";
 import SearchedProduct from "../../components/Card/SearchedProduct";
 import Banner from "../../components/Shared/Banner";
 import CategoryFilter from "./CategoryFilter";
+import MenuDrawer from "react-native-side-drawer";
 
 import { useSelector } from "react-redux";
 // const data = require("../../assets/data/products.json");
@@ -28,13 +32,17 @@ const ProductContainer = (props) => {
     const [products, setProducts] = useState([]);
     const [productsFiltered, setProductsFiltered] = useState([]);
     const [focus, setFocus] = useState();
-    const [refreshing, setRefreshing] = React.useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
     const [categories, setCategories] = useState([]);
     const [active, setActive] = useState();
+    const [open, setOpen] = useState(false);
+    const [isEnabled, setIsEnabled] = useState(false);
     const [initialState, setInitialState] = useState([]);
     const [productsCtg, setProductsCtg] = useState([]);
     const [isLoading, setIsLoading] = useState();
+
+    const themeContext = useContext(ThemeContext);
 
     const error_message = useSelector((state) => state.error_message);
     const success_message = useSelector((state) => state.success_message);
@@ -83,6 +91,60 @@ const ProductContainer = (props) => {
         }
     }, [success_message]);
 
+    const toggleOpen = () => {
+        setOpen(!open);
+    };
+    const toggleSwitch = () => {
+        setIsEnabled((previousState) => !previousState);
+        themeContext.toggleTheme();
+    };
+    const drawerContent = () => {
+        return (
+            <ScrollView style={styles.animatedBox}>
+                <Header
+                    style={{ backgroundColor: themeContext[themeContext.current_theme].background }}
+                >
+                    <Left>
+                        <Switch
+                            color={themeContext[themeContext.current_theme].foreground}
+                            onValueChange={toggleSwitch}
+                            value={isEnabled}
+                        />
+                    </Left>
+                    <Body>
+                        {themeContext.current_theme == "dark" ? (
+                            <Ionicons
+                                style={{
+                                    marginLeft: 30,
+                                    color: themeContext[themeContext.current_theme].foreground
+                                }}
+                                size={30}
+                                name="moon"
+                            />
+                        ) : (
+                            <Ionicons
+                                style={{
+                                    marginLeft: 30,
+                                    color: themeContext[themeContext.current_theme].foreground
+                                }}
+                                size={30}
+                                name="sunny"
+                            />
+                        )}
+                    </Body>
+                    <Right>
+                        <Icon
+                            style={{
+                                color: themeContext[themeContext.current_theme].foreground
+                            }}
+                            onPress={toggleOpen}
+                            name="ios-close"
+                        />
+                    </Right>
+                </Header>
+            </ScrollView>
+        );
+    };
     const searchProduct = (text) => {
         setProductsFiltered(
             products.filter((i) => i.name.toLowerCase().includes(text.toLowerCase()))
@@ -144,60 +206,69 @@ const ProductContainer = (props) => {
         </SafeAreaView>
     ) : (
         <SafeAreaView>
-            <Header searchBar rounded style={{ backgroundColor: "#F8F8F8", elevation: 10 }}>
-                <Item style={{ backgroundColor: "#E8E8E8", borderRadius: 20 }}>
-                    <Icon name="ios-search" />
-                    <Input
-                        placeholder="Search"
-                        onFocus={openList}
-                        onChangeText={(text) => searchProduct(text)}
+            <MenuDrawer
+                open={open}
+                drawerContent={drawerContent()}
+                drawerPercentage={70}
+                overlay={true}
+                opacity={0.8}
+            >
+                <Header searchBar rounded style={{ backgroundColor: "#F8F8F8", elevation: 10 }}>
+                    <Item style={{ backgroundColor: "#E8E8E8", borderRadius: 20 }}>
+                        <Icon name="ios-menu" onPress={toggleOpen} />
+                        <Icon name="ios-search" />
+                        <Input
+                            placeholder="Search"
+                            onFocus={openList}
+                            onChangeText={(text) => searchProduct(text)}
+                        />
+                        {focus == true ? <Icon onPress={onBlur} name="ios-close" /> : null}
+                    </Item>
+                </Header>
+                {focus == true ? (
+                    <SearchedProduct
+                        navigation={props.navigation}
+                        productsFiltered={productsFiltered}
                     />
-                    {focus == true ? <Icon onPress={onBlur} name="ios-close" /> : null}
-                </Item>
-            </Header>
-            {focus == true ? (
-                <SearchedProduct
-                    navigation={props.navigation}
-                    productsFiltered={productsFiltered}
-                />
-            ) : (
-                <ScrollView
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                    }
-                >
-                    <View>
+                ) : (
+                    <ScrollView
+                        refreshControl={
+                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                        }
+                    >
                         <View>
-                            <Banner />
-                        </View>
-                        <SafeAreaView>
-                            <CategoryFilter
-                                categories={categories}
-                                categoryFilter={changeCtg}
-                                active={active}
-                                setActive={setActive}
-                            />
-                        </SafeAreaView>
-                        {productsCtg.length > 0 ? (
-                            <SafeAreaView style={styles.listContainer}>
-                                {productsCtg.map((item) => {
-                                    return (
-                                        <ProductList
-                                            key={item.name}
-                                            item={item}
-                                            navigation={props.navigation}
-                                        />
-                                    );
-                                })}
-                            </SafeAreaView>
-                        ) : (
-                            <View style={[styles.center, { height: height / 2 }]}>
-                                <Text>No products found</Text>
+                            <View>
+                                <Banner />
                             </View>
-                        )}
-                    </View>
-                </ScrollView>
-            )}
+                            <SafeAreaView>
+                                <CategoryFilter
+                                    categories={categories}
+                                    categoryFilter={changeCtg}
+                                    active={active}
+                                    setActive={setActive}
+                                />
+                            </SafeAreaView>
+                            {productsCtg.length > 0 ? (
+                                <SafeAreaView style={styles.listContainer}>
+                                    {productsCtg.map((item) => {
+                                        return (
+                                            <ProductList
+                                                key={item.name}
+                                                item={item}
+                                                navigation={props.navigation}
+                                            />
+                                        );
+                                    })}
+                                </SafeAreaView>
+                            ) : (
+                                <View style={[styles.center, { height: height / 2 }]}>
+                                    <Text>No products found</Text>
+                                </View>
+                            )}
+                        </View>
+                    </ScrollView>
+                )}
+            </MenuDrawer>
         </SafeAreaView>
     );
 };
@@ -214,6 +285,11 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
         backgroundColor: "gainsboro",
         marginBottom: 50
+    },
+    animatedBox: {
+        flex: 1,
+        backgroundColor: "gainsboro",
+        padding: 10
     },
     center: {
         justifyContent: "center",

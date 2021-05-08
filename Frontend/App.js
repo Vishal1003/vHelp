@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import Main from "./navigators/Main";
+import GlobalState from "./context/GloabalState";
 import RootStackScreen from "./navigators/RootStackScreen";
 
 import { Provider } from "react-redux";
@@ -11,9 +11,11 @@ LogBox.ignoreAllLogs(true);
 export default function App() {
     return (
         <Provider store={store}>
-            <NavigationContainer>
-                <RootStackScreen />
-            </NavigationContainer>
+            <GlobalState>
+                <NavigationContainer>
+                    <RootStackScreen />
+                </NavigationContainer>
+            </GlobalState>
         </Provider>
     );
 }

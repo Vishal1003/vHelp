@@ -228,7 +228,7 @@ export default function ProductDetails(props) {
                     {
                         backgroundColor: "#fff",
                         marginTop: 10,
-                        height: 200,
+                        height: 200
                     }
                 ]}
             >
