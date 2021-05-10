@@ -7,6 +7,8 @@ import { Avatar, Title, Caption, Text, TouchableRipple } from "react-native-pape
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { logoutUser } from "../../redux/actions/AuthAction";
+import axios from "axios";
+import { REST_API_URL } from "../../constants/URLs";
 
 const ProfileScreen = ({ navigation }) => {
     const user_data = useSelector((state) => state.user_data);
@@ -18,6 +20,7 @@ const ProfileScreen = ({ navigation }) => {
     );
     const [name, setName] = useState("Name");
     const [contact, setContact] = useState("");
+    const [user, setUser] = useState();
 
     useEffect(() => {
         if (user_data.imageUrl != undefined) {
@@ -29,6 +32,20 @@ const ProfileScreen = ({ navigation }) => {
         if (user_data.name != undefined) {
             setName(user_data.name);
         }
+
+        const fetchAPI = async () => {
+            if (token.isVendor) {
+                let res = await axios.get(`${REST_API_URL}/api/index/vendor/${user_data._id}`);
+                if (res.data.success === true) {
+                    let vendor = { ...res.data.vendor, products: res.data.items };
+                    setUser(vendor);
+                } else {
+                    throw new Error(res.data.message);
+                }
+            }
+        };
+
+        fetchAPI();
     }, [user_data]);
     const handleLogout = () => {
         setIsLoggedIn(false);
@@ -101,12 +118,31 @@ const ProfileScreen = ({ navigation }) => {
                     }}
                 />
                 <View style={styles.menuWrapper}>
-                    <TouchableRipple onPress={() => {}}>
-                        <View style={styles.menuItem}>
-                            <Icon name="heart-outline" color="#00008B" size={25} />
-                            <Text style={styles.menuItemText}>Your Favorites</Text>
-                        </View>
-                    </TouchableRipple>
+                    {!token.isVendor && (
+                        <TouchableRipple onPress={() => {}}>
+                            <View style={styles.menuItem}>
+                                <Icon name="heart-outline" color="#00008B" size={25} />
+                                <Text style={styles.menuItemText}>Your Favorites</Text>
+                            </View>
+                        </TouchableRipple>
+                    )}
+
+                    {token.isVendor && (
+                        <TouchableRipple
+                            onPress={() => {
+                                navigation.navigate("Vendor Details", {
+                                    user: user,
+                                    navigation: navigation
+                                });
+                            }}
+                        >
+                            <View style={styles.menuItem}>
+                                <Icon name="cart" color="#00008B" size={25} />
+                                <Text style={styles.menuItemText}>Your Products</Text>
+                            </View>
+                        </TouchableRipple>
+                    )}
+
                     <TouchableRipple>
                         <View style={styles.menuItem}>
                             <Icon name="share-outline" color="#00008B" size={25} />

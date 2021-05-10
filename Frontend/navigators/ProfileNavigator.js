@@ -25,6 +25,13 @@ function MyStack() {
                     headerShown: true
                 }}
             />
+            <Stack.Screen
+                name="Vendor Details"
+                component={UserDetail}
+                options={{
+                    headerShown: false
+                }}
+            />
         </Stack.Navigator>
     );
 }
