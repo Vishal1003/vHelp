@@ -32,7 +32,7 @@ exports.postLogin = async (req, res, next) => {
 };
 
 exports.postRegister = async (req, res, next) => {
-    let { email, password, user_type } = req.body;
+    let { name, email, password, user_type, contact } = req.body;
     // Check if user exists already
     let user = await User.findOne({ email: email });
     if (user) {
@@ -47,13 +47,17 @@ exports.postRegister = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, 8);
     if (user_type === "user") {
         user = new User({
+            name: name,
             email: email,
-            password: hashedPassword
+            password: hashedPassword,
+            contact: contact
         });
     } else {
         user = new Vendor({
+            name: name,
             email: email,
-            password: hashedPassword
+            password: hashedPassword,
+            contact: contact
         });
     }
     user = await user.save();
@@ -67,6 +71,7 @@ exports.getAllProducts = async (req, res, next) => {
     let query = {};
     let category_id = req.query.category_id;
     let category_name = req.query.category;
+    let vendor_id = req.query.vendor_id;
     let min_cost = req.query.min_cost;
     let max_cost = req.query.max_cost;
     if (category_id) {
@@ -87,6 +92,12 @@ exports.getAllProducts = async (req, res, next) => {
     } else if (max_cost) {
         query.cost = { $lte: max_cost };
     }
+    if(vendor_id) {
+	if (!isValidId(vendor_id)) {
+            return res.json({ success: false, message: "Invalid Vendor Id" });
+        }
+        query.seller = vendor_id;
+    }
     const items = await Item.find(query).populate("category").populate("seller", "-password");
     if (!items) return res.json({ success: false, message: "No Items found!" });
     return res.json({ success: true, message: "Products found successfully", items });
@@ -106,7 +117,15 @@ exports.getOneProduct = async (req, res, next) => {
 exports.getAllVendors = async (req, res, next) => {
     const vendors = await Vendor.find().select("-password");
     if (!vendors) return res.json({ success: false, message: "No vendor found" });
-    res.json({ success: true, message: "Vendors found successfully", vendors });
+    const data = [];
+    for (let i = 0; i < vendors.length; i++) {
+        let user = vendors[i];
+        const items = await Item.find({ seller: user._id }).select("-cloudinary_id");
+        user = { ...user._doc, products: items };
+        console.log(user);
+        data.push(user);
+    }
+    res.json({ success: true, message: "Vendors found successfully", vendors: data });
 };
 
 exports.getOneVendor = async (req, res, next) => {
@@ -149,26 +168,35 @@ exports.getCategory = async (req, res, next) => {
     });
 };
 
+exports.filterProductCategory = async (req, res, next) => {
+    const id = req.params.id;
+    const data = await Item.find({ category: id }).populate("category").populate("seller", "-password");
+    if (!data) return res.json({ success: false, message: "Error fetching products" });
+    return res.json({ success: true, data });
+};
 
+exports.filterProductVendor = async (req, res, next) => {
+    const id = req.params.id;
+    const data = await Item.find({ seller: id }).populate("category").populate("seller", "-password");
+    if (!data) return res.json({ success: false, message: "Error fetching products" });
+    return res.json({ success: true, data });
+};
 
 exports.verifyJWT = async (req, res, next) => {
     const token = req.headers["x-access-token"];
 
-    if(!token) {
-        return res.json({success: false, message: "Authentication failed"});
+    if (!token) {
+        return res.json({ success: false, message: "Authentication failed" });
     }
 
     jwt.verify(token, process.env.JWT_SECRET, async (err, data) => {
-        if(err) 
-            return res.json({success: false, message : "Authentication required!"});
-        
+        if (err) return res.json({ success: false, message: "Authentication required!" });
+
         let user = await User.findById(data.userId).select("-password");
-        if(user)
-            return res.json({success: true, user});
+        if (user) return res.json({ success: true, user });
         user = await Vendor.findById(data.userId);
-        if(user)
-            return res.json({success: true, user});
-        
-        return res.json({success: false, message : "Failed Attempt!"})
-    })
-}
+        if (user) return res.json({ success: true, user });
+
+        return res.json({ success: false, message: "Failed Attempt!" });
+    });
+};

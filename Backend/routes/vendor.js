@@ -32,6 +32,7 @@ const uploadOptions = multer({ storage: storage });
 router.post("/item", uploadOptions.single("image"), controller.postAddItem);
 router.put("/item/:id", uploadOptions.single("image"), controller.putItem);
 router.delete("/item/:id", controller.deleteItem);
+router.put("/vendor", uploadOptions.single("image"), controller.putVendor);
 
 // Non modification operations on Items
 router.get("/items", controller.getItems);

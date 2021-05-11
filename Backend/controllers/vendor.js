@@ -12,7 +12,7 @@ function isValidId(id) {
 
 // GET list of all items of that vendor
 exports.getItems = async (req, res, next) => {
-    const vendorId = req.user.vendorId;
+    const vendorId = req.user.userId;
     const items = await Item.find({ seller: vendorId });
     if (items) {
         return res.json({ success: true, message: "Items found successfully", items: items });
@@ -54,7 +54,7 @@ exports.postAddItem = async (req, res, next) => {
 
     if (!item) return res.json({ success: false, message: "Error creating that item" });
 
-    res.json({
+    return res.json({
         success: true,
         message: "Item added successfully",
         item: item
@@ -66,7 +66,7 @@ exports.putItem = async (req, res, next) => {
     let { name, cost, category, description } = req.body;
 
     // Check if the vendor is registered (error not possible using frontend)
-    const vendor = await Vendor.findById(req.user.vendorId).select("_id");
+    const vendor = await Vendor.findById(req.user.userId).select("_id");
     if (!vendor) return res.json({ success: false, message: "Invalid vendor" });
 
     // Check if the category is supported (error not possible using frontend)
@@ -127,5 +127,47 @@ exports.deleteItem = async (req, res, next) => {
         return res.json({ success: true, message: "Item removed successfully", item: item });
     } else {
         return res.json({ success: false, message: "Item Not Found" });
+    }
+};
+
+// PUT the updated vendor and return updated vendor
+exports.putVendor = async (req, res, next) => {
+    let { name, email, contact } = req.body;
+    // Check if the vendor is registered (error not possible using frontend)
+    const vendor = await Vendor.findById(req.user.userId);
+    if (!vendor) return res.json({ success: false, message: "Invalid vendor" });
+
+    let updates = {};
+    if (name) {
+        updates.name = name;
+    }
+    if (email) {
+        updates.email = email;
+    }
+    if (contact) {
+        updates.contact = contact;
+    }
+
+    if (req.file) {
+        if (vendor.cloudinary_id != undefined) {
+            await cloudinary.uploader.destroy(vendor.cloudinary_id);
+        }
+        const result = await cloudinary.uploader.upload(req.file.path);
+        updates.imageUrl = result.secure_url;
+        updates.cloudinary_id = result.public_id;
+    }
+    let updatedVendor = await Vendor.findByIdAndUpdate(
+        vendor._id,
+        { $set: updates },
+        { new: true }
+    );
+    if (updatedVendor) {
+        return res.json({
+            success: true,
+            message: "Vendor details updated successfully",
+            vendor: updatedVendor
+        });
+    } else {
+        return res.json({ success: false, message: "Vendor details could not be updated" });
     }
 };

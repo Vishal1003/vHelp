@@ -15,7 +15,7 @@ function authJwt() {
 }
 
 async function isRevoked(req, payload, done) {
-    if (!payload.isVendor) done(null, true);
+    // if (!payload.isVendor) done(null, true);
     done();
 }
 

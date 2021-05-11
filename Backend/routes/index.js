@@ -26,6 +26,12 @@ router.post("/category", controller.postCategory);
 // GET all categories for the products
 router.get("/category", controller.getCategory);
 
+// GET all the products of certain category
+router.get("/category/:id", controller.filterProductCategory);
+
+// GET all the products of certain vendor
+router.get("/seller/:id", controller.filterProductVendor);
+
 // verify JWT
 router.post("/verify", controller.verifyJWT);
 

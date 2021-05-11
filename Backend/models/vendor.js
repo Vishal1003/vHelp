@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 
 const vendorSchema = mongoose.Schema({
     name: {
-        type: String
+        type: String,
+        required: true
     },
     email: {
         type: String,
@@ -13,11 +14,14 @@ const vendorSchema = mongoose.Schema({
         required: true
     },
     imageUrl: {
-        type : String,
+        type: String
     },
-    contact : {
-        type : String,
-        required : true
+    cloudinary_id: {
+        type: String
+    },
+    contact: {
+        type: String,
+        required: true
     }
 });
 const Vendor = mongoose.model("Vendor", vendorSchema);

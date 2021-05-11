@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema({
     name: {
-        type: String
+        type: String,
+        required: true
     },
     email: {
         type: String,
@@ -18,9 +19,15 @@ const userSchema = mongoose.Schema({
         postal_code: String,
         country: String
     },
-    image: {
-        data: Buffer,
-        contentType: String
+    imageUrl: {
+        type : String
+    },
+    cloudinary_id: {
+        type: String
+    },
+    contact : {
+        type : String,
+        required : true
     }
 });
 const User = mongoose.model("User", userSchema);

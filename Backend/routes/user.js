@@ -27,5 +27,6 @@ const storage = multer.diskStorage({
 });
 
 const uploadOptions = multer({ storage: storage });
-router.put("profile", uploadOptions.single("image"), controller.putProfile);
+router.put("/user", uploadOptions.single("image"), controller.putUser);
+
 module.exports = router;
