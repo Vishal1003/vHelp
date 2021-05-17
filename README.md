@@ -40,6 +40,10 @@ There are several types of end users of the application. They are broadly divide
   </tr>
   <tr>
       <td><img src="./Screenshots/Landing2.png" alt="5" width = 360px height = 600px></td>
+      <td><img src="./Screenshots/ProductDetails1.png" align="right" alt="6" width = 360px height = 600px></td>
+  </tr>
+  <tr>
+      <td><img src="./Screenshots/ProductDetails.png" alt="5" width = 360px height = 600px></td>
       <td><img src="./Screenshots/Map.png" align="right" alt="6" width = 360px height = 600px></td>
   </tr>
   <tr>
