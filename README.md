@@ -27,6 +27,20 @@ There are several types of end users of the application. They are broadly divide
 3. MongoDB (database)
 4. Heroku (backend deployment)
 
+## Project Overview
+
+<table>
+  <tr>
+    <td> <img src="./Screenshots/Welcome.png"  alt="1" width = 360px height = 640px > </td>
+    <td> <img src="./Screenshots/Login.png" alt="2" width = 360px height = 640px></td>
+   </tr> 
+   <tr>
+      <td><img src="./Screenshots/Landing.png" alt="3" width = 360px height = 640px></td>
+      <td><img src="./Screenshots/Landing2.png" align="right" alt="4" width = 360px height = 640px>
+  </td>
+  </tr>
+</table>
+
 ## Future Work
 
 The project is still work in progress and a few fetures (and bugs) needs to be added (priority wise):
