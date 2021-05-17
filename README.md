@@ -16,7 +16,7 @@ There are several types of end users of the application. They are broadly divide
 
 1. Cross platform mobile application which is designed to run both on android and iOS devices.
 2. Each type of user has different types of UI (screens) as per the requirements. These are very userfriendly and anyone can use it. (It uses react-navigation for the navigation across various screens of mobile application)
-3. Completely secure application (uses react-redux jwt authentication)
+3. Completely secure application
 4. Uses redux to store the state of the state of the user in the asyncStorage.
 5. Uses multer and cloudinary to upload image on cloud.
 
