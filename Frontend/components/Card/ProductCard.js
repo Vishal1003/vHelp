@@ -61,8 +61,13 @@ export default function ProductCard(props) {
                     >
                         Price :{" "}
                     </Text>
-                    <Text style={{ color: themeContext[themeContext.current_theme].foreground }}>
-                        {cost} $
+                    <Text
+                        style={{
+                            color: themeContext[themeContext.current_theme].foreground,
+                            fontWeight: "bold"
+                        }}
+                    >
+                        ₹ {cost}
                     </Text>
                 </CardItem>
                 <CardItem
