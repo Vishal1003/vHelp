@@ -31,13 +31,28 @@ There are several types of end users of the application. They are broadly divide
 
 <table>
   <tr>
-    <td> <img src="./Screenshots/Welcome.png"  alt="1" width = 360px height = 640px > </td>
-    <td> <img src="./Screenshots/Login.png" alt="2" width = 360px height = 640px></td>
+    <td> <img src="./Screenshots/welcome.png"  alt="1" width = 360px height = 600px > </td>
+    <td> <img src="./Screenshots/Login.png" alt="2" width = 360px height = 600px></td>
    </tr> 
    <tr>
-      <td><img src="./Screenshots/Landing.png" alt="3" width = 360px height = 640px></td>
-      <td><img src="./Screenshots/Landing2.png" align="right" alt="4" width = 360px height = 640px>
-  </td>
+      <td><img src="./Screenshots/Register.jpg" alt="3" width = 360px height = 600px></td>
+      <td><img src="./Screenshots/Landing.png" align="right" alt="4" width = 360px height = 600px></td>
+  </tr>
+  <tr>
+      <td><img src="./Screenshots/Landing2.png" alt="5" width = 360px height = 600px></td>
+      <td><img src="./Screenshots/Map.png" align="right" alt="6" width = 360px height = 600px></td>
+  </tr>
+  <tr>
+      <td><img src="./Screenshots/Profile.png" alt="7" width = 360px height = 600px></td>
+      <td><img src="./Screenshots/Edit.png" align="right" alt="8" width = 360px height = 600px></td>
+  </tr>
+  <tr>
+      <td><img src="./Screenshots/UploadEdit.png" alt="9" width = 360px height = 600px></td>
+      <td><img src="./Screenshots/AddProduct.png" align="right" alt="10" width = 360px height = 600px></td>
+  </tr>
+  <tr>
+      <td><img src="./Screenshots/VendorsList.png" alt="11" width = 360px height = 600px></td>
+      <td><img src="./Screenshots/VendorDetails.png" align="right" alt="12" width = 360px height = 600px></td>
   </tr>
 </table>
 
